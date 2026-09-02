@@ -39,7 +39,10 @@ function init(){
   PERFILES.forEach(p=>{
     const el=document.createElement('div');
     el.className='p-card';
-    el.innerHTML=`<div class="p-avatar" style="background:${p.color}22;border-color:${p.color}55;color:${p.color}"><span>${p.icon}</span></div><div class="p-title">${p.title}</div><div class="p-desc">${p.desc}</div><div class="p-kpi">Métricas: ${p.kpis.slice(0,3).join(' · ')}</div>`;
+    el.innerHTML=`<div class="p-avatar" style="--acc:${p.color}">${icon(p.ic)}</div>
+      <div class="p-title">${p.title}</div>
+      <div class="p-desc">${p.desc}</div>
+      <div class="p-kpi">${p.kpis.slice(0,3).join(' · ')}</div>`;
     makeSelectable_(el, 'Seleccionar decisor: '+p.title, ()=>pickPerfil(p.id,el));
     pg.appendChild(el);
   });
@@ -72,8 +75,8 @@ function go(n){
 function renderCrumbs(id){
   const el=document.getElementById(id);
   let h='';
-  if(ST.country)h+=`<div class="crumb on"><span class="crumb-lbl">País</span><span>${COUNTRIES[ST.country].flag} ${COUNTRIES[ST.country].name}</span></div>`;
-  if(ST.perfil){const p=PERFILES.find(x=>x.id===ST.perfil);h+=`<div class="crumb on"><span class="crumb-lbl">Decisor</span><span>${p.icon} ${p.title}</span></div>`;}
+  if(ST.country)h+=`<div class="crumb on"><span class="crumb-lbl">País</span><span>${COUNTRIES[ST.country].flagEmoji} ${COUNTRIES[ST.country].name}</span></div>`;
+  if(ST.perfil){const p=PERFILES.find(x=>x.id===ST.perfil);h+=`<div class="crumb on"><span class="crumb-lbl">Decisor</span><span>${icon(p.ic)} ${p.title}</span></div>`;}
   if(ST.meta){const m=METAS.find(x=>x.id===ST.meta);h+=`<div class="crumb on"><span class="crumb-lbl">Meta</span><span>${m.title}</span></div>`;}
   el.innerHTML=h;
 }
@@ -107,20 +110,28 @@ function buildProse_(c){
 function renderCtx(id){
   const c=COUNTRIES[id];
   const panel=document.getElementById('ctxPanel');
-  const refs=c.refs.map((r,i)=>`<span id="ref-${c.name}-${i+1}"></span>[${i+1}] <a href="${r.url}" target="_blank">↗ ${r.label}</a>`).join('<br>');
+  const refs=c.refs.map((r,i)=>`<li><span id="ref-${c.name}-${i+1}"></span>${enlaceExterno(r.url, r.label)}</li>`).join('');
   const robusto = c.estructura ? `
-    ${ctxSec('Estructura del sistema', c.estructura)}
-    ${ctxSec('Financiamiento', c.financiamiento)}
-    ${ctxSec('Proceso de inclusión de tecnologías', c.inclusion)}
-    ${ctxSec('Mecanismo de compra y pago', c.compra)}
-    ${ctxSec('Vía alterna de acceso', c.alterno)}
-    ${ctxSec('Contexto reciente', c.contexto)}
-  ` : '';
+    <details class="disclose">
+      <summary>${icon('chevron','disclose-mark')}<span>Ficha completa del sistema de salud</span></summary>
+      <div class="disclose-body">
+        ${ctxSec('Estructura del sistema', c.estructura)}
+        ${ctxSec('Financiamiento', c.financiamiento)}
+        ${ctxSec('Proceso de inclusión de tecnologías', c.inclusion)}
+        ${ctxSec('Mecanismo de compra y pago', c.compra)}
+        ${ctxSec('Vía alterna de acceso', c.alterno)}
+        ${ctxSec('Contexto reciente', c.contexto)}
+      </div>
+    </details>
+  ` : '<p class="ctx-nota">La ficha ampliada de este sistema de salud está pendiente de completar.</p>';
   panel.innerHTML=`
     <div class="ctx-head"><div class="ctx-flag">${c.flag}</div><div><div class="ctx-title">${c.name}</div><span class="ctx-sub">${c.sistema}</span></div></div>
     ${buildProse_(c)}
     ${robusto}
-    <div class="ctx-ref"><strong style="color:var(--gray)">Fuentes primarias verificadas:</strong><br>${refs}</div>`;
+    <details class="disclose">
+      <summary>${icon('chevron','disclose-mark')}<span>Fuentes primarias verificadas</span><span class="disclose-count">${c.refs.length}</span></summary>
+      <ol class="ctx-ref">${refs}</ol>
+    </details>`;
   panel.classList.add('on');
 }
 function pickPerfil(id,el){
@@ -146,17 +157,17 @@ function renderResult(){
   COMBO_TOOLS = [...base];
 
   const metaMetricPills = (META_METRICS[ST.meta]||[]).map(k=>`<span class="kpi-pill">${k}</span>`).join('');
-  const gapNote = `<div class="gap-note"><span class="gap-note-icon">Nota:</span><span class="gap-note-text">Toda esta evidencia proviene de Colombia y de consensos regionales. Si <strong>${country.name}</strong> aún no cuenta con un estudio propio (un CEA, un AIP o un análisis de carga de enfermedad con datos locales), esa brecha específica es, justamente, el tipo de proyecto que un equipo especializado en economía de la salud construye de la mano de un cliente.</span></div>`;
+  const gapNote = `<div class="gap-note">${icon('info','gap-note-icon')}<span class="gap-note-text">Toda esta evidencia proviene de Colombia y de consensos regionales. Si <strong>${country.name}</strong> aún no cuenta con un estudio propio (un CEA, un AIP o un análisis de carga de enfermedad con datos locales), esa brecha específica es, justamente, el tipo de proyecto que un equipo especializado en economía de la salud construye de la mano de un cliente.</span></div>`;
 
   document.getElementById('resBox').innerHTML=`
     <div class="res-wrap">
       <div class="res-hero">
-        <div class="res-tag">${country.flag} ${country.name} · ${perfil.icon} ${perfil.title} · ${meta.num}</div>
+        <div class="res-tag">${country.flagEmoji} ${country.name} · ${perfil.title} · ${meta.num}</div>
         <div class="res-title">Arma tu combinación de herramientas</div>
         <div class="res-sub">${meta.title}. Ya precargamos las herramientas que aplican a tu meta. Toca o arrastra para quitar o agregar otras. El argumento de abajo se redacta solo con la evidencia de Suprahyal.</div>
       </div>
       <div class="res-body">
-        <div class="drag-instructions"><span class="drag-instructions-icon">Instrucciones:</span><span><strong>Toca</strong> una tarjeta del <strong>catálogo completo</strong> para llevarla a <strong>tu combinación</strong>, y tócala de nuevo para devolverla. En computador también puedes arrastrarla entre las dos columnas.</span></div>
+        <div class="drag-instructions">${icon('info','drag-instructions-icon')}<span><strong>Toca</strong> una tarjeta del <strong>catálogo completo</strong> para llevarla a <strong>tu combinación</strong>, y tócala de nuevo para devolverla. En computador también puedes arrastrarla entre las dos columnas.</span></div>
 
         <div class="drag-cols">
           <div class="drag-col">
@@ -194,7 +205,7 @@ function makeDragCard_(k){
   el.className = 'drag-card';
   el.draggable = true;
   el.dataset.tool = k;
-  el.innerHTML = `<span class="drag-card-icon">${t.icon}</span><span class="drag-card-name">${t.nombre}</span>`;
+  el.innerHTML = `${icon(t.ic)}${sigla(t.icon)}<span class="drag-card-name">${t.nombre}</span>`;
   el.setAttribute('role','button');
   el.setAttribute('tabindex','0');
   el.title = 'Toca o arrastra para mover esta herramienta';
@@ -272,16 +283,24 @@ function renderComboDetails(){
   box.innerHTML = COMBO_TOOLS.map(k=>{
     const t = TOOLS[k];
     const rank = base.includes(k) ? 'Aplica directamente a tu meta' : 'Agregada por el equipo';
-    const evh = t.ev.map(e=>EVREF[e]).map(e=>`<div class="ev-item"><div class="ev-dot"></div><div><div class="ev-paper">${e.paper}</div><div class="ev-result">${e.result}</div><a href="${e.url}" target="_blank" style="font-size:0.68rem;color:var(--teal);text-decoration:none">↗ ${e.url}</a></div></div>`).join('');
-    return `<div class="tool-card">
-      <div class="tool-card-head"><span class="tool-card-icon">${t.icon}</span><div><div class="tool-card-rank">${rank}</div><div class="tool-card-name">${t.nombre}</div></div></div>
-      <div class="tool-card-grid">
-        <div><span class="res-item-lbl">Qué es</span><div class="res-item-val">${t.que}</div></div>
-        <div><span class="res-item-lbl">Qué pregunta responde</span><div class="res-item-val">${t.pregunta}</div></div>
-        <div><span class="res-item-lbl">Qué insumos requiere</span><div class="res-item-val">${t.insumos}</div></div>
-        <div><span class="res-item-lbl">Qué entrega</span><div class="res-item-val">${t.entrega}</div></div>
+    return `<details class="tool-card disclose">
+      <summary>
+        ${icon('chevron','disclose-mark')}
+        <span class="tool-card-mark">${icon(t.ic)}${sigla(t.icon)}</span>
+        <span class="tool-card-id">
+          <span class="tool-card-name">${t.nombre}</span>
+          <span class="tool-card-rank">${rank}</span>
+        </span>
+      </summary>
+      <div class="disclose-body">
+        <div class="tool-card-grid">
+          <div><span class="res-item-lbl">Qué es</span><div class="res-item-val">${t.que}</div></div>
+          <div><span class="res-item-lbl">Qué pregunta responde</span><div class="res-item-val">${t.pregunta}</div></div>
+          <div><span class="res-item-lbl">Qué insumos requiere</span><div class="res-item-val">${t.insumos}</div></div>
+          <div><span class="res-item-lbl">Qué entrega</span><div class="res-item-val">${t.entrega}</div></div>
+        </div>
+        ${bloqueEvidencia(t.ev, 'Evidencia de Suprahyal disponible', 'Ver la publicación')}
       </div>
-      <div class="ev-block" style="margin-bottom:0"><div class="ev-lbl">Evidencia de Suprahyal disponible</div>${evh}</div>
-    </div>`;
+    </details>`;
   }).join('');
 }

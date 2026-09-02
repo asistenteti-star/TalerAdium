@@ -143,5 +143,6 @@ document.getElementById('tab2').addEventListener('click', ()=>{
   if(ST.country && ST.perfil && ST.meta) startM2();
 });
 
+initTema();
 init();
 offerResume();

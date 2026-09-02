@@ -64,8 +64,8 @@ function startM2(){
   if(!country||!perfil||!meta) return;
   const viz=getViz();
 
-  document.getElementById('p1-quien').textContent=perfil.icon+' '+perfil.title;
-  document.getElementById('p1-quien-detail').textContent=country.flag+' '+country.name+' · '+country.hta;
+  document.getElementById('p1-quien').innerHTML=icon(perfil.ic)+' '+perfil.title;
+  document.getElementById('p1-quien-detail').textContent=country.name+' · '+country.hta;
   document.getElementById('p1-objetivo').textContent=meta.title;
   document.getElementById('p1-objetivo-detail').textContent=meta.tag;
 
@@ -75,7 +75,7 @@ function startM2(){
     return `<div class="viz-card"><div class="viz-title">${v.title}</div><div class="viz-stat"><div class="viz-num">${v.num}</div><div class="viz-unit">${v.unit}</div></div><div class="viz-desc">${v.desc}</div>${barHtml}<div class="viz-source">Fuente: ${v.src}</div></div>`;
   }).join('');
 
-  const guia=(items)=>items.map(t=>`<div class="story3-item"><div class="story3-item-val" style="color:var(--gray)">• ${t}</div></div>`).join('');
+  const guia=(items)=>`<ul class="guia-list">${items.map(t=>`<li>${t}</li>`).join('')}</ul>`;
   document.getElementById('escenario-content').innerHTML=`<div class="story3-item-lbl" style="margin-bottom:.5rem">QUÉ INCLUIR</div>`+guia([
     '¿Cuándo y dónde tiene lugar la historia?',
     '¿Quiénes son los protagonistas?',
@@ -85,15 +85,15 @@ function startM2(){
   prepararGuionEscenario_();
   const base=TOOLS_BY_META[ST.meta]||[];
   const evKeys=[...new Set(base.flatMap(k=>TOOLS[k].ev))];
-  const evh=evKeys.map(e=>EVREF[e]).map(e=>`<div class="ev-item"><div class="ev-dot"></div><div><div class="ev-paper">${e.paper}</div><div class="ev-result">${e.result}</div><a href="${e.url}" target="_blank" rel="noopener" style="font-size:0.72rem;color:var(--teal);text-decoration:none">↗ Ver paper</a></div></div>`).join('');
+  const evh=bloqueEvidencia(evKeys, 'Datos disponibles para sustentar el desarrollo', 'Ver la publicación');
   document.getElementById('desarrollo-content').innerHTML=`<div class="story3-item-lbl" style="margin-bottom:.5rem">QUÉ INCLUIR</div>`+guia([
     'Da ejemplos que ilustren la situación.',
     'Incluye datos que muestren el reto o la solución.',
     'Explica lo que sucederá si no se toman medidas.',
     'Discute las posibles opciones para abordar la situación.',
-    'Ilustra los beneficios de la solución.'])+`<div class="ev-block" style="margin-top:.9rem;margin-bottom:0"><div class="ev-lbl">Datos disponibles para sustentar el desarrollo</div>${evh}</div>`;
+    'Ilustra los beneficios de la solución.'])+evh;
 
-  const hint=(t)=>`<div class="conc-item"><div class="conc-dot" style="background:var(--gray-d)"></div><div style="color:var(--gray)">${t}</div></div>`;
+  const hint=(t)=>`<p class="conc-hint">${t}</p>`;
   const guion=getStory();
   const chipsCp = guion ? guionChips_('ta-cp', guion.cp) : '';
   const chipsLp = guion ? guionChips_('ta-lp', guion.lp) : '';
