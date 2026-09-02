@@ -156,7 +156,7 @@ Lo que falta probar y no se puede simular:
 
 ### 8. Revisión de contenido por el equipo médico
 
-La app cita 41 fuentes primarias con URL. La validación técnica confirmó que
+La app cita 39 fuentes oficiales de país y 5 publicaciones de evidencia, todas con URL. La validación técnica confirmó que
 los enlaces están bien formados y que cada herramienta apunta a evidencia que
 existe en el archivo, pero **no** que cada cifra corresponda a lo que dice el
 paper. Esa revisión la tiene que hacer quien conoce la evidencia de Suprahyal.
