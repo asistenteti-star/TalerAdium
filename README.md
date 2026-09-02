@@ -209,6 +209,13 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
   `<div>`, recibieron rol, foco y respuesta a Enter/Espacio, con `aria-pressed`
   y `aria-checked` reflejando la selección. El indicador de guardado es una
   región `aria-live`.
+- **Safari en iOS, por revisión de código** — no se pudo ejecutar (WebKit
+  necesita librerías del sistema con `sudo`), pero quedaron corregidos los tres
+  problemas conocidos que sí se detectan leyendo: `backdrop-filter` sin
+  prefijo `-webkit-`, `min-height:100vh` que en iOS no descuenta la barra del
+  navegador, y campos de texto por debajo de 16px, que hacen que Safari amplíe
+  la página al enfocarlos y no vuelva al zoom original. Falta la prueba en un
+  dispositivo real; está anotada en el ROADMAP.
 - **Impresión** — la hoja de impresión oculta el encabezado y los controles y
   fuerza el color del bloque de portada, para que el PDF salga presentable.
 - **Referencias cruzadas de datos** — cada herramienta apunta a evidencia que

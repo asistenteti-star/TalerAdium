@@ -155,9 +155,26 @@ Lo que falta probar y no se puede simular:
 - Safari en iPhone y iPad — es el navegador más probable en el salón y el que
   más difiere.
 - La impresión a PDF desde un teléfono.
-- Safari otra vez, ahora contra el Sheet conectado. La concurrencia ya se
-  midió —8 equipos simultáneos, 8 filas distintas, sin choques— pero desde
-  Chromium.
+- **Safari en iPhone y iPad.** Es el navegador más probable en el salón y el
+  único que no se pudo verificar: WebKit necesita librerías del sistema que
+  requieren `sudo` para instalarse, y un iOS real no se emula.
+
+  Tres problemas conocidos de iOS ya se corrigieron revisando el código:
+
+  | Problema | Efecto en el taller | Corrección |
+  |---|---|---|
+  | `backdrop-filter` sin prefijo `-webkit-` | Safari lo ignoró hasta la versión 18: el encabezado sticky quedaría sin difuminado y el contenido pasando por detrás sería ilegible | prefijo agregado |
+  | `min-height:100vh` | En iOS, `vh` no descuenta la barra del navegador: el final de cada pantalla quedaría escondido debajo | `100dvh` declarado después |
+  | Campos de texto bajo 16px | Safari amplía la página al enfocarlos y no vuelve al zoom original. El Paso 3 son cinco textareas, así que el equipo trabajaría ampliado todo el paso | 16px hasta 820px de ancho |
+
+  Lo que sigue sin verificar y solo se ve en un dispositivo real: el
+  desplazamiento con la barra de Safari colapsando y expandiéndose, el
+  comportamiento del teclado virtual sobre los campos del Paso 3, y la
+  impresión a PDF, que en iOS pasa por la hoja de compartir y no por un
+  diálogo de impresión.
+
+  Con un iPhone o iPad a mano son diez minutos: recorrido completo en
+  https://taler-adium.vercel.app y confirmar que la fila llega al Sheet.
 - La red del lugar del taller. Si es inestable, el respaldo local cubre al
   equipo, pero el facilitador vería el Sheet incompleto.
 

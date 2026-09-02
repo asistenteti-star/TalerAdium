@@ -7,14 +7,14 @@
   --priv:rgba(255,255,255,0.04);--amber:#c47f00;--amber-l:rgba(196,127,0,0.12);
   --green:#1d9e75;--green-l:rgba(29,158,117,0.12);
 }
-body{font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--white);min-height:100vh}
+body{font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--white);min-height:100vh;min-height:100dvh}
 .bg-grad{
   position:fixed;inset:0;z-index:0;pointer-events:none;
   background:radial-gradient(ellipse 60% 50% at 85% 5%,rgba(0,80,80,0.45) 0%,transparent 70%),
     radial-gradient(ellipse 50% 40% at 5% 90%,rgba(0,60,60,0.3) 0%,transparent 70%),
     linear-gradient(160deg,#0f1614 0%,#111a18 100%);
 }
-.app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh;min-height:100dvh}
 
 /* HEADER */
 /* El contenedor sticky evita el desfase que producía .prog{top:61px} fijo
@@ -23,7 +23,7 @@ body{font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--whi
 header{
   display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
   padding:1.1rem 2.2rem;border-bottom:1px solid var(--line);
-  background:rgba(15,20,18,0.88);backdrop-filter:blur(14px);
+  background:rgba(15,20,18,0.88);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
 }
 .logo{display:flex;align-items:center;gap:0.75rem}
 .logo-pip{width:3px;height:24px;border-radius:2px;background:var(--teal)}
@@ -440,3 +440,20 @@ body{overflow-x:hidden}
 .guion-item-lbl{font-size:0.62rem;letter-spacing:0.09em;color:var(--gray);font-weight:600;text-transform:uppercase;display:block;margin-bottom:0.2rem}
 .guion-item-val{font-size:0.82rem;color:var(--white);line-height:1.65}
 .guion-accion{margin-top:0.9rem;padding-top:0.85rem;border-top:1px solid var(--line)}
+
+
+/* ═══ SAFARI EN iOS ═══
+   Safari amplía la página al enfocar un campo cuyo texto mide menos de 16px,
+   y no vuelve al zoom original al salir del campo. El Módulo 2 se trabaja
+   escribiendo en textareas, así que el equipo quedaría con la pantalla
+   ampliada durante todo el paso. 16px es el umbral exacto que lo evita, y en
+   pantalla chica además se lee mejor. */
+@media (max-width:820px){
+  textarea,
+  input[type="text"],
+  .resumen-row textarea,
+  .conc-body textarea,
+  #teamNameInput{
+    font-size:16px;
+  }
+}
