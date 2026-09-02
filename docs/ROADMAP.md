@@ -10,72 +10,58 @@ contenido** y la conexión del Sheet. La lista está en orden de impacto.
 
 ## Bloque A · Contenido
 
-### 1. Guiones por perfil × meta: resuelto a medias
+### 1. Revisión de evidencia de septiembre de 2026: aplicada
 
-**Lo que se encontró.** El archivo original traía un objeto `STORY` con
-guiones completos por combinación de decisor y meta (dónde ocurre la
-conversación, quiénes son los protagonistas, cuál es el problema, qué acciones
-proponer a corto y a largo plazo, y el resumen reto/solución/resultado), pero la
-función que los lee, `getStory()`, **no se invocaba en ninguna parte**. Unos
-30 KB de contenido curado que nunca llegaba a la pantalla.
+El equipo de contenido entregó una revisión de fondo del archivo. La evidencia
+pasó de 5 publicaciones a 17, con correcciones materiales a cifras que ya
+estaban desplegadas:
 
-**Lo que se hizo.** El guion ya se muestra en el Paso 3, pero **solo en las
-combinaciones que tienen guion propio**. Aparece como bloque "Guion sugerido
-para esta combinación" con las cuatro piezas de la narrativa y un botón que las
-inserta en el campo de texto para que el equipo las edite; las acciones de
-corto y largo plazo y las tres frases del resumen se ofrecen como frases
-insertables junto a cada campo.
+| Dato | Estaba | Corregido |
+|---|---|---|
+| Vásquez | «USD 45,1M vs 50,2M a 5 años», leído como un ahorro de USD 5M | «USD 45,2M vs USD 27,3M»: más caro y más efectivo. No calcula ICER, así que no es un ahorro |
+| Altman | «1.312 días con 5+ ciclos», cohorte de 79M | «484 días con cualquier ciclo (mediana)», cohorte de 182.022 sobre una base de ~79M |
+| LATINVISCO | «recomendación 1A GRADE» | Rec. 1 es 1A (clínica); la Rec. 12, que es la de acceso, es 1C. El §3.15 atribuye la costo-efectividad al alto peso molecular en dosis única |
+| Castro | ICER dominante | ICER dominante, con precios de 2012 |
+| Umbral en 7 países | «Estimación empírica publicada» | «Sin umbral oficial publicado», con el detalle real de cada país |
 
-La restricción es deliberada. El fallback original devolvía el guion de
-*decisor financiero × presupuesto*, así que un equipo que eligiera **clínico
-prescriptor × diferenciación** habría visto un guion sobre un director
-financiero y techos presupuestales. `getStory()` ahora devuelve `null` cuando
-no hay guion propio y esas combinaciones siguen viendo solo las preguntas guía.
+La corrección de Vásquez era la más seria: la tarjeta de «USD 5M de ahorro a
+5 años» que estuvo en producción era incorrecta, y la meta de negociación se
+había construido sobre esa cifra.
 
-**Lo que queda pendiente.** 5 de las 24 combinaciones tienen guion:
+La revisión también incorpora contraevidencia y conflictos de interés
+declarados, que antes no aparecían en ninguna parte: Molloy 2023 encontró más
+artroplastia entre usuarios de hialuronato en 7,3M de registros; la guía
+MINSAL de Chile sugiere no usar en artrosis moderada; el análisis de
+Castañeda 2024 está financiado por el competidor; PANLAR 2016 no respalda la
+diferenciación por peso molecular; y Altman 2015 tiene sesgo de selección.
 
-| Combinación | Estado |
-|---|---|
-| pagador orientado a valor × inclusión | guion propio |
-| decisor financiero × presupuesto | guion propio |
-| decisor financiero × negociación | guion propio |
-| clínico prescriptor × prescripción | guion propio |
-| clínico administrativo × inclusión | guion propio |
-| las otras 19 combinaciones | preguntas guía únicamente |
+Todo eso se muestra en un campo nuevo, `advertencia`, presente en cuatro
+herramientas y en la ficha de Chile. **Va siempre a la vista, nunca dentro de
+un acordeón**: es lo que el equipo se va a encontrar enfrente en la reunión, y
+si hay que abrirlo, el día del taller nadie lo abre.
 
-Redactar las 19 faltantes es trabajo de contenido, no de código: la estructura
-ya está y cada guion nuevo se agrega a `assets/js/data/storytelling.js`
-copiando la forma de los existentes. Conviene priorizar por las combinaciones
-que se esperen más frecuentes en el salón, y eso depende de la composición de
-los grupos.
+### 2. Guiones por perfil × meta: retirados
 
-**Decisión suelta.** Hay una clave `STORY.acc` con un guion escrito para un
-perfil "gestor de acceso" que ya no existe en la lista de perfiles. Es el único
-guion de la meta *riesgo compartido*, así que hoy ninguna combinación de esa
-meta tiene guion. El contenido está intacto y es candidato a reasignarse a un
-perfil existente: el escenario describe una negociación con un pagador, así que
-encajaría en *pagador orientado a valor* o en *decisor financiero*. Pero
-reasignarlo cambia lo que ve el equipo en el salón y eso lo decide contenido.
+La revisión de contenido eliminó el objeto `STORY`. Los guiones habían estado
+en producción en 5 de las 24 combinaciones; se retiran para seguir la versión
+de contenido, y el Paso 3 vuelve a apoyarse en las preguntas guía y las frases
+sugeridas. Si en algún momento se quieren recuperar, están en el historial de
+git y en `docs/original/`.
 
-### 2. Datos de la meta 6: resuelto
+### 3. Paso 2 del Módulo 2: publicaciones en lugar de tarjetas de datos
 
-`VIZ` no tenía entrada para *"Defender el precio frente a una objeción de
-costo"* y caía silenciosamente en los datos de presupuesto. Ya tiene sus dos
-tarjetas propias, construidas con las cifras que ya estaban verificadas en el
-repositorio (Castro 2015 y Vásquez 2024) pero encuadradas para una mesa de
-negociación: costo total del tratamiento contra precio unitario, y el ahorro
-documentado a 5 años como referencia contra la cual medir el descuento que
-pide el comité.
+Las tarjetas con cifras (`VIZ`) se reemplazaron por enlaces a las cinco
+publicaciones principales, sin cifras, para que el equipo vaya a la fuente y
+no a un número ya resumido. `VIZ` se eliminó del proyecto: en el archivo de
+contenido había quedado actualizado pero huérfano (`getViz()` no se invocaba
+en ninguna parte), el mismo caso que `STORY` en la versión anterior.
 
-No se inventó ninguna cifra. Si el equipo médico prefiere otro encuadre o
-destacar otros números, se cambia en `assets/js/data/storytelling.js`.
+### 4. Siete de los ocho países siguen con ficha reducida
 
-### 3. Siete de los ocho países tienen ficha reducida
-
-Colombia tiene la ficha completa: estructura del sistema, financiamiento,
-proceso de inclusión de tecnologías, mecanismo de compra y pago, vía alterna de
-acceso y contexto reciente, con 10 fuentes primarias. Los otros siete solo
-tienen el párrafo introductorio.
+La revisión actualizó el umbral de costo-efectividad de los ocho países y
+agregó la advertencia de Chile, pero no la ficha ampliada. Solo Colombia
+tiene estructura del sistema, financiamiento, proceso de inclusión, mecanismo
+de compra, vía alterna y contexto reciente.
 
 | País | Fuentes | Ficha ampliada |
 |---|---|---|
@@ -89,13 +75,27 @@ tienen el párrafo introductorio.
 | Argentina | 3 | no |
 
 Un equipo que elige México ve bastante menos que uno que elige Colombia. Si
-el taller se dicta con grupos por país, la asimetría se va a notar.
+los grupos se arman por país, se va a notar.
 
-**Pendiente:** completar los seis campos por país siguiendo el modelo de
-Colombia en `assets/js/data/countries.js`. Es investigación con fuente
-primaria (normativa, resoluciones, cifras oficiales de cobertura y gasto), no
-programación, y no es material que convenga redactar sin verificar cada dato
-contra su fuente. Prioridad por número esperado de equipos por país.
+### 5. Pendientes menores de contenido
+
+**El umbral de Colombia.**
+
+Los siete países pasaron a decir «sin umbral oficial publicado», pero el de
+Colombia quedó en «Estimación empírica publicada», sin número, mientras que la
+publicación de Espinosa 2022, que ahora sí está citada en la herramienta de
+costo-efectividad, trae la cifra: USD 5.180,80 por AVAC, 0,86 del PIB per
+cápita. Vale confirmar con contenido si la ficha de Colombia debería mostrar
+ese valor.
+
+**La guía IMSS de México.** De las 17 publicaciones, 16 son alcanzables desde
+la pantalla: se abren desde la herramienta que las cita, desde el Paso 2 o
+desde el enlace de una advertencia. La única que quedó sin enlace es
+`IMSS-079-08`, la guía mexicana que recomienda la viscosuplementación cuando
+el tratamiento no farmacológico falla. No la cita ninguna herramienta ni la
+ficha de ningún país, así que está en los datos pero no llega al equipo.
+Encaja como fuente de México o como respaldo de la herramienta de consenso;
+la decisión de dónde ponerla es de contenido.
 
 ---
 

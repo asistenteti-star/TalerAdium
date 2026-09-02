@@ -56,7 +56,9 @@ if (!(await page.textContent('#descOut')).includes('interlocutor')) fallos.push(
 
 await page.click('.step-tab >> nth=1');
 await page.waitForSelector('#step2.on');
-if ((await page.$$('.viz-card')).length === 0) fallos.push('No se pintaron las tarjetas de datos');
+const papers = await page.$$('.paper-card');
+if (papers.length !== 5) fallos.push(`El Paso 2 debe ofrecer 5 publicaciones, encontré ${papers.length}`);
+if (!(await page.getAttribute('.paper-card', 'href'))?.startsWith('http')) fallos.push('Las publicaciones no enlazan a su fuente');
 
 await page.click('.step-tab >> nth=2');
 await page.waitForSelector('#step3.on');
@@ -66,6 +68,18 @@ await page.fill('#ta-metricas', 'Métrica de prueba');
 await page.click('button:has-text("Listo para presentar")');
 await page.waitForSelector('#s6.on');
 if (!(await page.textContent('.prop-title')).trim()) fallos.push('La propuesta final salió vacía');
+
+// Las advertencias de contraevidencia van a la vista, no dentro de un
+// acordeón: si hay que abrirlas, el día del taller nadie las abre.
+await page.evaluate(()=>{
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s4').classList.add('on');
+});
+await page.waitForTimeout(120);
+const avisosVisibles = await page.$$eval('.tool-card > .aviso', els => els.length);
+if (avisosVisibles === 0) fallos.push('Ninguna advertencia de herramienta quedó visible fuera del acordeón');
+const dentro = await page.$$eval('.disclose-body .aviso', els => els.length);
+if (dentro > 0) fallos.push(`${dentro} advertencia(s) quedaron dentro del acordeón`);
 
 // Desborde horizontal en cada ancho y cada pantalla
 for (const w of ANCHOS) {

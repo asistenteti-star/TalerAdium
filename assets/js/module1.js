@@ -127,6 +127,7 @@ function renderCtx(id){
   panel.innerHTML=`
     <div class="ctx-head"><div class="ctx-flag">${c.flag}</div><div><div class="ctx-title">${c.name}</div><span class="ctx-sub">${c.sistema}</span></div></div>
     ${buildProse_(c)}
+    ${aviso(c.advertencia, 'Postura oficial que hay que anticipar', c.advRefs)}
     ${robusto}
     <details class="disclose">
       <summary>${icon('chevron','disclose-mark')}<span>Fuentes primarias verificadas</span><span class="disclose-count">${c.refs.length}</span></summary>
@@ -303,7 +304,11 @@ function renderComboDetails(){
   box.innerHTML = COMBO_TOOLS.map(k=>{
     const t = TOOLS[k];
     const rank = base.includes(k) ? 'Aplica directamente a tu meta' : 'Agregada por el equipo';
-    return `<details class="tool-card disclose">
+    // El aviso va FUERA del <details>: un acordeón cerrado esconde todo lo que
+    // no sea su summary, así que dentro quedaba invisible justo la advertencia
+    // que el equipo no puede pasar por alto.
+    return `<div class="tool-card">
+      <details class="disclose">
       <summary>
         ${icon('chevron','disclose-mark')}
         <span class="tool-card-mark">${icon(t.ic)}${sigla(t.icon)}</span>
@@ -321,6 +326,8 @@ function renderComboDetails(){
         </div>
         ${bloqueEvidencia(t.ev, 'Evidencia de Suprahyal disponible', 'Ver la publicación')}
       </div>
-    </details>`;
+      </details>
+      ${aviso(t.advertencia, null, t.advRefs)}
+    </div>`;
   }).join('');
 }

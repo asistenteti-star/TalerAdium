@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Farmacoeconomía · Adium LATAM</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#111615;--teal:#00b4b4;--teal-d:#007f7f;
+  --teal-dim:rgba(0,180,180,0.12);--teal-glow:rgba(0,180,180,0.18);
+  --white:#f2f0eb;--gray:#7a8585;--gray-d:#4a5252;
+  --line:rgba(255,255,255,0.07);--pub:rgba(0,180,180,0.10);--pub-b:rgba(0,180,180,0.25);
+  --priv:rgba(255,255,255,0.04);--amber:#c47f00;--amber-l:rgba(196,127,0,0.12);
+  --green:#1d9e75;--green-l:rgba(29,158,117,0.12);
+}
+body{font-family:Helvetica,Arial,sans-serif;background:var(--bg);color:var(--white);min-height:100vh}
+.bg-grad{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 85% 5%,rgba(0,80,80,0.45) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 40% at 5% 90%,rgba(0,60,60,0.3) 0%,transparent 70%),
+    linear-gradient(160deg,#0f1614 0%,#111a18 100%);
+}
+.app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* HEADER */
+header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:1.1rem 2.2rem;border-bottom:1px solid var(--line);
+  background:rgba(15,20,18,0.88);backdrop-filter:blur(14px);
+  position:sticky;top:0;z-index:100;
+}
+.logo{display:flex;align-items:center;gap:0.75rem}
+.logo-pip{width:3px;height:24px;border-radius:2px;background:var(--teal)}
+.logo-name{font-size:0.88rem;font-weight:700}
+.logo-name em{font-style:normal;color:var(--teal)}
+.logo-sub{font-size:0.6rem;color:var(--gray);display:block;margin-top:2px}
+.module-tabs{display:flex;gap:0.5rem}
+.mod-tab{font-size:0.68rem;letter-spacing:0.08em;padding:0.28rem 0.8rem;border-radius:20px;border:1px solid var(--line);color:var(--gray);cursor:pointer;transition:all .2s}
+.mod-tab.active{border-color:var(--teal);background:var(--teal-dim);color:var(--teal)}
+
+/* PROGRESS */
+.prog{height:2px;background:var(--line);position:sticky;top:61px;z-index:99}
+.prog-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal-d),var(--teal));transition:width .5s ease}
+
+main{flex:1;display:flex;justify-content:center;padding:2.5rem 1.4rem 6rem}
+.inner{width:100%;max-width:1040px}
+
+/* SCREENS */
+.screen{display:none}
+.screen.on{display:block;animation:rise .36s ease}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* TYPO */
+.kicker{font-size:0.66rem;letter-spacing:0.14em;color:var(--teal);font-weight:600;margin-bottom:0.55rem}
+h1{font-family:Helvetica,Arial,sans-serif;font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.18;margin-bottom:0.65rem;font-weight:700;letter-spacing:-0.01em}
+.lead{color:var(--gray);font-size:0.9rem;line-height:1.7;margin-bottom:2rem;max-width:620px}
+
+/* COUNTRY */
+.country-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.6rem}
+.c-btn{background:var(--priv);border:1px solid var(--line);border-radius:16px;padding:2rem 1rem 1.6rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.8rem;transition:all .22s;text-align:center;min-height:190px}
+.c-btn:hover{border-color:var(--teal-d);background:var(--teal-dim);transform:translateY(-4px);box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.c-btn.sel{border-color:var(--teal);background:var(--teal-glow);box-shadow:0 0 0 2px var(--teal-dim)}
+.c-flag{font-size:1.05rem;font-weight:700;letter-spacing:0.06em;color:var(--teal);background:rgba(0,180,180,.1);border:1px solid var(--pub-b);border-radius:8px;width:52px;height:36px;display:flex;align-items:center;justify-content:center;margin-bottom:0.3rem}
+.c-name{font-size:1.05rem;font-weight:700;letter-spacing:0.01em}
+@media(max-width:900px){.country-grid{grid-template-columns:repeat(2,1fr)}.c-flag{font-size:0.9rem;width:44px;height:32px}.c-btn{min-height:160px}}
+
+/* CTX */
+.ctx{background:var(--pub);border:1px solid var(--pub-b);border-radius:14px;padding:1.5rem 1.8rem;margin-bottom:1.8rem;display:none}
+.ctx.on{display:block;animation:rise .3s ease}
+.ctx-head{display:flex;align-items:center;gap:0.7rem;margin-bottom:1rem}
+.ctx-flag{font-size:0.85rem;font-weight:700;letter-spacing:0.06em;color:var(--teal);background:rgba(0,180,180,.1);border:1px solid var(--pub-b);border-radius:8px;width:44px;height:32px;display:flex;align-items:center;justify-content:center}
+.ctx-title{font-family:Helvetica,Arial,sans-serif;font-size:1.4rem;font-weight:400}
+.ctx-sub{font-size:0.69rem;color:var(--teal);font-weight:600;letter-spacing:0.07em;display:block;margin-top:3px}
+.ctx-desc{font-size:0.84rem;color:var(--gray);line-height:1.72;margin-bottom:1.1rem}
+.ctx-meta{display:grid;grid-template-columns:repeat(2,1fr);grid-auto-rows:1fr;gap:0.7rem;margin-bottom:1rem}
+.ctx-item{background:rgba(0,0,0,.2);border-radius:8px;padding:0.85rem 1rem;display:flex;flex-direction:column}
+@media(max-width:600px){.ctx-meta{grid-template-columns:1fr}}
+.ctx-lbl{font-size:0.62rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;display:block;margin-bottom:0.25rem}
+.ctx-val{font-size:0.84rem;color:var(--white);font-weight:500;line-height:1.55}
+.ctx-ref{margin-top:0.9rem;padding-top:0.8rem;border-top:1px solid var(--line);font-size:0.68rem;color:var(--gray-d);line-height:1.65}
+.ctx-ref a{color:var(--teal);text-decoration:none}.ctx-ref a:hover{text-decoration:underline}
+.ctx-sec{margin-top:1.1rem;padding-top:1rem;border-top:1px solid var(--line)}
+.ctx-sec-lbl{font-size:0.68rem;color:var(--teal);letter-spacing:0.1em;font-weight:700;text-transform:uppercase;margin-bottom:0.4rem}
+.ctx-sec-val{font-size:0.85rem;color:var(--white);line-height:1.75}
+
+
+/* PERFILES */
+.perfil-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.8rem;align-items:stretch}
+@media(max-width:900px){.perfil-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.perfil-grid{grid-template-columns:1fr}.p-card{min-height:auto}}
+.p-card{border-radius:13px;padding:1.5rem 1.4rem;cursor:pointer;border:1px solid var(--line);background:var(--priv);transition:all .2s;display:flex;flex-direction:column;min-height:280px}
+.p-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.3);border-color:rgba(0,180,180,.3)}
+.p-card.sel{border-color:var(--teal);background:var(--teal-glow)}
+.p-icon{font-size:1.7rem;margin-bottom:0.7rem}
+.p-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.95rem;font-weight:700;letter-spacing:0.02em;margin-bottom:0.9rem;border:1px solid var(--line)}
+.p-title{font-size:0.94rem;font-weight:700;margin-bottom:0.32rem}
+.p-desc{font-size:0.77rem;color:var(--gray);line-height:1.55;margin-bottom:0.7rem}
+.p-kpi{font-size:0.7rem;color:var(--teal);font-weight:500;padding:0.28rem 0;border-top:1px solid var(--line)}
+
+/* METAS */
+.meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(255px,1fr));gap:0.85rem;margin-bottom:1.8rem}
+.m-card{border-radius:13px;padding:1.4rem 1.3rem;cursor:pointer;border:1px solid var(--line);background:var(--priv);transition:all .2s;position:relative;overflow:hidden}
+.m-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--teal);opacity:0;transition:opacity .2s}
+.m-card:hover{transform:translateY(-3px);box-shadow:0 12px 36px rgba(0,0,0,.3);border-color:rgba(0,180,180,.3)}
+.m-card.sel{border-color:var(--teal);background:var(--teal-glow)}
+.m-card.sel::before{opacity:1}
+.m-num{font-size:0.63rem;letter-spacing:0.12em;color:var(--teal);font-weight:600;margin-bottom:0.6rem}
+.m-title{font-size:0.95rem;font-weight:700;margin-bottom:0.35rem}
+.m-desc{font-size:0.78rem;color:var(--gray);line-height:1.55;margin-bottom:0.65rem}
+.m-tag{font-size:0.68rem;color:var(--gray);font-style:italic}
+
+/* BREADCRUMBS */
+.crumbs{display:flex;flex-wrap:wrap;gap:0.48rem;margin-bottom:1.55rem}
+.crumb{display:flex;align-items:center;gap:0.3rem;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:20px;padding:0.24rem 0.68rem;font-size:0.75rem}
+.crumb.on{border-color:var(--teal);background:var(--teal-dim);color:var(--teal)}
+.crumb-lbl{color:var(--gray);font-size:0.65rem}
+
+/* RESULTADO M1 */
+.res-wrap{border-radius:18px;border:1px solid var(--pub-b);overflow:hidden;margin-bottom:1.5rem}
+.res-hero{background:linear-gradient(135deg,#0a2e2b,#0f3d3a);padding:1.8rem 2.2rem 1.4rem}
+.res-tag{display:inline-block;font-size:0.65rem;letter-spacing:0.1em;color:var(--teal);padding:0.28rem 0.75rem;border:1px solid var(--pub-b);border-radius:20px;margin-bottom:0.9rem}
+.res-title{font-family:Helvetica,Arial,sans-serif;font-size:1.55rem;font-weight:400;margin-bottom:0.45rem}
+.res-sub{font-size:0.86rem;color:rgba(226,240,238,0.75);line-height:1.65}
+.res-body{padding:1.6rem 2.2rem;background:rgba(0,0,0,.15)}
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-bottom:1.2rem}
+.res-item{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:0.95rem 1rem}
+.res-item-lbl{font-size:0.62rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;margin-bottom:0.3rem;display:block}
+.res-item-val{font-size:0.83rem;line-height:1.5}
+.ev-block{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem}
+.ev-lbl{font-size:0.62rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;margin-bottom:0.65rem}
+.ev-item{display:flex;align-items:flex-start;gap:0.6rem;font-size:0.79rem;line-height:1.5;margin-bottom:0.45rem}
+.ev-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px}
+.ev-paper{color:var(--white);font-weight:500}
+.ev-result{color:var(--gray);margin-top:1px}
+.kpi-block{background:var(--teal-dim);border:1px solid var(--pub-b);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem}
+.kpi-lbl{font-size:0.62rem;color:var(--teal);letter-spacing:0.1em;font-weight:600;margin-bottom:0.55rem}
+.kpi-pills{display:flex;flex-wrap:wrap;gap:0.38rem}
+.kpi-pill{background:rgba(0,180,180,.12);border:1px solid var(--pub-b);border-radius:6px;padding:0.25rem 0.65rem;font-size:0.73rem;color:var(--teal);font-weight:500}
+.msg-block{background:linear-gradient(135deg,rgba(0,180,180,.1),rgba(0,180,180,.04));border:1px solid var(--pub-b);border-radius:10px;padding:1.25rem 1.4rem;margin-bottom:1.2rem}
+.msg-lbl{font-size:0.62rem;color:var(--teal);letter-spacing:0.1em;font-weight:600;margin-bottom:0.45rem}
+.msg-text{font-size:0.9rem;font-weight:500;line-height:1.65}
+.tool-block{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:10px;padding:1rem 1.15rem;display:flex;align-items:center;gap:0.85rem}
+.tool-icon{font-size:1.55rem;flex-shrink:0}
+.tool-lbl{font-size:0.61rem;color:var(--gray);font-weight:600;letter-spacing:0.1em;margin-bottom:0.16rem}
+.tool-name{font-size:0.92rem;font-weight:700;color:var(--teal)}
+
+/* ── MÓDULO 2 STORYTELLING ── */
+.story-header{
+  background:linear-gradient(135deg,#0a2e2b,#0d3d3a);
+  border:1px solid var(--pub-b);border-radius:16px;
+  padding:1.8rem 2.2rem;margin-bottom:1.5rem;
+}
+.story-header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem;flex-wrap:wrap;gap:0.75rem}
+.story-badge{font-size:0.65rem;letter-spacing:0.1em;color:var(--teal);padding:0.28rem 0.75rem;border:1px solid var(--pub-b);border-radius:20px}
+.story-timer{font-size:0.75rem;color:var(--amber);font-weight:600;background:rgba(196,127,0,.12);border:1px solid rgba(196,127,0,.3);padding:0.28rem 0.75rem;border-radius:20px}
+.story-title{font-family:Helvetica,Arial,sans-serif;font-size:1.5rem;font-weight:400;margin-bottom:0.4rem}
+.story-desc{font-size:0.84rem;color:rgba(226,240,238,0.7);line-height:1.65}
+
+.story-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem}
+.step-tab{
+  border-radius:12px;padding:1.1rem;cursor:pointer;
+  border:1px solid var(--line);background:var(--priv);
+  transition:all .2s;text-align:center;
+}
+.step-tab:hover{border-color:rgba(0,180,180,.3);background:var(--teal-dim)}
+.step-tab.active{border-color:var(--teal);background:var(--teal-glow)}
+.step-num{font-size:1.4rem;font-weight:800;color:var(--teal);font-family:Helvetica,Arial,sans-serif}
+.step-label{font-size:0.78rem;font-weight:600;margin-top:0.3rem;display:block}
+.step-time{font-size:0.65rem;color:var(--gray);margin-top:0.15rem;display:block}
+
+.step-content{display:none}
+.step-content.on{display:block;animation:rise .3s ease}
+
+/* PASO 1 — CONTEXTO */
+.paso1-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
+.ctx2-card{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:1.3rem}
+.ctx2-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;font-weight:600;margin-bottom:0.5rem;display:block}
+.ctx2-val{font-size:0.88rem;color:var(--white);font-weight:600;margin-bottom:0.3rem}
+.ctx2-detail{font-size:0.78rem;color:var(--gray);line-height:1.55}
+
+/* PASO 2 — VISUALIZACIÓN */
+.viz-grid{display:flex;flex-direction:column;margin-bottom:1.2rem}
+.viz-card{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:1.2rem}
+.viz-title{font-size:0.75rem;font-weight:700;color:var(--teal);margin-bottom:0.8rem;text-transform:uppercase;letter-spacing:0.08em}
+.viz-stat{display:flex;align-items:baseline;gap:0.5rem;margin-bottom:0.5rem}
+.viz-num{font-family:Helvetica,Arial,sans-serif;font-size:2rem;font-weight:400;color:var(--white);line-height:1}
+.viz-unit{font-size:0.75rem;color:var(--gray)}
+.viz-desc{font-size:0.76rem;color:var(--gray);line-height:1.5}
+.viz-bar-wrap{margin-top:0.75rem}
+.viz-bar-label{display:flex;justify-content:space-between;font-size:0.7rem;color:var(--gray);margin-bottom:0.3rem}
+.viz-bar-bg{height:8px;background:rgba(255,255,255,.07);border-radius:4px;overflow:hidden}
+.viz-bar-fill{height:100%;border-radius:4px;background:var(--teal)}
+.viz-source{font-size:0.65rem;color:var(--gray-d);margin-top:0.6rem;font-style:italic}
+
+/* PASO 3 — STORYTELLING */
+.story3-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.2rem}
+.story3-section{border-radius:12px;border:1px solid var(--line);overflow:hidden}
+.story3-head{padding:0.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
+.story3-head-title{font-size:0.8rem;font-weight:700}
+.story3-hint{font-size:0.68rem;color:rgba(255,255,255,.6);font-style:italic}
+.story3-body{padding:1.1rem 1.2rem;background:rgba(0,0,0,.15)}
+.story3-item{margin-bottom:0.75rem}
+.story3-item:last-child{margin-bottom:0}
+.story3-item-lbl{font-size:0.65rem;color:var(--gray);letter-spacing:0.08em;font-weight:600;margin-bottom:0.25rem}
+.story3-item-val{font-size:0.84rem;color:var(--white);line-height:1.6}
+.story3-item-val em{color:var(--teal);font-style:normal;font-weight:600}
+
+
+.builder-title{font-size:0.95rem;font-weight:700;margin-top:1.6rem;margin-bottom:0.3rem}
+.builder-sub{font-size:0.78rem;color:var(--gray);margin-bottom:1.1rem}
+.chip-row{margin-bottom:1.1rem}
+.chip-row-lbl{font-size:0.68rem;color:var(--teal);letter-spacing:0.09em;font-weight:700;text-transform:uppercase;margin-bottom:0.5rem}
+.chip-opts{display:flex;flex-wrap:wrap;gap:0.5rem}
+.chip-opt{background:var(--priv);border:1px solid var(--line);border-radius:20px;padding:0.4rem 0.9rem;font-size:0.8rem;cursor:pointer;transition:all .18s;color:var(--gray)}
+.chip-opt:hover{border-color:rgba(0,180,180,.35);color:var(--white)}
+.chip-opt.sel{border-color:var(--teal);background:var(--teal-dim);color:var(--teal);font-weight:600}
+.desc-out-wrap{margin-top:1.3rem;background:linear-gradient(135deg,rgba(0,180,180,.1),rgba(0,180,180,.03));border:1px solid var(--pub-b);border-radius:12px;padding:1.2rem 1.4rem}
+.desc-out-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;font-weight:700;text-transform:uppercase;margin-bottom:0.55rem}
+.desc-out{font-size:0.9rem;line-height:1.75;color:var(--white)}
+
+.sugg-row{display:flex;flex-wrap:wrap;gap:0.45rem;margin-bottom:0.8rem}
+.sugg-chip{background:rgba(0,180,180,.08);border:1px dashed var(--pub-b);border-radius:8px;padding:0.4rem 0.75rem;font-size:0.76rem;color:var(--teal);cursor:pointer;transition:all .18s;max-width:100%}
+.sugg-chip:hover{background:var(--teal-dim);border-style:solid}
+
+.gap-note{margin-top:0.4rem;background:rgba(255,255,255,.025);border:1px solid var(--line);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:1.1rem 1.3rem}
+.gap-note-icon{font-size:1.1rem;margin-right:0.5rem}
+.gap-note-text{font-size:0.82rem;color:var(--gray);line-height:1.7;display:inline}
+.gap-note-text strong{color:var(--white);font-weight:600}
+
+.tool-catalog-lbl{font-size:0.65rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;text-transform:uppercase;margin:1.3rem 0 0.7rem}
+.tool-catalog{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.6rem;margin-bottom:1.2rem}
+.tool-btn{border-radius:10px;padding:0.85rem 0.9rem;border:1px solid var(--line);background:var(--priv);display:flex;flex-direction:column;gap:0.35rem;transition:all .18s;position:relative}
+.tool-btn-icon{font-size:1.3rem}
+.tool-btn-name{font-size:0.78rem;font-weight:600;line-height:1.3}
+.tool-btn.enabled{cursor:pointer;border-color:rgba(0,180,180,.3)}
+.tool-btn.enabled:hover{border-color:var(--teal);background:var(--teal-dim);transform:translateY(-2px)}
+.tool-btn.active{border-color:var(--teal);background:var(--teal-glow);box-shadow:0 0 0 1px var(--teal-b,rgba(0,180,180,.3))}
+.tool-btn.active .tool-btn-name{color:var(--teal)}
+.tool-btn.disabled{opacity:0.35;cursor:not-allowed}
+.tool-btn-tag{font-size:0.62rem;color:var(--gray-d);font-style:italic}
+
+.ctx-prose{font-size:0.87rem;color:var(--white);line-height:1.85;margin:1rem 0}
+.ctx-prose sup a{font-weight:700}
+
+.hm-wrap{overflow-x:auto;margin-bottom:1.2rem;border:1px solid var(--line);border-radius:12px}
+.hm-table{width:100%;border-collapse:collapse;font-size:0.78rem;min-width:640px}
+.hm-table th,.hm-table td{padding:0.6rem 0.5rem;text-align:center;border-bottom:1px solid var(--line);border-right:1px solid var(--line)}
+.hm-table th:last-child,.hm-table td:last-child{border-right:none}
+.hm-corner{background:rgba(0,0,0,.25)}
+.hm-meta{background:rgba(0,0,0,.25);color:var(--gray);font-weight:700;font-size:0.72rem;letter-spacing:0.04em}
+.hm-meta.current{color:var(--teal);background:var(--teal-dim)}
+.hm-tool{display:flex;align-items:center;gap:0.55rem;text-align:left;white-space:nowrap;padding-left:0.9rem;background:rgba(0,0,0,.12)}
+.hm-tool-icon{font-size:1.1rem}
+.hm-tool-name{font-size:0.76rem;font-weight:600;color:var(--white)}
+.hm-cell{color:var(--gray-d);font-size:1rem}
+.hm-cell.applies{color:var(--teal)}
+.hm-cell.current-col{background:rgba(0,180,180,.045)}
+.hm-cell.current-col.applies{font-weight:700}
+.hm-cell.active{background:var(--teal-glow);border-radius:6px;box-shadow:inset 0 0 0 1px var(--teal)}
+
+.drag-cols{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.2rem 0}
+.drag-col-lbl{font-size:0.68rem;color:var(--gray);letter-spacing:0.1em;font-weight:700;text-transform:uppercase;margin-bottom:0.6rem}
+.drag-col-lbl.accent{color:var(--teal)}
+.drag-zone{min-height:260px;background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:0.7rem;display:flex;flex-direction:column;gap:0.55rem}
+.drag-zone.accent{background:var(--teal-dim);border:1px dashed var(--pub-b)}
+.drag-card{display:flex;align-items:center;gap:0.6rem;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:9px;padding:0.65rem 0.8rem;cursor:grab;font-size:0.8rem;transition:border-color .15s}
+.drag-card:hover{border-color:rgba(0,180,180,.4)}
+.drag-card:active{cursor:grabbing}
+.drag-card-icon{font-size:0.62rem;font-weight:700;letter-spacing:0.02em;color:var(--teal);background:rgba(0,180,180,.12);border-radius:5px;padding:0.2rem 0.4rem;min-width:34px;text-align:center}
+.drag-card-name{font-weight:600;color:var(--white)}
+.arg-box{background:linear-gradient(135deg,rgba(0,180,180,.1),rgba(0,180,180,.03));border:1px solid var(--pub-b);border-radius:12px;padding:1.2rem 1.4rem;margin-bottom:1.2rem}
+.arg-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;font-weight:700;text-transform:uppercase;margin-bottom:0.6rem}
+.arg-text{font-size:0.9rem;line-height:1.8;color:var(--white);margin:0}
+.arg-cite{color:var(--teal);font-size:0.82rem;font-style:normal}
+@media(max-width:640px){.drag-cols{grid-template-columns:1fr}}
+
+.drag-instructions{display:flex;align-items:flex-start;gap:0.6rem;background:rgba(0,180,180,.06);border:1px solid var(--pub-b);border-radius:10px;padding:0.85rem 1.05rem;margin-bottom:1rem;font-size:0.82rem;color:var(--white);line-height:1.6}
+.drag-instructions-icon{font-size:1.1rem;flex-shrink:0}
+
+.c-flag-big{font-size:5rem;line-height:1;text-align:center;margin-bottom:0.5rem}
+@media(max-width:900px){.c-flag-big{font-size:4rem}}
+
+.purpose-box{margin-top:2.5rem;max-width:560px;border-top:1px solid var(--line);padding-top:1.4rem}
+.purpose-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;font-weight:700;text-transform:uppercase;margin-bottom:0.6rem}
+.purpose-text{font-size:0.85rem;color:var(--gray);line-height:1.8;margin:0}
+
+#s0 h1{font-size:clamp(2.6rem,6vw,3.6rem)}
+#s0 .lead{font-size:1.2rem;line-height:1.75;max-width:680px;margin-bottom:2.4rem}
+#s0 #teamNameInput{font-size:1.35rem !important;padding:1.3rem 1.6rem !important;max-width:600px !important;margin-bottom:2rem !important}
+#s0 .btn-p{font-size:1.1rem;padding:1.15rem 2.6rem}
+#s0 .purpose-box{max-width:760px;margin-top:3.2rem;padding-top:2rem}
+#s0 .purpose-lbl{font-size:0.85rem}
+#s0 .purpose-text{font-size:1.2rem;line-height:1.9}
+
+.obj-list{display:flex;flex-direction:column;gap:0.9rem;margin:1.6rem 0 2.2rem;max-width:760px}
+.obj-item{display:flex;align-items:flex-start;gap:1.1rem;background:rgba(0,180,180,.06);border:1px solid var(--pub-b);border-radius:12px;padding:1.1rem 1.3rem}
+.obj-num{width:34px;height:34px;border-radius:50%;background:var(--teal);color:#0a1412;font-weight:700;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.obj-title{font-size:1.02rem;font-weight:700;color:var(--white);margin-bottom:0.3rem}
+.obj-desc{font-size:0.86rem;color:var(--gray);line-height:1.65}
+.obj-divider{border-top:1px solid var(--line);margin:2rem 0 1.8rem;max-width:760px}
+.team-question{font-size:1.5rem;font-weight:700;color:var(--white);margin-bottom:0.6rem}
+
+.obj-general{font-size:1.05rem;color:var(--white);line-height:1.6;margin:0.9rem 0 0;max-width:none}
+.obj-general strong{color:var(--teal)}
+
+.paper-link-card{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:10px;padding:0.9rem 1.1rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:0.6rem}
+.paper-link-name{font-size:0.85rem;color:var(--white);font-weight:500}
+.paper-link-url{font-size:0.78rem;color:var(--teal);text-decoration:none;white-space:nowrap;flex-shrink:0}
+.paper-link-url:hover{text-decoration:underline}
+
+textarea.is-example{color:var(--gray);font-style:italic}
+
+.stepper-bar{display:flex;gap:0.4rem;overflow-x:auto;padding:0.6rem 1.4rem;background:rgba(10,14,13,.9);border-bottom:1px solid var(--line);position:sticky;top:63px;z-index:98}
+.stepper-pill{flex-shrink:0;font-size:0.74rem;font-weight:600;color:var(--gray);padding:0.4rem 0.85rem;border-radius:20px;border:1px solid var(--line);cursor:pointer;transition:all .15s;white-space:nowrap}
+.stepper-pill:hover{border-color:rgba(0,180,180,.4);color:var(--white)}
+.stepper-pill.active{border-color:var(--teal);background:var(--teal-dim);color:var(--teal)}
+@media(max-width:640px){.stepper-bar{padding:0.5rem 1rem}.stepper-pill{font-size:0.68rem;padding:0.35rem 0.7rem}}
+
+.purpose-hint{background:rgba(0,180,180,.07);border:1px solid var(--pub-b);border-radius:10px;padding:0.9rem 1.1rem;margin-bottom:1.2rem;font-size:0.83rem;color:var(--white);line-height:1.65}
+.purpose-hint strong{color:var(--teal)}
+.purpose-note{font-size:0.78rem;color:var(--gray);line-height:1.6;margin-bottom:0.9rem;padding-bottom:0.8rem;border-bottom:1px dashed var(--line)}
+/* PLANTILLA EDITABLE */
+.edit-hint{font-size:0.72rem;color:var(--amber);margin-bottom:1.2rem;padding:0.6rem 1rem;background:var(--amber-l);border-radius:8px;border:1px solid rgba(196,127,0,.3)}
+textarea{
+  width:100%;background:rgba(0,0,0,.25);border:1px solid var(--line);
+  border-radius:10px;padding:1rem;color:var(--white);font-family:Helvetica,Arial,sans-serif;
+  font-size:0.85rem;line-height:1.65;resize:vertical;min-height:90px;
+  transition:border-color .2s;
+}
+textarea:focus{outline:none;border-color:var(--teal)}
+textarea::placeholder{color:var(--gray)}
+.field-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.08em;font-weight:600;margin-bottom:0.4rem;margin-top:0.85rem;display:block}
+
+/* CONCLUSIÓN */
+.conclusion-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
+.conc-card{border-radius:12px;border:1px solid var(--line);overflow:hidden}
+.conc-head{padding:0.75rem 1rem}
+.conc-head-title{font-size:0.8rem;font-weight:700}
+.conc-head-sub{font-size:0.68rem;opacity:0.8;margin-top:2px}
+.conc-body{padding:1rem;background:rgba(0,0,0,.2)}
+.conc-item{display:flex;align-items:flex-start;gap:0.5rem;margin-bottom:0.5rem;font-size:0.8rem}
+.conc-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.resumen-box{background:linear-gradient(135deg,rgba(0,180,180,.1),rgba(0,180,180,.03));border:1px solid var(--pub-b);border-radius:12px;padding:1.3rem 1.5rem;margin-bottom:1.2rem}
+.resumen-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;font-weight:600;margin-bottom:0.75rem}
+.resumen-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem}
+.resumen-row textarea,.conc-body textarea{font-size:0.8rem;padding:0.7rem}
+.resumen-item-lbl{font-size:0.63rem;color:var(--gray);margin-bottom:0.28rem;font-weight:600;letter-spacing:0.07em}
+.resumen-item-val{font-size:0.82rem;color:var(--white);font-weight:500;line-height:1.5}
+
+.tool-card{background:rgba(0,0,0,.22);border:1px solid var(--line);border-radius:14px;padding:1.3rem 1.4rem;margin-bottom:1rem}
+.tool-card-head{display:flex;align-items:center;gap:0.9rem;margin-bottom:1rem;padding-bottom:0.8rem;border-bottom:1px solid var(--line)}
+.tool-card-icon{font-size:0.72rem;font-weight:700;letter-spacing:0.03em;color:var(--teal);background:rgba(0,180,180,.1);border:1px solid var(--pub-b);border-radius:8px;padding:0.35rem 0.5rem;display:inline-flex;align-items:center;justify-content:center;min-width:44px}
+.tool-card-rank{font-size:0.62rem;letter-spacing:0.1em;color:var(--teal);font-weight:600;margin-bottom:0.2rem}
+.tool-card-name{font-size:1rem;font-weight:700}
+.tool-card-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.9rem 1.2rem;margin-bottom:1rem}
+@media(max-width:640px){.tool-card-grid{grid-template-columns:1fr}}
+
+/* PROPUESTA */
+.prop-wrap{border:1px solid var(--pub-b);border-radius:18px;overflow:hidden;margin-bottom:1.5rem;background:rgba(0,0,0,.15)}
+.prop-hero{background:linear-gradient(135deg,#0a2e2b,#0f3d3a);padding:1.9rem 2.2rem}
+.prop-kicker{font-size:0.65rem;letter-spacing:0.12em;color:var(--teal);font-weight:600;margin-bottom:0.5rem}
+.prop-title{font-family:Helvetica,Arial,sans-serif;font-size:1.7rem;font-weight:400;margin-bottom:0.5rem}
+.prop-meta{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.9rem}
+.prop-sec{padding:1.4rem 2.2rem;border-top:1px solid var(--line)}
+.prop-sec-num{font-size:0.62rem;letter-spacing:0.12em;color:var(--teal);font-weight:600}
+.prop-sec-title{font-size:1.05rem;font-weight:700;margin:0.25rem 0 0.9rem}
+.prop-field{margin-bottom:0.9rem}
+.prop-field-lbl{font-size:0.63rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;margin-bottom:0.3rem}
+.prop-field-val{font-size:0.88rem;line-height:1.65;white-space:pre-wrap}
+.prop-field-val.empty{color:var(--gray-d);font-style:italic}
+.prop-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.prop-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.prop-box{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:1rem}
+@media(max-width:640px){.prop-2col,.prop-3col{grid-template-columns:1fr}}
+@media print{
+  body{background:#fff;color:#111}
+  .bg-grad,header,.prog,.no-print,.module-tabs{display:none!important}
+  main{padding:0}
+  .prop-wrap{border-color:#ccc;background:#fff}
+  .prop-hero{background:#0f3d3a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .prop-box{background:#f4f6f6;border-color:#ddd}
+  .prop-field-val,.prop-sec-title{color:#111}
+  .prop-field-lbl,.prop-sec-num{color:#555}
+  .crumb{color:#111;border-color:#bbb}
+}
+/* BUTTONS */
+.btn-row{display:flex;gap:0.65rem;flex-wrap:wrap;margin-top:1.4rem}
+.btn-p{background:var(--teal);color:#0a1412;font-weight:700;font-family:Helvetica,Arial,sans-serif;padding:0.8rem 1.7rem;border-radius:9px;border:none;cursor:pointer;font-size:0.86rem;transition:background .18s,transform .12s;display:inline-flex;align-items:center;gap:0.38rem}
+.btn-p:hover{background:#00cccc;transform:translateY(-1px)}
+.btn-p:disabled{background:#1f2d2b;color:var(--gray);cursor:not-allowed;transform:none}
+.btn-g{background:transparent;color:var(--gray);border:1px solid var(--line);padding:0.78rem 1.3rem;border-radius:9px;cursor:pointer;font-size:0.84rem;font-family:Helvetica,Arial,sans-serif;transition:all .18s}
+.btn-g:hover{border-color:var(--gray);color:var(--white)}
+.btn-amber{background:var(--amber);color:#fff;font-weight:700;font-family:Helvetica,Arial,sans-serif;padding:0.8rem 1.7rem;border-radius:9px;border:none;cursor:pointer;font-size:0.86rem;transition:all .18s}
+.btn-amber:hover{background:#d4900a;transform:translateY(-1px)}
+
+@media(max-width:640px){
+  header{padding:1rem 1.2rem}.module-tabs{display:none}
+  main{padding:2rem 1rem 5rem}
+  .story-steps{grid-template-columns:1fr}
+  .res-grid,.paso1-grid,.viz-grid,.conclusion-grid,.resumen-row{grid-template-columns:1fr}
+  h1{font-size:1.7rem}
+}
+</style>
+</head>
+<body>
+<div class="bg-grad"></div>
+<div class="app">
+
+<header>
+  <div class="logo">
+    <div class="logo-pip"></div>
+    <div>
+      <div class="logo-name">AL<em>ZAK</em> <span style="font-weight:300;color:var(--gray)">Consulting & Research</span></div>
+      <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Octubre 2026</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.8rem">
+    <span id="saveIndicator" style="font-size:0.68rem;color:var(--gray);display:flex;align-items:center;gap:0.35rem"></span>
+    <div class="module-tabs">
+      <div class="mod-tab active" id="tab1">Módulo 1 · Segmentación</div>
+      <div class="mod-tab" id="tab2">Módulo 2 · Storytelling</div>
+    </div>
+  </div>
+</header>
+
+<div class="prog"><div class="prog-bar" id="progBar"></div></div>
+<div class="stepper-bar" id="stepperBar">
+  <div class="stepper-pill" data-stage="0" onclick="goToStage(0)">Equipo</div>
+  <div class="stepper-pill" data-stage="1" onclick="goToStage(1)">País</div>
+  <div class="stepper-pill" data-stage="2" onclick="goToStage(2)">Decisor</div>
+  <div class="stepper-pill" data-stage="3" onclick="goToStage(3)">Meta</div>
+  <div class="stepper-pill" data-stage="4" onclick="goToStage(4)">Herramientas</div>
+  <div class="stepper-pill" data-stage="5" onclick="goToStage(5)">Historia</div>
+  <div class="stepper-pill" data-stage="6" onclick="goToStage(6)">Propuesta</div>
+</div>
+
+<main><div class="inner">
+
+  <!-- ═══ MÓDULO 1 ═══ -->
+
+  <!-- S0 OBJETIVOS + NOMBRE EQUIPO -->
+  <div class="screen on" id="s0">
+    <div class="kicker">Objetivos del taller</div>
+    <h1>Lo que cada equipo va a lograr hoy</h1>
+    <p class="obj-general"><strong>Objetivo general del taller:</strong> Construir, con las herramientas de economía de la salud adecuadas para cada mercado y tipo de decisor, un mensaje de valor propio y un plan de acción a corto y mediano plazo para posicionar Suprahyal ante el pagador correspondiente.</p>
+
+    <div class="obj-divider"></div>
+
+    <div class="kicker">Antes de empezar</div>
+    <div class="team-question">¿Cómo se llama tu equipo?</div>
+    <p class="lead">Este nombre identifica tu progreso en el registro del taller. Úsalo en todos los dispositivos si trabajan en más de uno.</p>
+    <input id="teamNameInput" type="text" placeholder="Ej: Grupo México 1, Equipo Andrea..." style="width:100%;max-width:420px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:0.85rem 1.1rem;color:var(--white);font-family:Helvetica,Arial,sans-serif;font-size:0.95rem;margin-bottom:1.4rem" />
+    <div class="btn-row">
+      <button class="btn-p" id="btnTeam" disabled onclick="confirmTeam()">Comenzar →</button>
+    </div>
+  </div>
+
+  <!-- S1 PAÍS -->
+  <div class="screen" id="s1">
+    <div class="kicker">Módulo 1 · Paso 1 de 4</div>
+    <h1>Selecciona tu mercado de interés</h1>
+    <p class="lead" style="max-width:none;white-space:nowrap">El sistema de salud, los actores y las rutas de acceso son distintos en cada país.</p>
+    <div class="country-grid" id="countryGrid"></div>
+    <div class="ctx" id="ctxPanel"></div>
+    <div class="btn-row"><button class="btn-p" id="btn1" disabled onclick="go(2)">Continuar →</button></div>
+  </div>
+
+  <!-- S2 PERFIL -->
+  <div class="screen" id="s2">
+    <div class="crumbs" id="cr2"></div>
+    <div class="kicker">Módulo 1 · Paso 2 de 4</div>
+    <h1>¿Con qué tipo de decisor vas a hablar?</h1>
+    <p class="lead">El argumento correcto depende de cómo razona la persona que tienes enfrente.</p>
+    <div class="perfil-grid" id="perfilGrid"></div>
+    <div class="btn-row">
+      <button class="btn-g" onclick="go(1)">← Volver</button>
+      <button class="btn-p" id="btn2" disabled onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- S3 META -->
+  <div class="screen" id="s3">
+    <div class="crumbs" id="cr3"></div>
+    <div class="kicker">Módulo 1 · Paso 3 de 4</div>
+    <h1>¿Qué quieres lograr con Suprahyal?</h1>
+    <p class="lead">El objetivo de tu conversación determina el tipo de argumento, la evidencia que llevas y el número que necesitas tener listo.</p>
+    <div class="meta-grid" id="metaGrid"></div>
+    <div class="btn-row">
+      <button class="btn-g" onclick="go(2)">← Volver</button>
+      <button class="btn-p" id="btn3" disabled onclick="go(4)">Ver mis herramientas →</button>
+    </div>
+  </div>
+
+  <!-- S4 RESULTADO M1 -->
+  <div class="screen" id="s4">
+    <div class="crumbs" id="cr4"></div>
+    <div class="kicker">Módulo 1 · Paso 4 de 4 — Tus herramientas</div>
+    <div id="resBox"></div>
+    <div class="btn-row">
+      <button class="btn-g" onclick="go(3)">← Volver</button>
+      <button class="btn-amber" onclick="startM2()">Módulo 2 · Construir el storytelling →</button>
+    </div>
+  </div>
+
+  <!-- ═══ MÓDULO 2 ═══ -->
+  <div class="screen" id="s5">
+    <div class="crumbs" id="cr5"></div>
+
+    <!-- Header del reto -->
+    <div class="story-header">
+      <div class="story-header-top">
+        <div class="story-badge">Módulo 2 · Storytelling de Suprahyal</div>
+        <div class="story-timer">⏱ 40 min en total</div>
+      </div>
+      <div class="story-title">Construye el argumento que mueve a este decisor</div>
+      <div class="story-desc">Has conseguido un espacio con un decisor que no es receptivo a las propuestas estándar de la industria. El desafío es construir un storytelling con datos reales de Suprahyal que le haga sentir que la conversación vale su tiempo — y que proponga acciones concretas a corto y mediano plazo.</div>
+    </div>
+
+    <!-- Tabs de pasos -->
+    <div class="story-steps">
+      <div class="step-tab active" onclick="showStep(1,this)">
+        <div class="step-num">01</div>
+        <span class="step-label">Comprensión del contexto</span>
+        <span class="step-time">10 minutos</span>
+      </div>
+      <div class="step-tab" onclick="showStep(2,this)">
+        <div class="step-num">02</div>
+        <span class="step-label">Visualización de datos</span>
+        <span class="step-time">10 minutos</span>
+      </div>
+      <div class="step-tab" onclick="showStep(3,this)">
+        <div class="step-num">03</div>
+        <span class="step-label">Storytelling</span>
+        <span class="step-time">20 minutos</span>
+      </div>
+    </div>
+
+    <!-- PASO 1 -->
+    <div class="step-content on" id="step1">
+      <div class="purpose-hint"><strong>Para qué sirve este paso:</strong> aquí el argumento deja de ser genérico. Sin definir a quién le hablas y en qué mercado, tu mensaje suena igual para cualquier decisor — y eso es exactamente lo que hace que una propuesta no conecte.</div>
+      <div class="paso1-grid">
+        <div class="ctx2-card">
+          <span class="ctx2-lbl">¿A quién? — Audiencia</span>
+          <div class="ctx2-val" id="p1-quien"></div>
+          <div class="ctx2-detail" id="p1-quien-detail"></div>
+        </div>
+        <div class="ctx2-card">
+          <span class="ctx2-lbl">¿Para qué? — Objetivo</span>
+          <div class="ctx2-val" id="p1-objetivo"></div>
+          <div class="ctx2-detail" id="p1-objetivo-detail"></div>
+        </div>
+      </div>
+      <div class="builder-title">Construye la situación de este decisor</div>
+      <div class="builder-sub">Selecciona una opción en cada fila. El sistema arma la descripción del decisor con base en tus elecciones.</div>
+      <div id="chipBuilder"></div>
+      <div class="desc-out-wrap">
+        <div class="desc-out-lbl">Descripción general del decisor</div>
+        <div class="desc-out" id="descOut">Selecciona las opciones de arriba para generar la descripción.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="showStep(2,document.querySelectorAll('.step-tab')[1])">Paso 2 — Ver los datos →</button>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="step-content" id="step2">
+      <div class="purpose-hint"><strong>Para qué sirve este paso:</strong> sin un número o un hallazgo concreto, el argumento se queda en opinión. Aquí conviertes la evidencia disponible en el dato específico que vas a usar frente al decisor.</div><div class="edit-hint">Estos son los 5 papers principales identificados para Suprahyal. Ábrelos, revisa el hallazgo que le sirva a tu argumento y escribe la cifra o el dato específico abajo.</div>
+      <div class="viz-grid" id="vizGrid"></div>
+      <div class="builder-title">Agrega evidencia adicional de tu mercado</div>
+      <div class="builder-sub">Selecciona el tipo y la fuente del dato. Cuando tengas el estudio o la cifra exacta, escríbela abajo — el sistema arma la descripción por ti.</div>
+      <div id="chipBuilder2"></div>
+      <span class="field-lbl">Cifra o hallazgo específico — este es el mensaje de valor que sale de la herramienta</span>
+      <textarea id="ta-p2-valor" style="min-height:60px" oninput="updateDescOut2();saveDebounced()" placeholder="Ej: 8.400 pacientes con OA de rodilla activos · COP 28 millones por artroplastia"></textarea>
+      <div class="desc-out-wrap">
+        <div class="desc-out-lbl">Dato adicional para tu propuesta</div>
+        <div class="desc-out" id="descOut2">Selecciona las opciones de arriba para generar el texto.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-g" onclick="showStep(1,document.querySelectorAll('.step-tab')[0])">← Paso 1</button>
+        <button class="btn-p" onclick="showStep(3,document.querySelectorAll('.step-tab')[2])">Paso 3 — Construir la historia →</button>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="step-content" id="step3">
+      <div class="purpose-hint"><strong>Para qué sirve este paso:</strong> aquí el argumento técnico se convierte en algo que un decisor escéptico realmente escucha y recuerda. Cada bloque cumple un rol distinto — sin uno de ellos, el argumento se queda corto.</div>
+
+      <!-- Escenario -->
+      <div class="story3-section" style="margin-bottom:1rem">
+        <div class="story3-head" style="background:rgba(0,100,100,.3)">
+          <div>
+            <div class="story3-head-title">Escenario de la historia</div>
+            <div class="story3-hint">¿Cuándo y dónde? · ¿Quiénes son los protagonistas? · ¿Cuál es el problema?</div>
+          </div>
+          <span style="font-size:0.65rem;color:var(--teal);padding:0.2rem 0.6rem;border:1px solid var(--pub-b);border-radius:10px">Estructura narrativa</span>
+        </div>
+        <div class="story3-body">
+          <div class="purpose-note">Para qué sirve: sitúa el argumento en la realidad específica de este decisor, no en un caso genérico. Es lo que hace que la conversación se sienta hecha para él.</div>
+          <div id="escenario-content"></div>
+          <textarea id="ta-escenario" oninput=""></textarea>
+        </div>
+      </div>
+
+      <!-- Desarrollo -->
+      <div class="story3-section" style="margin-bottom:1rem">
+        <div class="story3-head" style="background:rgba(100,50,0,.3)">
+          <div>
+            <div class="story3-head-title">Desarrollo de la historia</div>
+            <div class="story3-hint">Datos · ¿Qué pasa si no se actúa? · Opciones · Beneficios</div>
+          </div>
+        </div>
+        <div class="story3-body">
+          <div class="purpose-note">Para qué sirve: conecta el problema con la evidencia y con el costo real de no actuar. Es lo que le muestra al decisor que hay algo en juego, no solo un concepto.</div>
+          <div id="desarrollo-content"></div>
+          <textarea id="ta-desarrollo" oninput=""></textarea>
+        </div>
+      </div>
+
+      <!-- Propuesta: opciones y beneficios -->
+      <div class="story3-section" style="margin-bottom:1rem">
+        <div class="story3-head" style="background:rgba(0,60,90,.3)">
+          <div>
+            <div class="story3-head-title">Propuesta: opciones y beneficios</div>
+            <div class="story3-hint">¿Qué ofrecemos concretamente? · ¿Por qué le conviene a este decisor?</div>
+          </div>
+        </div>
+        <div class="story3-body">
+          <div class="purpose-note">Para qué sirve: sin este paso se describe un problema pero nunca se pide nada. Aquí el equipo dice explícitamente qué está ofreciendo y por qué le conviene a esta persona en particular.</div>
+          <textarea id="ta-propuesta" oninput=""></textarea>
+        </div>
+      </div>
+
+      <!-- Conclusión -->
+      <div class="story3-section" style="margin-bottom:1.2rem">
+        <div class="story3-head" style="background:rgba(0,80,60,.3)">
+          <div>
+            <div class="story3-head-title">Conclusión — Plan de acción a corto y mediano plazo</div>
+            <div class="story3-hint">Acciones concretas · Métricas · Resumen final</div>
+          </div>
+        </div>
+        <div class="story3-body">
+          <div class="purpose-note">Para qué sirve: define qué pasa después de esta conversación. Es el entregable que el equipo se lleva a campo — sin esto, todo lo anterior queda solo en la conversación.</div>
+          <div class="conclusion-grid">
+            <div class="conc-card">
+              <div class="conc-head" style="background:rgba(0,180,180,.15)">
+                <div class="conc-head-title" style="color:var(--teal)">Acciones a corto plazo</div>
+                <div class="conc-head-sub" style="color:var(--teal)">Hasta 3 meses</div>
+              </div>
+              <div class="conc-body" id="acciones-cp"></div>
+            </div>
+            <div class="conc-card">
+              <div class="conc-head" style="background:rgba(29,158,117,.15)">
+                <div class="conc-head-title" style="color:var(--green)">Acciones a mediano plazo</div>
+                <div class="conc-head-sub" style="color:var(--green)">3 a 6 meses</div>
+              </div>
+              <div class="conc-body" id="acciones-lp"></div>
+            </div>
+          </div>
+          <div class="resumen-box">
+            <div class="resumen-lbl">Resumen final — Reto · Solución · Resultados esperados</div>
+            <div class="resumen-row" id="resumen-final"></div>
+          </div>
+          <span class="field-lbl">¿Cuáles son las métricas con las que vas a validar el resultado de este plan?</span>
+          <textarea id="ta-metricas"></textarea>
+        </div>
+      </div>
+
+      <!-- Pitch de 60 segundos -->
+      <div class="story3-section" style="margin-bottom:1.2rem;border-color:var(--pub-b)">
+        <div class="story3-head" style="background:linear-gradient(90deg,rgba(0,180,180,.25),rgba(0,180,180,.08))">
+          <div>
+            <div class="story3-head-title">Pitch de 60 segundos — para agendar la reunión</div>
+            <div class="story3-hint">Resume todo en un guion hablable. La meta no es cerrar aquí — es lograr la siguiente reunión.</div>
+          </div>
+        </div>
+        <div class="story3-body">
+          <div class="purpose-note">Para qué sirve: es lo que dices en el primer minuto frente al pagador. Si logra que acepte una siguiente reunión, cumplió su función — no tiene que resolver todo el caso.</div>
+          <textarea id="ta-pitch" style="min-height:130px" oninput=""></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-g" onclick="showStep(2,document.querySelectorAll('.step-tab')[1])">← Paso 2</button>
+        <button class="btn-g" onclick="restart()">↩ Empezar de nuevo</button>
+        <button class="btn-p" onclick="buildProposal()">Listo para presentar</button>
+      </div>
+    </div>
+
+  </div><!-- fin s5 -->
+
+  <!-- ═══ PROPUESTA FINAL ═══ -->
+  <div class="screen" id="s6">
+    <div class="crumbs" id="cr6"></div>
+    <div id="propBox"></div>
+    <div class="btn-row no-print">
+      <button class="btn-g" onclick="go(5)">← Volver a editar</button>
+      <button class="btn-g" onclick="window.print()">Imprimir / guardar PDF</button>
+      <button class="btn-g" onclick="restart()">↩ Nuevo caso</button>
+    </div>
+  </div>
+
+
+</div></main>
+</div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const PERFILES=[
+  {id:'val',icon:'V',color:'#5DA9E0',title:'Pagador orientado a valor',desc:'Toma decisiones de cobertura priorizando el valor clínico y económico sobre el costo inmediato. Puede ser una aseguradora, un asegurador social o una institución que exige evidencia de costo-efectividad y calidad metodológica antes de comprometerse. Su mayor riesgo profesional es aprobar algo que luego sea cuestionado técnicamente.',kpis:['ICER / AVAC','DALY evitados','Calidad GRADE','Beneficio clínico neto','RWE regional','Impacto en guías']},
+  {id:'fin',icon:'F',color:'#D4A017',title:'Decisor financiero',desc:'Toma decisiones de compra priorizando el impacto en el presupuesto sobre el resultado clínico. Puede ser el área financiera de un asegurador, un comprador institucional o una central de abastecimiento. Necesita el número concreto que pueda llevar a una junta directiva o a un comité de compras, expresado en la moneda local y con un horizonte temporal claro.',kpis:['Análisis de Impacto Presupuestal (AIP)','Costo unitario','Techo presupuestal','Descuento por volumen','Flujo de caja 3–5 años','ROI']},
+  {id:'clin',icon:'C',color:'#4FBF8F',title:'Clínico prescriptor',desc:'Toma decisiones desde la práctica clínica priorizando la eficacia y la seguridad del tratamiento sobre el costo. Suele ser un especialista sin autoridad formal de compra, pero con alta influencia sobre lo que efectivamente se usa. El argumento económico tiene que presentarse como una extensión natural del criterio clínico, nunca como un reemplazo de este.',kpis:['Eficacia demostrada','Perfil de seguridad','Consenso de expertos','Guías de práctica','Experiencia en paciente real']},
+  {id:'clin_adm',icon:'CA',color:'#C77DD8',title:'Clínico con rol administrativo',desc:'Es médico pero ya está sentado en mesas de negociación, comités de farmacia o dirección médica institucional. Necesita el argumento clínico y el económico al mismo tiempo, porque responde tanto ante sus pares médicos como ante el equipo financiero de su organización. El error más común con este perfil es llegar con solo uno de los dos argumentos.',kpis:['Resultado clínico + costo evitado','Argumento ante comité','Eficiencia del formulario','Sostenibilidad de la prescripción','Diferenciación vs genérico']}
+];
+
+const METAS=[
+  {id:'inclusion',num:'Meta 1',title:'Incluir Suprahyal en el formulario o listado oficial',desc:'El producto no está cubierto. Quiero que entre al plan de beneficios, formulario, LOM, CNMB o petitorio.',tag:'Acceso inicial · barrera de cobertura'},
+  {id:'difer',num:'Meta 2',title:'Diferenciarlo frente al ácido hialurónico genérico',desc:'El producto está en el mercado pero compite con múltiples alternativas. Quiero demostrar por qué Suprahyal es la opción preferida.',tag:'Diferenciación · barrera de preferencia'},
+  {id:'presup',num:'Meta 3',title:'Demostrar que no hace un hueco al presupuesto',desc:'El pagador tiene dudas sobre el costo. Quiero mostrar que Suprahyal evita costos mayores a futuro.',tag:'Sostenibilidad · barrera financiera'},
+  {id:'riesgo',num:'Meta 4',title:'Abrir una conversación de riesgo compartido',desc:'El pagador quiere ver impacto real antes de comprometerse. Quiero proponer un acuerdo precio-resultado.',tag:'Acuerdo de acceso · relación avanzada'},
+  {id:'prescripcion',num:'Meta 5',title:'Aumentar la prescripción donde ya tiene cobertura',desc:'El producto ya está cubierto pero la prescripción es baja. Quiero que el clínico lo use más y con mayor confianza.',tag:'Expansión · barrera de adopción clínica'},
+  {id:'negociacion',num:'Meta 6',title:'Defender el precio frente a una objeción de costo',desc:'El producto ya generó interés o está en evaluación, pero el pagador compara precio directo contra el genérico o pide un descuento antes de aprobar. Quiero sustentar el precio con costo total, no con precio unitario.',tag:'Negociación comercial · barrera de precio'}
+];
+
+
+
+
+
+const COUNTRIES = {
+  CO:{name:'Colombia',flag:'CO',flagEmoji:'🇨🇴',sistema:'SGSSS — Sistema General de Seguridad Social en Salud',
+    gasto:'13.7% (2021)',
+    hta:'IETS — Instituto de Evaluación Tecnológica en Salud',
+    umbral:'Estimación empírica publicada.',
+    cobertura:'98,56% de afiliación al SGSSS al cierre de 2024 (MinSalud, BDUA + proyección DANE).',
+    estructura:'Aseguramiento mixto con dos regímenes: Contributivo (trabajadores formales y sus familias, financiado por cotizaciones) y Subsidiado (población sin capacidad de pago, financiado con recursos fiscales). Ambos acceden al mismo Plan de Beneficios en Salud (PBS). Operan EPS habilitadas en uno o ambos regímenes (listado vigente MinSalud, junio 2025).',
+    financiamiento:'La Unidad de Pago por Capitación (UPC) es el valor per cápita anual que la ADRES reconoce a cada EPS por afiliado para cubrir el PBS. Para 2025: UPC contributiva $1.521.489,60 y UPC subsidiada $1.323.403,20 (Resolución 2717/2024, MinSalud). Existen primas adicionales por ciudad y por dispersión geográfica.',
+    inclusion:'Las tecnologías dentro del PBS se financian con cargo a la UPC. Las que están por fuera ("No PBS") requieren prescripción vía MIPRES (Resolución 1885/2018) y se financian con Presupuestos Máximos, un monto anual que la ADRES asigna a cada EPS. El IETS produce evaluaciones de efectividad y de impacto presupuestal (manual metodológico 2023-2024) que orientan al MinSalud, pero sus dictámenes no son vinculantes por ley.',
+    compra:'Desde 2024 la ADRES ejecuta el giro directo de los recursos de Presupuestos Máximos a IPS y proveedores (Res. 82395/2024, Res. 0107427/2026), reduciendo la intermediación de las EPS. El presupuesto de Presupuestos Máximos pasó de $758.348 millones (2024) a $1.870.368 millones (2025), +146,6% (Res. 205474 ADRES). El giro directo es obligatorio para EPS bajo vigilancia especial o sin patrimonio adecuado (Decreto 489/2024).',
+    alterno:'Mecanismo de tutela: acción constitucional para exigir acceso a una tecnología no cubierta cuando hay riesgo para la vida o la salud del paciente. Vía paralela al proceso técnico del IETS.',
+    contexto:'El sistema atraviesa una reforma estructural: el Decreto 858/2025 y las Resoluciones 1789 y 1888/2025 fueron suspendidas provisionalmente por el Consejo de Estado el 21 de octubre de 2025. La deuda de EPS no intervenidas se duplicó entre 2023 y 2024: de $5,37 a $10,84 billones de pesos.',
+    refs:[
+      {label:'MinSalud — Resolución 2717 de 2024 · UPC 2025',url:'https://www.minsalud.gov.co/Normatividad_Nuevo/Resoluci%C3%B3n%20No%202717%20de%202024.pdf'},
+      {label:'ADRES — Giro directo Presupuestos Máximos · Res. 0107427/2026',url:'https://consultorsalud.com/adres-giro-directo-pago-presupuestos-maximos/'},
+      {label:'ADRES — Presupuestos Máximos, requisitos giro directo',url:'https://www.adres.gov.co/eps/giro-directo/presupuestos-maximos'},
+      {label:'CONSULTORSALUD — Presupuestos Máximos 2024-2025, cifras Res. 205474',url:'https://consultorsalud.com/presupuestos-maximos-en-salud-colombia-2024-2025-desafios-y-perspectivas-financieras-que-deja-la-resolucion-205474/'},
+      {label:'IETS — Manual Metodológico AIP 2023',url:'https://www.iets.org.co/wp-content/uploads/2024/02/Manual-Metodologico-Analisis-Impacto-Presupuestal-IETS-14022023-VF.pdf'},
+      {label:'IETS — Reconocimiento MinCiencias Resolución 0684/2024',url:'https://iets.org.co/nosotros/sobre-nosotros/'},
+      {label:'MinSalud — Listado EPS vigentes por régimen, junio 2025',url:'https://www.minsalud.gov.co/sites/rid/Lists/BibliotecaDigital/RIDE/VP/DOA/listado-eps-por-regimen.pdf'},
+      {label:'MinSalud — Cobertura 98,56% cierre 2024 (BDUA/DANE)',url:'https://www.minsalud.gov.co/proteccionsocial/Regimensubsidiado/paginas/coberturas-del-regimen-subsidiado.aspx'},
+      {label:'Umbral de costo-efectividad Colombia — Espinosa et al. (estimación empírica)',url:'https://consultorsalud.com/este-umbral-de-costo-efectividad-colombia/'},
+      {label:'OPS — Perfil Colombia, gasto de bolsillo 13,7% (2021)',url:'https://hia.paho.org/es/perfiles-de-pais/colombia'},
+    ]},
+
+  MX:{name:'México',flag:'MX',flagEmoji:'🇲🇽',sistema:'IMSS · ISSSTE · IMSS-Bienestar · Sector privado',
+    desc:'Sistema fragmentado. La inclusión de tecnologías pasa por el Consejo de Salubridad General (CSG) a través de la Comisión del CNIS — el CNIS 2025 fue publicado el 26 de abril de 2025 en el DOF. El CENETEC provee el soporte técnico. NOTA: CONETEC es una agencia argentina, no mexicana.',
+    gasto:'41.4% (2021)',hta:'CSG + Comisión CNIS + CENETEC',
+    umbral:'Sin valor numérico oficial verificado. La Guía para la Conducción de Estudios de Evaluación Económica del CSG (enero 2023) fija los criterios y el Reglamento del CNIS (DOF 22/11/2022) impide dictaminar favorablemente si no se cumple la relación costo-efecto.',cobertura:'65,8% de la población con acceso a servicios de salud en 2024 (34,2% con carencia, 44,5 millones de personas). INEGI, medición de pobreza multidimensional 2024.',
+    refs:[
+      {label:'INEGI — Comunicado 118/25 · Pobreza multidimensional 2024 · carencia acceso a salud 34,2%',url:'https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2025/pm/pm2025_08.pdf'},
+      {label:'CSG — Guía para la Conducción de Estudios de Evaluación Económica (GCEEE) enero 2023',url:'https://www.gob.mx/cms/uploads/attachment/file/920130/GCEEE_Enero_2023.pdf'},
+      {label:'DOF — Reglamento Interior de la Comisión del CNIS · 22 nov 2022',url:'https://www.dof.gob.mx/nota_detalle.php?codigo=5671965&fecha=22%2F11%2F2022'},
+      {label:'CSG — CNIS 2025 publicado DOF 26 abril 2025 · gob.mx',url:'https://www.gob.mx/csg/articulos/compendio-nacional-de-insumos-para-la-salud-367182'},
+      {label:'DOF — Actualización CNIS agosto 2025',url:'https://www.gob.mx/cms/uploads/attachment/file/1019095/2025.08.27_3a_Actualizaci_n_CNIS.pdf'},
+      {label:'OPS — Perfil México · hia.paho.org',url:'https://hia.paho.org/es/perfiles-de-pais/mexico'},
+    ]},
+  PE:{name:'Perú',flag:'PE',flagEmoji:'🇵🇪',sistema:'EsSalud · SIS / MINSA · FFAA · Privado',
+    desc:'EsSalud tiene el IETSI, que en 2025 publicó la Resolución N° 136 con metodología vinculante para evaluar tecnologías fuera del petitorio. Perú tiene los mecanismos de riesgo compartido más avanzados de la región.',
+    gasto:'27.2% (2021)',hta:'IETSI — Resolución N° 136-IETSI-ESSALUD-2025',
+    umbral:'Sin umbral oficial vinculante. DIGEMID/MINSA publicó una estimación de S/ 9.500 a S/ 19.300 por año de vida ganado (2,2 a 4,4 UIT de 2021).',cobertura:'90,7% de la población con algún seguro de salud (III trimestre 2024): 62,8% solo SIS, 23,3% EsSalud, 4,5% otros. INEI, ENAHO 2024.',
+    refs:[
+      {label:'INEI — ENAHO 2024 · 90,7% con seguro de salud (vía Gestión, 26 dic 2024)',url:'https://gestion.pe/peru/peruanos-afiliados-al-sis-essalud-y-seguros-privados-inei-reporta-crecimiento-noticia/'},
+      {label:'DIGEMID/MINSA — Estimación del umbral de costo-efectividad para evaluaciones económicas',url:'https://api-repositorio-digemid.minsa.gob.pe/server/api/core/bitstreams/b0536c58-f2b3-4a7f-9999-c57956e8c9aa/content'},
+      {label:'IETSI — Resolución 136/2025 · Metodología evaluación · ietsi.essalud.gob.pe',url:'https://ietsi.essalud.gob.pe/evaluacion-de-productos-farmaceuticos/'},
+      {label:'OPS — Perfil Perú · hia.paho.org',url:'https://hia.paho.org/es/perfiles-de-pais/peru'},
+    ]},
+  CL:{name:'Chile',flag:'CL',flagEmoji:'🇨🇱',sistema:'FONASA · ISAPREs · GES/AUGE · Ley Ricarte Soto',
+    desc:'El departamento ETESA-SBE del MINSAL evalúa tecnologías para el GES/AUGE (87 patologías) y la Ley Ricarte Soto. CENABAST centraliza licitaciones. En junio 2025 se publicó el nuevo Formulario de Condiciones Comerciales bajo la Ley Ricarte Soto.',
+    advertencia:'La guía MINSAL 2018 de tratamiento de artrosis SUGIERE NO USAR inyecciones de ácido hialurónico en artrosis moderada (recomendación condicional, certeza muy baja). No aplica a artrosis leve, donde no hay recomendación. Cualquier conversación en Chile debe anticipar esta postura antes de entrar.',
+    gasto:'29.8% (2022)',hta:'ETESA-SBE — MINSAL · Resolución Ministerial N° 707/2017',
+    umbral:'ETESA-SBE publica la Guía Metodológica para la Evaluación Económica de Intervenciones en Salud en Chile. No se localizó un valor numérico de umbral publicado en fuente oficial.',cobertura:'FONASA: 16.752.189 beneficiarios a diciembre 2024 (aprox. 83% de la población según proyección INE). Isapres: 2.531.551 beneficiarios a septiembre 2025 (Superintendencia de Salud).',
+    refs:[
+      {label:'Superintendencia de Salud — Sistema Isapre 2,53 millones de beneficiarios sept 2025',url:'https://www.superdesalud.gob.cl/noticias/2026/01/sistema-isapre-registra-25-millones-de-beneficiarios-a-septiembre-de-2025/'},
+      {label:'ETESA-SBE — Manuales, guías e instructivos metodológicos',url:'https://etesa-sbe.minsal.cl/manuales_metodologicos/'},
+      {label:'ETESA-SBE · etesa-sbe.minsal.cl',url:'https://etesa-sbe.minsal.cl/'},
+      {label:'ETESA-SBE — Formulario Condiciones Comerciales 2025',url:'https://etesa-sbe.minsal.cl/respuestas-a-preguntas-sobre-el-nuevo-formulario-de-condiciones-comerciales-para-la-oferta-de-medicamentos/'},
+      {label:'OPS — Perfil Chile · hia.paho.org',url:'https://hia.paho.org/es/perfiles-de-pais/chile'},
+    ]},
+  EC:{name:'Ecuador',flag:'EC',flagEmoji:'🇪🇨',sistema:'MSP · IESS · ISSFA · ISSPOL · MIES · Privado',
+    desc:'Sin agencia HTA formal. La inclusión en el CNMB pasa por el CONASA a través de la CONAMEI. Las compras públicas se hacen mediante Subasta Inversa Corporativa (SICM). En 2025 el CONASA aprobó la 12ª revisión del CNMB con 512 principios activos, que entra en vigencia en 2026.',
+    gasto:'30.6% (2021)',hta:'CONASA / CONAMEI — Sin agencia HTA formal. ARCSA regula el registro.',
+    umbral:'Sin umbral oficial publicado.',cobertura:'Sin cifra oficial 2024 o posterior localizada. Último dato oficial: 32,9% de la población con algún seguro de salud (INEC, ENEMDU 2021).',
+    refs:[
+      {label:'INEC ENEMDU 2021 — Acceso a seguros de salud por sexo (Consejo Nacional para la Igualdad de Género)',url:'https://www.igualdadgenero.gob.ec/wp-content/uploads/downloads/2022/09/ACCESO-A-SEGUROS-DE-SALUD-POR-SEXO.pdf'},
+      {label:'CONASA — 12ª Revisión CNMB 2025 · 512 principios activos',url:'https://www.edicionmedica.ec/secciones/profesionales/se-amplia-el-cuadro-nacional-de-medicamentos-basicos-a-512-principios-activos-105213'},
+      {label:'OPS — Perfil Ecuador · hia.paho.org',url:'https://hia.paho.org/es/perfiles-de-pais/ecuador'},
+    ]},
+  PY:{name:'Paraguay',flag:'PY',flagEmoji:'🇵🇾',sistema:'MSPBS · IPS · FFAA · Privado',
+    desc:'Sin agencia HTA formal. Las licitaciones públicas se gestionan a través del portal DNCP. El IPS opera el seguro social de forma independiente al MSPBS. El consenso de expertos y la evidencia regional tienen mayor peso que el modelo económico en las decisiones de este mercado.',
+    gasto:'35.9% (2021)',hta:'Sin agencia HTA. DINAVISA regula. Decisiones por comité ad hoc MSPBS.',
+    umbral:'Sin umbral oficial publicado.',cobertura:'28,6% de la población con seguro médico en 2024; IPS cubre 21%. 71,4% sin ningún seguro. INE, EPHC 2024.',
+    refs:[
+      {label:'INE Paraguay — EPHC 2024 · acceso a la salud y seguro médico',url:'https://www.ine.gov.py/noticias/2353/el-ine-comparte-los-datos-relevantes-sobre-el-acceso-a-la-salud-en-paraguay'},
+      {label:'MSPBS — Plan Estratégico Institucional 2024–2028',url:'https://www.mspbs.gov.py/adjunto/Plan-Estrategico-Institucional-MSPBS-2024-2028.pdf'},
+      {label:'OPS — Perfil Paraguay · hia.paho.org',url:'https://hia.paho.org/es/paises-2022/perfil-paraguay'},
+    ]},
+  AR:{name:'Argentina',flag:'AR',flagEmoji:'🇦🇷',sistema:'Obras Sociales · PAMI · Medicina Prepagada · Sistema público provincial',
+    desc:'Sistema fragmentado. CONETEC (Resolución 623/2018) es el equivalente argentino al IETS colombiano — evalúa tecnologías sanitarias. ANMAT gestiona el registro. Las obras sociales definen coberturas propias dentro del PMO.',
+    gasto:'~22% (2021)',hta:'CONETEC — Resolución 623/2018 (agencia argentina, no existe en México)',
+    umbral:'Sin umbral oficial publicado. CONETEC produce evaluaciones pero no ha adoptado un valor de referencia vinculante.',cobertura:'60,9% de la población con obra social, prepaga o PAMI; algo más de 3 de cada 10 solo con sistema público. INDEC, Censo 2022 (último dato oficial disponible).',
+    refs:[
+      {label:'INDEC — Censo 2022 · 60,9% con obra social, prepaga o PAMI',url:'https://censo.gob.ar/index.php/el-609-de-la-poblacion-tiene-obra-social-prepaga-o-cobertura-de-pami/'},
+      {label:'CONETEC — Resolución 623/2018 · boletinoficial.gob.ar',url:'https://www.boletinoficial.gob.ar/detalleAviso/primera/193408/20180918'},
+      {label:'OPS — Perfil Argentina · hia.paho.org',url:'https://hia.paho.org/es/perfiles-de-pais/argentina'},
+    ]},
+  CR:{name:'Costa Rica',flag:'CR',flagEmoji:'🇨🇷',sistema:'CCSS — Cobertura casi universal',
+    desc:'La CCSS concentra aseguramiento, prestación y compra. El Comité Central de Farmacoterapia (CCF) gestiona la LOM — la versión 7 de 2025 fue publicada en julio de 2025, con 88 nuevos medicamentos en 2023-2025. La Sala IV es la vía de judicialización de acceso cuando la CCSS no cubre una tecnología.',
+    gasto:'20.7% (2021)',hta:'CCF — Comité Central de Farmacoterapia de la CCSS (no CCFT)',
+    umbral:'Sin umbral oficial publicado. El CCF evalúa con criterios de eficacia, seguridad, costo y disponibilidad.',cobertura:'86,4% de la población reporta contar con algún seguro de la CCSS (Encuesta Actualidades 2024, UCR; fuente académica). No se localizó cifra oficial CCSS 2024.',
+    refs:[
+      {label:'UCR — Encuesta Actualidades 2024 · 86,4% con seguro CCSS',url:'https://www.ucr.ac.cr/noticias/2025/2/19/la-ccss-se-mantiene-como-el-pilar-de-la-salud-en-costa-rica.html'},
+      {label:'CCSS — Estadísticas actuariales (fuente oficial para verificación)',url:'https://www.ccss.sa.cr/est_actuarial'},
+      {label:'CCSS — LOM 2025 Versión 7 · julio 2025',url:'https://cdn.who.int/media/docs/default-source/essential-medicines/national-essential-medicines-lists-(neml)/paho_neml/costa-rica-neml-2025.pdf'},
+      {label:'La Nación CR — 88 medicamentos en LOM 2023–2025',url:'https://www.nacion.com/el-pais/88-medicamentos-ingresaron-a-lista-oficial-de-la/4U7EJEOB5NA6LJBACCVROIQGXE/story/'},
+      {label:'OPS — Perfil Costa Rica · hia.paho.org',url:'https://hia.paho.org/es/perfiles-de-pais/costa-rica'},
+    ]},
+};
+
+
+
+// ═══ HERRAMIENTAS DE ECONOMÍA DE LA SALUD ═══
+const TOOLS={
+  cea:{nombre:'Análisis de costo-efectividad / costo-utilidad (CEA / CUA)',icon:'CEA',
+    que:'Compara el costo adicional de una tecnología frente a su comparador con la ganancia adicional en salud (años de vida, AVAC, eventos evitados).',
+    pregunta:'¿Vale la pena el costo adicional por cada unidad de salud que se gana?',
+    insumos:'Eficacia comparativa, costos directos del tratamiento y de los eventos evitados, horizonte temporal, tasa de descuento, umbral de referencia del país.',
+    entrega:'Razón de costo-efectividad incremental (ICER). Castro 2015 muestra resultado dominante en Colombia, aunque con precios de 2012 — hay que declararlo al usarlo.',
+    ev:['castro','espinosa']},
+  aip:{nombre:'Análisis de impacto presupuestal (AIP / BIA)',icon:'AIP',
+    que:'Proyecta cuánto cambia el gasto total de un pagador al incorporar la tecnología en su población, normalmente a 3 y 5 años.',
+    pregunta:'¿Cuánto le cuesta al presupuesto incluir esta tecnología y cuánto se compensa con los costos que evita?',
+    insumos:'Población elegible, tasa de adopción esperada, precio local, costos de los eventos evitados (cirugía, hospitalización), horizonte de 3 a 5 años.',
+    entrega:'No existe todavía un AIP colombiano propio de esta tecnología. Es una brecha real, no un instrumento listo — y es exactamente el tipo de estudio que se puede construir con datos locales.',
+    advertencia:'Sin AIP colombiano propio. La única referencia regional (Castañeda-Cardona 2024) está financiada por el competidor y argumenta en contra del hialuronato de bajo peso molecular — no usar como evidencia propia sin declarar el conflicto.',
+    ev:['castaneda']},
+  cmin:{nombre:'Análisis de minimización de costos',icon:'CM',
+    que:'Compara únicamente costos entre alternativas cuando se asume o se demuestra que producen el mismo resultado clínico.',
+    pregunta:'Si el efecto es equivalente, ¿cuál alternativa cuesta menos al sistema considerando el tratamiento completo?',
+    insumos:'Evidencia de equivalencia clínica, precio unitario, número de aplicaciones por ciclo, costos asociados a administración y seguimiento.',
+    entrega:'No hay una evaluación local limpia disponible todavía. Evitar esta herramienta o usarla con extrema cautela hasta contar con un estudio propio.',
+    advertencia:'Sin evidencia local confiable. La única disponible en la región está financiada por el competidor.',
+    ev:['castaneda']},
+  ccons:{nombre:'Análisis de costo-consecuencia',icon:'CC',
+    que:'Presenta costos y resultados en salud por separado, sin combinarlos en un índice, para que el decisor los valore según su criterio.',
+    pregunta:'¿Qué consecuencias clínicas y económicas tiene cada alternativa, listadas una por una?',
+    insumos:'Resultados clínicos relevantes (tiempo a cirugía, dolor, función), costos por tipo, población descrita.',
+    entrega:'Vásquez Melo 2025 (Colombia) entrega exactamente esto: años libres de artroplastia a 5 años frente al costo. McAlindon 2017 aporta el comparador real de consulta: la triamcinolona repetida causa más pérdida de cartílago sin diferencia en dolor.',
+    ev:['vasquez','malanga','mcalindon']},
+  mea:{nombre:'Acuerdos de riesgo compartido / acuerdos de entrada gestionada (MEA)',icon:'MEA',
+    que:'Esquemas contractuales donde el precio o el pago se condiciona a un resultado clínico, a un volumen o a un tope de gasto acordado.',
+    pregunta:'¿Cómo entra la tecnología al sistema sin que el pagador asuma todo el riesgo de la incertidumbre en resultados o en gasto?',
+    insumos:'Una métrica de resultado medible en campo, sistema de registro de pacientes, precio base y regla de ajuste, horizonte del acuerdo.',
+    entrega:'Berkani 2022 (síntesis independiente, sin financiación) da la base más sólida: retraso de 9,8 meses en la artroplastia. Perú y Chile tienen los marcos de riesgo compartido más desarrollados de la región.',
+    advertencia:'Molloy 2023 (7,3M de registros) encontró más artroplastia entre usuarios de HA — declarar esta evidencia contraria al construir el acuerdo.',
+    ev:['berkani','malanga']},
+  consenso:{nombre:'Consenso de expertos con metodología GRADE',icon:'GRADE',
+    que:'Recomendación clínica construida por un panel de especialistas con evaluación explícita de la calidad de la evidencia.',
+    pregunta:'¿Qué recomiendan los especialistas de la región para esta indicación y con qué fuerza de evidencia?',
+    insumos:'Revisión sistemática de la literatura, panel de expertos, proceso Delphi, gradación GRADE de la evidencia.',
+    entrega:'LATINVISCO 2026 es el consenso latinoamericano específico — pero la recomendación económica relevante (Rec. 12) es grado 1C, la más débil de la escala, y su letra pequeña favorece el alto peso molecular en dosis única. PANLAR 2016 y EUROVISCO respaldan a nivel panamericano y europeo sin ese condicionante. Chua 2020 reencuadra la conversación: el costo pesa solo 6,6% en la decisión real, frente a 13,2% de duración del efecto y 17,7% de calidad de la evidencia.',
+    ev:['lat','panlar','chua']},
+  rwe:{nombre:'Evidencia de mundo real (RWE)',icon:'RWE',
+    que:'Datos de práctica clínica habitual, registros administrativos o bases de aseguradoras que muestran cómo se comporta la tecnología fuera del ensayo clínico.',
+    pregunta:'¿Qué pasa con los pacientes que reciben o no reciben la tecnología en la vida real?',
+    insumos:'Bases de datos de reclamaciones o historias clínicas, definición de cohortes, variable de resultado (por ejemplo tiempo a cirugía).',
+    entrega:'Altman 2015 y Berkani 2022 muestran retraso consistente de la cirugía. Miller 2020 añade menos eventos adversos frente a AINE oral (19,8% vs 29,0%). Altman 2016 respalda además la seguridad del origen bacteriano del producto.',
+    advertencia:'Altman 2015 solo incluyó pacientes que llegaron a cirugía (sesgo de selección). Molloy 2023, con 7,3M de registros, encontró el resultado contrario — declararlo siempre.',
+    ev:['altman','berkani','miller','altman2016']},
+};
+
+const EVREF={
+  castro:{paper:'Castro et al. 2015 · Colombia · CEA',result:'ICER dominante · ahorro USD 576 por paciente vs terapia convencional · retrasa cirugía 3 años (precios 2012)',url:'https://pubmed.ncbi.nlm.nih.gov/29698172/'},
+  espinosa:{paper:'Espinosa et al. 2022 · umbral colombiano',result:'USD 5.180,80 por AVAC · 0,86 del PIB per cápita · cofinanciado MinHacienda + IETS',url:'https://academic.oup.com/heapol/article/37/3/359/6455647'},
+  vasquez:{paper:'Vásquez Melo et al. 2025 · Colombia · costo-consecuencia',result:'Hylan G-F 20 más caro y más efectivo que no viscosuplementar: USD 45,2M y 39.400 años libres de artroplastia, frente a USD 27,3M y 4.280 años. No calcula ICER — no es un ahorro automático, requiere discutir el valor frente al costo adicional.',url:'https://www.tandfonline.com/doi/full/10.1080/14737167.2024.2442461'},
+  altman:{paper:'Altman et al. 2015 · RWE · cohorte de 182.022 pacientes',result:'114 días a cirugía sin HA · 484 días con cualquier ciclo de HA (mediana). Cohorte de 182.022 pacientes extraída de una base de ~79M asegurados.',url:'https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0145776'},
+  berkani:{paper:'Berkani et al. 2022 · síntesis independiente, sin financiación',result:'25 estudios · 2,8M pacientes · retraso de artroplastia de 9,8 meses (IC 8,2-11,4)',url:'https://www.mdpi.com/2077-0383/11/14/3985'},
+  malanga:{paper:'Malanga et al. 2020',result:'Mediana 16,4 vs 5,7 meses · HA es 1,8% del costo total del manejo vs 76,6% de la cirugía',url:'https://www.ahdbonline.com/articles/3059-knee-osteoarthritis-treatment-costs-in-the-medicare-patient-population'},
+  miller:{paper:'Miller et al. 2020 · HA vs AINE oral',result:'Eficacia equivalente · eventos adversos 19,8% vs 29,0% · gastrointestinales 14,1% vs 23,4%',url:'https://journals.sagepub.com/doi/10.1177/2325967119897909'},
+  molloy:{paper:'Molloy et al. 2023 · evidencia contraria',result:'7,3M de registros · MÁS artroplastia entre usuarios de hialuronato — declarar siempre',url:'https://pubmed.ncbi.nlm.nih.gov/'},
+  lat:{paper:'LATINVISCO 2026 · Hamdan et al. · consenso latinoamericano',result:'25 especialistas, 15 países. Rec. 1 (grado 1A): a favor por efectividad en estadios I-III. Rec. 12 (grado 1C, la relevante para acceso): mejor costo-beneficio que corticoide. El §3.15 atribuye la costo-efectividad al hialuronato de ALTO peso molecular en DOSIS ÚNICA — verificar si coincide con el perfil del producto antes de citarla.',url:'https://doi.org/10.1016/j.ctim.2026.103385'},
+  panlar:{paper:'PANLAR 2016 · consenso panamericano',result:'A favor · aplica a distintos pesos moleculares (no respalda diferenciación por peso molecular)',url:'https://www.ovid.com/jnls/jclinrheum/fulltext/10.1097/rhu.0000000000000449~panlar-consensus-recommendations-for-the-management-in'},
+  eurovisco:{paper:'EUROVISCO · Conrozier et al.',result:'Consenso europeo Delphi con criterios explícitos de selección de paciente',url:'https://journals.sagepub.com/doi/10.1177/19476035241286578'},
+  imss:{paper:'IMSS-079-08 · Guía México',result:'"Se recomienda en pacientes con osteoartrosis de rodilla en quienes el tratamiento no farmacológico no ha sido exitoso o está contraindicado"',url:'https://www.imss.gob.mx/sites/all/statics/guiasclinicas/079GRR.pdf'},
+  minsalcl:{paper:'MINSAL Chile 2018 · postura en contra',result:'Sugiere NO usar en artrosis moderada (condicional, certeza muy baja). Sin recomendación para leve',url:'https://diprece.minsal.cl/wp-content/uploads/2020/06/RE_FINAL_GPC-Artrosis-Cadera-y-Rodilla-mayores-55-an%CC%83os_2018_V1.pdf'},
+  altman2016:{paper:'Altman et al. 2016 · origen del producto',result:'Fermentación bacteriana: menor incidencia de eventos adversos que origen aviar',url:'https://journals.sagepub.com/doi/10.1177/0363546515609599'},
+  mcalindon:{paper:'McAlindon et al. 2017 · comparador corticoide (NIH)',result:'Triamcinolona repetida: mayor pérdida de cartílago (−0,21 vs −0,10mm), sin diferencia en dolor',url:'https://jamanetwork.com/journals/jama/fullarticle/2626573'},
+  chua:{paper:'Chua et al. 2020 · marco multicriterio',result:'El costo pesa solo 6,6% de la decisión; duración del efecto 13,2%; riesgo de daño grave 12,8%',url:'https://doaj.org/article/0fea15d90ff44715a119d60aeeb3e015'},
+  castaneda:{paper:'Castañeda-Cardona & Gil-Rojas 2024 · El Salvador/Panamá — financiado por Sanofi',result:'A favor de hylan G-F 20, en contra del hialuronato de bajo peso molecular. Usar con extrema cautela — es evidencia del competidor',url:'https://www.elsevier.es/es-revista-revista-colombiana-reumatologia-374-articulo-analisis-minimizacion-costos-e-impacto-S0121812322000706'},
+};
+// Herramientas por meta (orden de prioridad) y refuerzo por perfil
+const TOOLS_BY_META={
+  inclusion:['consenso','cea','aip'],
+  difer:['ccons','cmin','rwe'],
+  presup:['aip','cea'],
+  riesgo:['mea','rwe','cea'],
+  prescripcion:['consenso','rwe','ccons'],
+  negociacion:['cmin','cea','aip'],
+};
+const TOOLS_BY_PERFIL={val:['cea','consenso'],fin:['aip','cmin'],clin:['consenso','rwe','ccons'],clin_adm:['cea','aip','ccons'],acc:['aip','cea','mea']};
+
+// ESTADO
+// Orden fijo del catálogo completo de herramientas
+const TOOL_ORDER = ['cea','aip','cmin','ccons','mea','consenso','rwe'];
+// Métricas sugeridas según la meta de acceso (independiente del perfil de decisor)
+const META_METRICS = {
+  inclusion: ['Costo por AVAC evitado','Nivel de evidencia GRADE','Tiempo estimado a inclusión','Comparación con tecnologías ya incluidas'],
+  difer: ['Diferencia de resultado clínico vs. comparador','Costo total del tratamiento completo','Tasa de eventos evitados','Percepción de valor del prescriptor'],
+  presup: ['Impacto presupuestal neto a 3 y 5 años','Costo evitado por paciente tratado','Análisis de sensibilidad del modelo','Número de pacientes elegibles'],
+  riesgo: ['Métrica de resultado acordada','Tasa de cumplimiento del acuerdo','Ajuste de precio por resultado','Costo de monitoreo del acuerdo'],
+  prescripcion: ['Tasa de prescripción actual vs. esperada','Brecha entre cobertura aprobada y uso real','Confianza clínica reportada','Tiempo desde cobertura hasta primera prescripción'],
+  negociacion: ['Costo total a 5 años vs. precio de lista','Descuento máximo aceptable sin pérdida de margen','Ahorro neto proyectado para el sistema','Precio por resultado comparado con el comparador'],
+};
+let ACTIVE_TOOL = null;
+
+// ═══ REGISTRO EN VIVO — GOOGLE SHEET ═══
+// Reemplaza esta URL por la que te da Apps Script al implementar (ver AppsScript_TallerAdium.gs)
+const APPS_SCRIPT_URL = 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT';
+const GUARDADO_ACTIVO = false; // ← ponlo en true cuando pegues la URL real y quieras conectar el Sheet
+let TEAM_NAME = '';
+let saveDebounceTimer = null;
+
+function setSaveIndicator(state){
+  const el = document.getElementById('saveIndicator');
+  if(!el) return;
+  if(state==='saving') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#c47f00;display:inline-block"></span> Guardando…';
+  else if(state==='saved') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block"></span> Guardado';
+  else if(state==='error') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#c94b4b;display:inline-block"></span> Sin conexión';
+  else el.innerHTML = '';
+}
+
+function currentStepLabel(){
+  const active = document.querySelector('.screen.on');
+  if(!active) return '';
+  const map = { s0:'Módulo 1 · Nombre de equipo', s1:'Módulo 1 · Paso 1 País', s2:'Módulo 1 · Paso 2 Decisor',
+    s3:'Módulo 1 · Paso 3 Meta', s4:'Módulo 1 · Paso 4 Herramientas', s5:'Módulo 2 · Storytelling', s6:'Propuesta final' };
+  return map[active.id] || active.id;
+}
+
+function collectData(){
+  const country = COUNTRIES[ST.country], perfil = PERFILES.find(x=>x.id===ST.perfil), meta = METAS.find(x=>x.id===ST.meta);
+  const gv = (id) => { const el = document.getElementById(id); if(!el) return ''; if(el.classList.contains('is-example')) return ''; return el.value.trim(); };
+  const gt = (id) => { const el = document.getElementById(id); return el ? el.innerText.trim() : ''; };
+  return {
+    equipo: TEAM_NAME,
+    paso_actual: currentStepLabel(),
+    pais: country ? country.name : '',
+    decisor: perfil ? perfil.title : '',
+    meta: meta ? meta.title : '',
+    apertura: BUILDER_SEL.apertura || '',
+    presion: BUILDER_SEL.presion || '',
+    relacion: BUILDER_SEL.relacion || '',
+    objecion: BUILDER_SEL.objecion || '',
+    descripcion_decisor: gt('descOut'),
+    dato_tipo: (BUILDER2_SEL||{}).tipo || '',
+    dato_fuente: (BUILDER2_SEL||{}).fuente || '',
+    dato_valor: gv('ta-p2-valor'),
+    dato_adicional_texto: gt('descOut2'),
+    herramienta_activa: (typeof COMBO_TOOLS !== 'undefined' && COMBO_TOOLS.length) ? COMBO_TOOLS.map(k=>TOOLS[k].nombre).join(' + ') : '',
+    escenario: gv('ta-escenario'),
+    desarrollo: gv('ta-desarrollo'),
+    propuesta: gv('ta-propuesta'),
+    pitch_60s: gv('ta-pitch'),
+    acciones_corto_plazo: gv('ta-cp'),
+    acciones_largo_plazo: gv('ta-lp'),
+    metricas: gv('ta-metricas'),
+    reto: gv('ta-reto'),
+    solucion: gv('ta-sol'),
+    resultados_esperados: gv('ta-res'),
+    listo_para_presentar: document.getElementById('s6') && document.getElementById('s6').classList.contains('on') ? 'SI' : 'NO',
+  };
+}
+
+function saveToSheet(){
+  if(!GUARDADO_ACTIVO) return;
+  if(!TEAM_NAME) return;
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PEGA_AQUI') === 0){
+    console.warn('APPS_SCRIPT_URL no configurada — guardado deshabilitado.');
+    return;
+  }
+  setSaveIndicator('saving');
+  const data = collectData();
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors', // Apps Script Web Apps no siempre exponen CORS; enviamos "a ciegas".
+    headers: { 'Content-Type': 'text/plain' }, // evita preflight OPTIONS
+    body: JSON.stringify(data),
+  }).then(()=> setSaveIndicator('saved'))
+    .catch(()=> setSaveIndicator('error'));
+}
+
+function saveDebounced(){
+  clearTimeout(saveDebounceTimer);
+  saveDebounceTimer = setTimeout(saveToSheet, 1200);
+}
+
+function confirmTeam(){
+  const val = document.getElementById('teamNameInput').value.trim();
+  if(!val) return;
+  TEAM_NAME = val;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s1').classList.add('on');
+  document.getElementById('progBar').style.width = '0%';
+  saveToSheet();
+}
+
+let ST={country:null,perfil:null,meta:null};
+
+// VIZ DATA por meta
+const VIZ={
+  inclusion:[
+    {title:'Respaldo regional',num:'25',unit:'expertos · 15 países',desc:'LATINVISCO 2026. La recomendación de acceso (Rec. 12) es grado 1C y favorece el alto peso molecular en dosis única — verificar el perfil del producto antes de citarla sin matices',src:'Hamdan et al. 2026 · Complement Ther Med'},
+    {title:'Resultado clínico documentado',num:'39.400',unit:'años libres de artroplastia (hylan G-F 20)',desc:'Costo-consecuencia a 5 años, Colombia. Más caro y más efectivo que no viscosuplementar — no es un ahorro, es un beneficio que hay que argumentar frente al costo.',src:'Vásquez Melo et al. 2025 · Expert Rev Pharmacoecon',bar:{labels:['Hylan G-F 20 (USD 45,2M)','Otros hialuronatos (USD 50,2M)','No viscosuplementar (USD 27,3M)'],vals:[39400,30741,4280],max:42000}}
+  ],
+  difer:[
+    {title:'Retraso documentado de cirugía',num:'114 → 484',unit:'días (mediana, sin vs con HA)',desc:'Cohorte de 182.022 pacientes (de ~79M asegurados) · con 5 o más ciclos, mediana de 1.312 días',src:'Altman et al. 2015 · PLoS ONE',bar:{labels:['Sin HA','Con 5+ ciclos'],vals:[114,1312],max:1400}},
+    {title:'Origen del producto',num:'Bacteriano',unit:'fermentación (no aviar)',desc:'Suprahyal se obtiene por fermentación de Streptococcus zooepidemicus (ficha PLM Ecuador) · menor incidencia de eventos adversos que el origen aviar',src:'Altman et al. 2016 · Am J Sports Med'}
+  ],
+  presup:[
+    {title:'ICER Suprahyal',num:'Dominante',unit:'',desc:'Más efectivo Y más barato que la terapia convencional en Colombia (precios 2012 — declarar la fecha)',src:'Castro et al. 2015 · Colombia'},
+    {title:'Umbral de referencia colombiano',num:'USD 5.180,80',unit:'por AVAC',desc:'0,86 del PIB per cápita · el ICER de Castro está muy por debajo de este umbral',src:'Espinosa et al. 2022 · Health Policy Plan'}
+  ],
+  riesgo:[
+    {title:'Retraso de artroplastia',num:'9,8',unit:'meses (IC 8,2-11,4)',desc:'Síntesis independiente, sin financiación · 25 estudios · 2,8M pacientes · base sólida para definir la métrica de un acuerdo',src:'Berkani et al. 2022 · J Clin Med'},
+    {title:'Peso del hialuronato en el costo total',num:'1,8%',unit:'vs 76,6% de la cirugía',desc:'Argumento de poca inversión, mucha palanca para estructurar el acuerdo',src:'Malanga et al. 2020',bar:{labels:['Hialuronato','Cirugía'],vals:[1.8,76.6],max:100}}
+  ],
+  prescripcion:[
+    {title:'El dato que cambia la consulta',num:'114 → 484',unit:'días (mediana, sin vs con HA)',desc:'El argumento que el prescriptor necesita para justificar la frecuencia de uso',src:'Altman et al. 2015 · PLoS ONE',bar:{labels:['Sin HA','Con HA'],vals:[114,484],max:550}},
+    {title:'Respaldo de consenso regional',num:'LATINVISCO',unit:'2026',desc:'Rec. 1 (1A) respalda la efectividad clínica en estadios I-III. La Rec. 12 (económica) es solo 1C — usar la primera para el prescriptor, la segunda con matices',src:'Hamdan et al. 2026 · Complement Ther Med'}
+  ],
+  negociacion:[
+    {title:'ICER Suprahyal',num:'Dominante',unit:'',desc:'Ahorro de USD 576 por paciente vs terapia convencional · el costo total, no el precio unitario, es el argumento',src:'Castro et al. 2015 · Colombia'},
+    {title:'Resultado a 5 años',num:'39.400',unit:'años libres de artroplastia (hylan G-F 20)',desc:'Cuesta más que no tratar (USD 45,2M vs 27,3M) pero entrega muchos más años libres de artroplastia — el argumento es de valor, no de ahorro',src:'Vásquez Melo et al. 2025 · Expert Rev Pharmacoecon',bar:{labels:['Hylan G-F 20 (USD 45,2M)','Otros hialuronatos (USD 50,2M)','No viscosuplementar (USD 27,3M)'],vals:[39400,30741,4280],max:42000}}
+  ]
+};
+
+function getViz(){return VIZ[ST.meta]||VIZ.presup}
+
+// ═══ INIT ════════════════════════════════════
+function init(){
+  const cg=document.getElementById('countryGrid');
+  cg.innerHTML='';
+  Object.entries(COUNTRIES).forEach(([id,c])=>{
+    const el=document.createElement('div');
+    el.className='c-btn';
+    el.innerHTML=`<div class="c-flag-big">${c.flagEmoji}</div><div class="c-name">${c.name}</div>`;
+    el.onclick=()=>pickCountry(id,el);
+    cg.appendChild(el);
+  });
+  const pg=document.getElementById('perfilGrid');
+  pg.innerHTML='';
+  PERFILES.forEach(p=>{
+    const el=document.createElement('div');
+    el.className='p-card';
+    el.innerHTML=`<div class="p-avatar" style="background:${p.color}22;border-color:${p.color}55;color:${p.color}"><span>${p.icon}</span></div><div class="p-title">${p.title}</div><div class="p-desc">${p.desc}</div><div class="p-kpi">Métricas: ${p.kpis.slice(0,3).join(' · ')}</div>`;
+    el.onclick=()=>pickPerfil(p.id,el);
+    pg.appendChild(el);
+  });
+  const mg=document.getElementById('metaGrid');
+  mg.innerHTML='';
+  METAS.forEach(m=>{
+    const el=document.createElement('div');
+    el.className='m-card';
+    el.innerHTML=`<div class="m-num">${m.num}</div><div class="m-title">${m.title}</div><div class="m-desc">${m.desc}</div><div class="m-tag">${m.tag}</div>`;
+    el.onclick=()=>pickMeta(m.id,el);
+    mg.appendChild(el);
+  });
+}
+
+
+function updateStepperActive(n){
+  document.querySelectorAll('.stepper-pill').forEach(p=>{
+    p.classList.toggle('active', parseInt(p.dataset.stage,10)===n);
+  });
+}
+function goToStage(n){
+  if(n===0){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+    document.getElementById('s0').classList.add('on');
+    document.getElementById('progBar').style.width='0%';
+    window.scrollTo({top:0,behavior:'smooth'});
+    updateStepperActive(0);
+    return;
+  }
+  if(n>=1 && n<=4){ go(n); return; }
+  if(n===5){
+    if(ST.country && ST.perfil && ST.meta){ startM2(); }
+    else { go(5); updateStepperActive(5); }
+    return;
+  }
+  if(n===6){
+    if(ST.country && ST.perfil && ST.meta){ buildProposal(); }
+    else { go(6); updateStepperActive(6); }
+    return;
+  }
+}
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
+  document.getElementById('s'+n).classList.add('on');
+  const pct=n<=4?(n-1)/3*100:100;
+  document.getElementById('progBar').style.width=pct+'%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  saveToSheet();
+  if(n===2)renderCrumbs('cr2');
+  if(n===3)renderCrumbs('cr3');
+  if(n===4){renderCrumbs('cr4');renderResult();}
+  updateStepperActive(n);
+  // tabs
+  document.getElementById('tab1').classList.toggle('active',n<=4);
+  document.getElementById('tab2').classList.toggle('active',n===5);
+}
+
+function renderCrumbs(id){
+  const el=document.getElementById(id);
+  let h='';
+  if(ST.country)h+=`<div class="crumb on"><span class="crumb-lbl">País</span><span>${COUNTRIES[ST.country].flag} ${COUNTRIES[ST.country].name}</span></div>`;
+  if(ST.perfil){const p=PERFILES.find(x=>x.id===ST.perfil);h+=`<div class="crumb on"><span class="crumb-lbl">Decisor</span><span>${p.icon} ${p.title}</span></div>`;}
+  if(ST.meta){const m=METAS.find(x=>x.id===ST.meta);h+=`<div class="crumb on"><span class="crumb-lbl">Meta</span><span>${m.title}</span></div>`;}
+  el.innerHTML=h;
+}
+
+function pickCountry(id,el){
+  document.querySelectorAll('.c-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');ST.country=id;
+  document.getElementById('btn1').disabled=false;
+  saveToSheet();
+}
+function ctxSec(label,text){
+  if(!text) return '';
+  return `<div class="ctx-sec"><div class="ctx-sec-lbl">${label}</div><div class="ctx-sec-val">${text}</div></div>`;
+}
+function findRefIndex_(refs, keywords){
+  for(let i=0;i<refs.length;i++){
+    const label = refs[i].label.toUpperCase();
+    if(keywords.some(k=>label.includes(k.toUpperCase()))) return i+1;
+  }
+  return null;
+}
+function buildProse_(c){
+  const gastoIdx = findRefIndex_(c.refs, ['OPS','PAHO']);
+  const htaTokens = (c.hta.match(/[A-ZÁÉÍÓÚÑ]{2,}(-[A-Z]{2,})?/g) || []).filter(t=>t.length>1 && t!=='NOTA');
+  let htaIdx = null;
+  for(const tok of htaTokens){ htaIdx = findRefIndex_(c.refs, [tok]); if(htaIdx) break; }
+  const coberturaIdx = findRefIndex_(c.refs, ['INEGI','MINSALUD','INEI','SUPERINTENDENCIA','INE ','INDEC','UCR','ENAHO','ENIGH','EPHC','CENSO','FONASA']);
+  const sup = (n) => n ? `<sup><a href="#ref-${c.name}-${n}" style="color:var(--teal);text-decoration:none">${n}</a></sup>` : '';
+  return `<p class="ctx-prose">${c.name} opera bajo el modelo de ${c.sistema}. El gasto de bolsillo representa ${c.gasto} del gasto total en salud${sup(gastoIdx)}, uno de los indicadores más directos de cuánto asumen los hogares frente a lo que cubre el sistema. La evaluación de tecnologías sanitarias está a cargo de ${c.hta}${sup(htaIdx)}. En materia de umbral de costo-efectividad, ${c.umbral.charAt(0).toLowerCase()+c.umbral.slice(1)} En cuanto a cobertura, ${c.cobertura}${sup(coberturaIdx)}</p>`;
+}
+function renderCtx(id){
+  const c=COUNTRIES[id];
+  const panel=document.getElementById('ctxPanel');
+  const refs=c.refs.map((r,i)=>`<span id="ref-${c.name}-${i+1}"></span>[${i+1}] <a href="${r.url}" target="_blank">↗ ${r.label}</a>`).join('<br>');
+  panel.innerHTML=`
+    <div class="ctx-head"><div class="ctx-flag">${c.flag}</div><div><div class="ctx-title">${c.name}</div><span class="ctx-sub">${c.sistema}</span></div></div>
+    <div class="ctx-meta">
+      <div class="ctx-item"><span class="ctx-lbl">Gasto de bolsillo</span><span class="ctx-val">${c.gasto}</span></div>
+      <div class="ctx-item"><span class="ctx-lbl">Agencia HTA</span><span class="ctx-val">${c.hta}</span></div>
+      <div class="ctx-item"><span class="ctx-lbl">Umbral de costo-efectividad</span><span class="ctx-val">${c.umbral}</span></div>
+      <div class="ctx-item"><span class="ctx-lbl">Cobertura de aseguramiento</span><span class="ctx-val">${c.cobertura}</span></div>
+    </div>
+    <div class="ctx-ref"><strong style="color:var(--gray)">Fuentes primarias verificadas:</strong><br>${refs}</div>`;
+  panel.classList.add('on');
+}
+function pickPerfil(id,el){
+  document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');ST.perfil=id;ST.meta=null;
+  document.getElementById('btn2').disabled=false;
+  saveToSheet();
+}
+function pickMeta(id,el){
+  document.querySelectorAll('.m-card').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');ST.meta=id;
+  document.getElementById('btn3').disabled=false;
+  saveToSheet();
+}
+
+let COMBO_TOOLS = [];
+
+function renderResult(){
+  const country=COUNTRIES[ST.country];
+  const perfil=PERFILES.find(x=>x.id===ST.perfil);
+  const meta=METAS.find(x=>x.id===ST.meta);
+  if(!country||!perfil||!meta){document.getElementById('resBox').innerHTML='<p style="color:var(--gray)">Completa los tres pasos anteriores.</p>';return;}
+  const base=TOOLS_BY_META[ST.meta]||[];
+  COMBO_TOOLS = [...base];
+
+  const metaMetricPills = (META_METRICS[ST.meta]||[]).map(k=>`<span class="kpi-pill">${k}</span>`).join('');
+  const gapNote = `<div class="gap-note"><span class="gap-note-icon">Nota:</span><span class="gap-note-text">Toda esta evidencia proviene de Colombia y de consensos regionales. Si <strong>${country.name}</strong> aún no cuenta con un estudio propio —un CEA, un AIP o un análisis de carga de enfermedad con datos locales— esa brecha específica es, justamente, el tipo de proyecto que un equipo especializado en economía de la salud construye de la mano de un cliente.</span></div>`;
+
+  document.getElementById('resBox').innerHTML=`
+    <div class="res-wrap">
+      <div class="res-hero">
+        <div class="res-tag">${country.flag} ${country.name} · ${perfil.icon} ${perfil.title} · ${meta.num}</div>
+        <div class="res-title">Arma tu combinación de herramientas</div>
+        <div class="res-sub">${meta.title}. Ya precargamos las herramientas que aplican a tu meta. Arrastra para quitar o agregar otras — el argumento de abajo se redacta solo con la evidencia de Suprahyal.</div>
+      </div>
+      <div class="res-body">
+        <div class="drag-instructions"><span class="drag-instructions-icon">Instrucciones:</span><span>Arrastra una tarjeta del <strong>catálogo completo</strong> hacia <strong>tu combinación</strong> para usarla en el argumento. Si no la necesitas, arrástrala de vuelta al catálogo.</span></div>
+
+        <div class="drag-cols">
+          <div class="drag-col">
+            <div class="drag-col-lbl">Catálogo completo</div>
+            <div class="drag-zone" id="dzCatalogo"></div>
+          </div>
+          <div class="drag-col">
+            <div class="drag-col-lbl accent">Tu combinación</div>
+            <div class="drag-zone accent" id="dzCombo"></div>
+          </div>
+        </div>
+
+        <div class="arg-box">
+          <div class="arg-lbl">Argumento generado con tu combinación</div>
+          <p class="arg-text" id="argGenerado"></p>
+        </div>
+
+        <div id="comboDetails"></div>
+
+        ${gapNote}
+      </div>
+    </div>`;
+
+  renderDragZones();
+  renderArgumento();
+  renderComboDetails();
+}
+
+function makeDragCard_(k){
+  const t = TOOLS[k];
+  const el = document.createElement('div');
+  el.className = 'drag-card';
+  el.draggable = true;
+  el.dataset.tool = k;
+  el.innerHTML = `<span class="drag-card-icon">${t.icon}</span><span class="drag-card-name">${t.nombre}</span>`;
+  el.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', k); });
+  return el;
+}
+
+function renderDragZones(){
+  const dzCat = document.getElementById('dzCatalogo');
+  const dzCombo = document.getElementById('dzCombo');
+  if(!dzCat || !dzCombo) return;
+  dzCat.innerHTML = '';
+  dzCombo.innerHTML = '';
+  TOOL_ORDER.forEach(k=>{
+    const card = makeDragCard_(k);
+    if(COMBO_TOOLS.includes(k)) dzCombo.appendChild(card);
+    else dzCat.appendChild(card);
+  });
+  [dzCat, dzCombo].forEach(zone=>{
+    zone.ondragover = e => e.preventDefault();
+    zone.ondrop = e => {
+      e.preventDefault();
+      const k = e.dataTransfer.getData('text/plain');
+      const card = zone.parentElement.querySelector ? null : null;
+      const draggedCard = document.querySelector(`.drag-card[data-tool="${k}"]`);
+      if(draggedCard) zone.appendChild(draggedCard);
+      COMBO_TOOLS = Array.from(dzCombo.children).map(c=>c.dataset.tool);
+      renderArgumento();
+      renderComboDetails();
+      saveToSheet();
+    };
+  });
+}
+
+function renderArgumento(){
+  const out = document.getElementById('argGenerado');
+  if(!out) return;
+  const country=COUNTRIES[ST.country], perfil=PERFILES.find(x=>x.id===ST.perfil), meta=METAS.find(x=>x.id===ST.meta);
+  if(COMBO_TOOLS.length===0){
+    out.innerHTML = 'Arrastra al menos una herramienta a "Tu combinación" para generar el argumento.';
+    return;
+  }
+  const fragmentos = COMBO_TOOLS.map(k=>{
+    const t = TOOLS[k];
+    const e = EVREF[t.ev[0]];
+    return `${t.entrega} <span class="arg-cite">(${e.paper})</span>`;
+  });
+  let texto = `Para <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong>, con el objetivo de <em>${meta.title.toLowerCase()}</em>, el argumento se construye así: ${fragmentos[0]}.`;
+  for(let i=1;i<fragmentos.length;i++){
+    texto += ` Además, ${fragmentos[i]}.`;
+  }
+  out.innerHTML = texto;
+}
+
+function renderComboDetails(){
+  const box = document.getElementById('comboDetails');
+  if(!box) return;
+  if(COMBO_TOOLS.length===0){ box.innerHTML=''; return; }
+  const base = TOOLS_BY_META[ST.meta]||[];
+  box.innerHTML = COMBO_TOOLS.map(k=>{
+    const t = TOOLS[k];
+    const rank = base.includes(k) ? 'Aplica directamente a tu meta' : 'Agregada por el equipo';
+    const evh = t.ev.map(e=>EVREF[e]).map(e=>`<div class="ev-item"><div class="ev-dot"></div><div><div class="ev-paper">${e.paper}</div><div class="ev-result">${e.result}</div><a href="${e.url}" target="_blank" style="font-size:0.68rem;color:var(--teal);text-decoration:none">↗ ${e.url}</a></div></div>`).join('');
+    const advertenciaHtml = t.advertencia ? `<div class="gap-note" style="margin-top:0.9rem;margin-bottom:0"><span class="gap-note-icon">Atención:</span><span class="gap-note-text">${t.advertencia}</span></div>` : '';
+    return `<div class="tool-card">
+      <div class="tool-card-head"><span class="tool-card-icon">${t.icon}</span><div><div class="tool-card-rank">${rank}</div><div class="tool-card-name">${t.nombre}</div></div></div>
+      <div class="tool-card-grid">
+        <div><span class="res-item-lbl">Qué es</span><div class="res-item-val">${t.que}</div></div>
+        <div><span class="res-item-lbl">Qué pregunta responde</span><div class="res-item-val">${t.pregunta}</div></div>
+        <div><span class="res-item-lbl">Qué insumos requiere</span><div class="res-item-val">${t.insumos}</div></div>
+        <div><span class="res-item-lbl">Qué entrega</span><div class="res-item-val">${t.entrega}</div></div>
+      </div>
+      <div class="ev-block" style="margin-bottom:0"><div class="ev-lbl">Evidencia de Suprahyal disponible</div>${evh}</div>
+      ${advertenciaHtml}
+    </div>`;
+  }).join('');
+}
+
+
+// ═══ EJEMPLO EDITABLE — se borra al enfocar, reaparece si queda vacío ═══
+function setupExampleField(id, exampleText){
+  const ta = document.getElementById(id);
+  if(!ta) return;
+  ta.dataset.example = exampleText;
+  ta.value = exampleText;
+  ta.classList.add('is-example');
+  ta.addEventListener('focus', function(){
+    if(this.value === this.dataset.example){
+      this.value = '';
+      this.classList.remove('is-example');
+    }
+  });
+  ta.addEventListener('blur', function(){
+    if(this.value.trim() === ''){
+      this.value = this.dataset.example;
+      this.classList.add('is-example');
+    }
+  });
+}
+
+// ═══ 5 PAPERS PRINCIPALES — Paso 2 (solo links, sin cifras) ═══
+const TOP5_PAPERS = ['castro','vasquez','altman','lat','berkani'];
+
+function startM2(){
+  const country=COUNTRIES[ST.country];
+  const perfil=PERFILES.find(x=>x.id===ST.perfil);
+  const meta=METAS.find(x=>x.id===ST.meta);
+  if(!country||!perfil||!meta) return;
+  document.getElementById('p1-quien').textContent=perfil.icon+' '+perfil.title;
+  document.getElementById('p1-quien-detail').textContent=country.flag+' '+country.name+' · '+country.hta;
+  document.getElementById('p1-objetivo').textContent=meta.title;
+  document.getElementById('p1-objetivo-detail').textContent=meta.tag;
+
+  document.getElementById('vizGrid').innerHTML=TOP5_PAPERS.map(k=>{
+    const e = EVREF[k];
+    return `<div class="paper-link-card"><div class="paper-link-name">${e.paper}</div><a href="${e.url}" target="_blank" rel="noopener" class="paper-link-url">↗ Abrir paper</a></div>`;
+  }).join('');
+
+  const guia=(items)=>items.map(t=>`<div class="story3-item"><div class="story3-item-val" style="color:var(--gray)">• ${t}</div></div>`).join('');
+  document.getElementById('escenario-content').innerHTML=`<div class="story3-item-lbl" style="margin-bottom:.5rem">QUÉ INCLUIR</div>`+guia([
+    '¿Cuándo y dónde tiene lugar la historia?',
+    '¿Quiénes son los protagonistas?',
+    'La situación: el problema y la posible mejora.',
+    '¿Qué necesitamos hacer para resolver la situación?']);
+  document.getElementById('desarrollo-content').innerHTML=`<div class="story3-item-lbl" style="margin-bottom:.5rem">QUÉ INCLUIR</div>`+guia([
+    'Da ejemplos que ilustren la situación.',
+    'Incluye el dato o hallazgo que escribiste en el Paso 2.',
+    'Explica lo que sucederá si no se toman medidas.']);
+
+  const hint=(t)=>`<div class="conc-item"><div class="conc-dot" style="background:var(--gray-d)"></div><div style="color:var(--gray)">${t}</div></div>`;
+  document.getElementById('acciones-cp').innerHTML=hint('Acciones concretas hasta tres meses.')+`<textarea style="margin-top:.6rem;min-height:110px" id="ta-cp"></textarea>`;
+  document.getElementById('acciones-lp').innerHTML=hint('Acciones concretas entre 3 y 6 meses.')+`<textarea style="margin-top:.6rem;min-height:110px" id="ta-lp" placeholder="Escribe aquí las acciones a mediano plazo..."></textarea>`;
+  document.getElementById('resumen-final').innerHTML=`
+    <div><div class="resumen-item-lbl">EL RETO — la barrera u objeción que enfrenta este decisor</div><textarea id="ta-reto" style="min-height:80px"></textarea></div>
+    <div><div class="resumen-item-lbl">LA SOLUCIÓN — el argumento o herramienta que la resuelve</div><textarea id="ta-sol" style="min-height:80px"></textarea></div>
+    <div><div class="resumen-item-lbl">RESULTADOS ESPERADOS — qué logra el equipo al usar este argumento</div><textarea id="ta-res" style="min-height:80px"></textarea></div>`;
+
+  BUILDER_SEL = {};
+  BUILDER2_SEL = {};
+  renderChipBuilder();
+  renderChipBuilder2();
+
+  const ejemploEscenario = `Ejemplo: En una reunión con ${perfil.title.toLowerCase()} en ${country.name}, el reto es que la institución compara el precio de Suprahyal frente a alternativas más baratas sin considerar el costo total del tratamiento a lo largo del año.`;
+  const ejemploDesarrollo = `Ejemplo: Sin un tratamiento adecuado, muchos pacientes con osteoartrosis avanzan más rápido hacia la cirugía de reemplazo articular. Con un esquema completo de viscosuplementación, ese tiempo se extiende de forma significativa, lo que reduce la presión sobre el presupuesto de cirugías del año y le da al paciente más tiempo con buena función articular.`;
+  setupExampleField('ta-escenario', ejemploEscenario);
+  setupExampleField('ta-desarrollo', ejemploDesarrollo);
+
+  const ejemploPropuesta = `Ejemplo: Proponemos presentar el análisis de costo total de Suprahyal frente al comparador, con la evidencia ya verificada. El beneficio para ${perfil.title.toLowerCase()} es contar con un argumento defendible ante su propia organización, sin necesidad de generar un estudio nuevo.`;
+  const ejemploReto = `Ejemplo: ${perfil.title} en ${country.name} compara el precio de Suprahyal frente a una alternativa más barata, sin considerar el costo total del tratamiento.`;
+  const ejemploSolucion = `Ejemplo: Presentar el argumento de costo total con la evidencia ya verificada de Suprahyal, mostrando que el gasto neto del sistema es menor a mediano plazo.`;
+  const ejemploResultado = `Ejemplo: Aprobación del precio actual, o un descuento menor al solicitado, sustentado en datos reales y no en el precio de lista.`;
+  const ejemploMetricas = `Ejemplo: Tasa de cirugías evitadas a 6 meses · número de pacientes en tratamiento · costo total comparado con el año anterior.`;
+  setupExampleField('ta-propuesta', ejemploPropuesta);
+  setupExampleField('ta-reto', ejemploReto);
+  setupExampleField('ta-sol', ejemploSolucion);
+  setupExampleField('ta-res', ejemploResultado);
+  setupExampleField('ta-metricas', ejemploMetricas);
+
+  const ejemploCP = `Ejemplo:
+1. Agendar reunión de 20 minutos con ${perfil.title.toLowerCase()} de ${country.name} en las próximas dos semanas, con la evidencia de esta combinación ya lista.
+2. Enviar el resumen de una página con el argumento y la fuente citada, antes de la reunión.
+3. Confirmar quién más del equipo de ${country.name} necesita estar en esa conversación.`;
+  setupExampleField('ta-cp', ejemploCP);
+
+  const ejemploPitch = `Ejemplo: Hablo con ${perfil.title.toLowerCase()} de ${country.name} sobre pacientes con osteoartrosis de rodilla que hoy dependen del manejo actual. Frente a esa alternativa, Suprahyal desplaza un tratamiento con riesgo documentado, y tenemos evidencia que muestra el beneficio en resultado y en costo. Para su institución eso significa un argumento defendible con datos, no una opinión. Sé que la primera objeción va a ser [la objeción esperada de este decisor] — y tenemos cómo responderla. Lo que le pido hoy no es una decisión: es 20 minutos la próxima semana para revisar el caso completo con su equipo.`;
+  setupExampleField('ta-pitch', ejemploPitch);
+
+  document.getElementById('cr5').innerHTML=document.getElementById('cr4').innerHTML;
+  showStep(1,document.querySelectorAll('.step-tab')[0]);
+  go(5);
+}
+
+
+function val(id){const el=document.getElementById(id);if(!el) return '';if(el.classList.contains('is-example')) return '';return el.value.trim();}
+function fld(lbl,v){return `<div class="prop-field"><div class="prop-field-lbl">${lbl}</div><div class="prop-field-val ${v?'':'empty'}">${v||'Sin completar'}</div></div>`;}
+function buildProposal(){
+  const country=COUNTRIES[ST.country], perfil=PERFILES.find(x=>x.id===ST.perfil), meta=METAS.find(x=>x.id===ST.meta);
+  if(!country||!perfil||!meta) return;
+  const base=(typeof COMBO_TOOLS !== 'undefined' && COMBO_TOOLS.length) ? COMBO_TOOLS : (TOOLS_BY_META[ST.meta]||[]);
+  const tools=base.map(k=>`<div class="prop-box"><div style="font-weight:700;font-size:0.85rem;margin-bottom:.3rem">${TOOLS[k].icon} ${TOOLS[k].nombre}</div><div style="font-size:0.78rem;color:var(--gray)">${TOOLS[k].entrega}</div></div>`).join('');
+  const argGen = document.getElementById('argGenerado') ? document.getElementById('argGenerado').innerText.trim() : '';
+  const fecha=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
+  document.getElementById('propBox').innerHTML=`
+  <div class="prop-wrap">
+    <div class="prop-hero">
+      <div class="prop-kicker">Propuesta del grupo de trabajo · ${fecha}</div>
+      <div class="prop-title">${meta.title}</div>
+      <div style="font-size:0.85rem;color:rgba(226,240,238,.75)">Plan de acción a corto y mediano plazo con Suprahyal ante ${perfil.title.toLowerCase()} · ${country.flag} ${country.name}</div>
+      <div class="prop-meta">
+        <span class="crumb on"><span class="crumb-lbl">Mercado</span><span>${country.flag} ${country.name}</span></span>
+        <span class="crumb on"><span class="crumb-lbl">Decisor</span><span>${perfil.icon} ${perfil.title}</span></span>
+        <span class="crumb on"><span class="crumb-lbl">Meta</span><span>${meta.num}</span></span>
+      </div>
+    </div>
+
+    <div class="prop-sec">
+      <div class="prop-sec-num">01</div><div class="prop-sec-title">Comprensión del contexto</div>
+      <div class="prop-2col">
+        <div class="prop-box">${fld('A quién · audiencia', perfil.title+'\n'+country.name+' · '+country.hta)}</div>
+        <div class="prop-box">${fld('Para qué · objetivo', meta.title+'\n'+meta.tag)}</div>
+      </div>
+      ${fld('Descripción general del decisor', document.getElementById('descOut') ? document.getElementById('descOut').innerText.trim() : '')}
+      <div class="prop-box"><div class="prop-field-lbl">Contexto del sistema</div><div class="prop-field-val" style="font-size:0.8rem">Gasto de bolsillo ${country.gasto} · ${country.hta}<br>${country.cobertura}</div></div>
+    </div>
+
+    <div class="prop-sec">
+      <div class="prop-sec-num">02</div><div class="prop-sec-title">Datos que sustentan la propuesta</div>
+      ${fld('Datos propios de nuestro mercado o cartera', document.getElementById('descOut2') ? document.getElementById('descOut2').innerText.trim() : '')}
+      <div class="prop-field-lbl" style="margin-top:.6rem">Herramientas de economía de la salud seleccionadas por el equipo</div>
+      <div class="prop-2col" style="margin-top:.4rem">${tools}</div>
+      ${fld('Argumento generado con esta combinación', argGen)}
+    </div>
+
+    <div class="prop-sec">
+      <div class="prop-sec-num">03</div><div class="prop-sec-title">Storytelling</div>
+      ${fld('Escenario de la historia', val('ta-escenario'))}
+      ${fld('Desarrollo de la historia', val('ta-desarrollo'))}
+      ${fld('Propuesta: opciones y beneficios', val('ta-propuesta'))}
+    </div>
+
+    <div class="prop-sec">
+      <div class="prop-sec-num">04</div><div class="prop-sec-title">Conclusión · plan de acción a corto y mediano plazo</div>
+      <div class="prop-2col" style="margin-bottom:1rem">
+        <div class="prop-box">${fld('Acciones a corto plazo · hasta 3 meses', val('ta-cp'))}</div>
+        <div class="prop-box">${fld('Acciones a mediano plazo · 3 a 6 meses', val('ta-lp'))}</div>
+      </div>
+      ${fld('Métricas para validar los resultados', val('ta-metricas'))}
+      <div class="prop-3col">
+        <div class="prop-box">${fld('El reto', val('ta-reto'))}</div>
+        <div class="prop-box">${fld('La solución', val('ta-sol'))}</div>
+        <div class="prop-box">${fld('Resultados esperados', val('ta-res'))}</div>
+      </div>
+    </div>
+
+    <div class="prop-sec" style="background:linear-gradient(135deg,rgba(0,180,180,.08),rgba(0,180,180,.02))">
+      <div class="prop-sec-num">05</div><div class="prop-sec-title">Pitch de 60 segundos — para agendar la reunión</div>
+      <div style="font-size:0.78rem;color:var(--gray);margin-bottom:.8rem">El objetivo de este pitch no es cerrar todo aquí — es lograr que el pagador acepte una siguiente reunión.</div>
+      ${fld('Pitch de 60 segundos', val('ta-pitch'))}
+    </div>
+
+  </div>`;
+  saveToSheet();
+  document.getElementById('cr6').innerHTML=document.getElementById('cr5').innerHTML;
+  document.querySelectorAll('.screen').forEach(x=>x.classList.remove('on'));
+  document.getElementById('s6').classList.add('on');
+  document.getElementById('progBar').style.width='100%';
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateStepperActive(6);
+}
+
+
+// ═══ CONSTRUCTOR DE SITUACIÓN DEL DECISOR ═══
+const BUILDER_DIMS = [
+  { id:'apertura', label:'Nivel de apertura ante nuevas tecnologías',
+    opts: [
+      { v:'frio', t:'Frío / escéptico', frase:'se muestra escéptico ante propuestas nuevas de la industria y suele cuestionar cualquier evidencia presentada' },
+      { v:'neutral', t:'Neutral', frase:'no tiene una postura definida frente a nuevas tecnologías y evalúa cada caso de forma independiente' },
+      { v:'receptivo', t:'Receptivo', frase:'está abierto a evaluar nuevas alternativas cuando la evidencia es sólida' },
+    ]},
+  { id:'presion', label:'Presión que enfrenta actualmente',
+    opts: [
+      { v:'presupuestal', t:'Presupuestal', frase:'Enfrenta presión para reducir gasto o cumplir un techo presupuestal ajustado' },
+      { v:'clinica', t:'Resultados clínicos', frase:'Está bajo presión por mejorar indicadores clínicos o de calidad de atención' },
+      { v:'institucional', t:'Política institucional', frase:'Responde a lineamientos internos o políticos que condicionan sus decisiones' },
+      { v:'ninguna', t:'Sin presión evidente', frase:'No enfrenta una presión particular identificada en este momento' },
+    ]},
+  { id:'relacion', label:'Relación previa con Adium / Suprahyal',
+    opts: [
+      { v:'ninguna', t:'Sin relación previa', frase:'No tiene relación previa con Adium ni conoce el portafolio' },
+      { v:'ocasional', t:'Cliente ocasional', frase:'Ha tenido contacto ocasional con Adium pero sin una relación consolidada' },
+      { v:'activo', t:'Cliente activo', frase:'Mantiene una relación comercial activa y conoce el portafolio' },
+      { v:'competencia', t:'Usa alternativa establecida', frase:'Actualmente trabaja con una alternativa de la competencia ya consolidada en su institución' },
+    ]},
+  { id:'objecion', label:'Principal objeción esperada',
+    opts: [
+      { v:'precio', t:'Precio', frase:'Su objeción más probable es el precio frente a alternativas disponibles' },
+      { v:'evidencia', t:'Falta de evidencia local', frase:'Su objeción más probable es la falta de evidencia generada en su propio país' },
+      { v:'alternativa', t:'Ya tiene alternativa', frase:'Su objeción más probable es que ya cuenta con una alternativa que considera suficiente' },
+      { v:'proceso', t:'Proceso burocrático lento', frase:'Su objeción más probable está relacionada con la lentitud de su propio proceso interno de incorporación' },
+    ]},
+];
+let BUILDER_SEL = {};
+
+function renderChipBuilder(){
+  const box = document.getElementById('chipBuilder');
+  if(!box) return;
+  box.innerHTML = BUILDER_DIMS.map(dim => `
+    <div class="chip-row">
+      <div class="chip-row-lbl">${dim.label}</div>
+      <div class="chip-opts">
+        ${dim.opts.map(o => `<div class="chip-opt" data-dim="${dim.id}" data-val="${o.v}" onclick="pickChip('${dim.id}','${o.v}',this)">${o.t}</div>`).join('')}
+      </div>
+    </div>`).join('');
+  updateDescOut();
+}
+
+function pickChip(dimId, val, el){
+  document.querySelectorAll(`.chip-opt[data-dim="${dimId}"]`).forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  BUILDER_SEL[dimId] = val;
+  updateDescOut();
+  saveDebounced();
+}
+
+function updateDescOut(){
+  const out = document.getElementById('descOut');
+  if(!out) return;
+  const country = COUNTRIES[ST.country], perfil = PERFILES.find(x=>x.id===ST.perfil), meta = METAS.find(x=>x.id===ST.meta);
+  if(!country||!perfil||!meta){ out.textContent = 'Completa el Módulo 1 primero.'; return; }
+
+  const frases = BUILDER_DIMS.map(dim => {
+    const sel = BUILDER_SEL[dim.id];
+    if(!sel) return null;
+    const opt = dim.opts.find(o=>o.v===sel);
+    return opt ? opt.frase : null;
+  }).filter(Boolean);
+
+  if(frases.length === 0){
+    out.innerHTML = `Interlocutor: <strong>${perfil.title}</strong> en <strong>${country.name}</strong>. Objetivo de la conversación: <em>${meta.title.toLowerCase()}</em>. Selecciona las opciones de arriba para enriquecer esta descripción.`;
+    return;
+  }
+
+  let texto = `Este interlocutor es un <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong>. `;
+  texto += frases.join('. ') + '. ';
+  texto += `El objetivo de esta conversación es <em>${meta.title.toLowerCase()}</em>.`;
+  out.innerHTML = texto;
+}
+
+
+// ═══ BUILDER 2 — EVIDENCIA ADICIONAL (Paso 2) ═══
+// NOTA: estructura lista para reemplazar/ampliar 'frase' cuando lleguen papers reales.
+const BUILDER2_DIMS = [
+  { id:'tipo', label:'Tipo de dato adicional',
+    opts:[
+      { v:'local', t:'Estudio local propio', frase:'un estudio local generado en el propio mercado' },
+      { v:'cartera', t:'Dato de cartera de pacientes', frase:'datos reales de la cartera de pacientes de esta institución' },
+      { v:'precio', t:'Comparador de precio de mercado', frase:'una comparación de precio frente a las alternativas disponibles en este mercado' },
+      { v:'epi', t:'Dato epidemiológico regional', frase:'un dato epidemiológico específico de la región' },
+      { v:'otro', t:'Otro estudio publicado', frase:'un estudio publicado adicional a la evidencia ya verificada' },
+    ]},
+  { id:'fuente', label:'Fuente del dato',
+    opts:[
+      { v:'adium', t:'Base de datos institucional Adium', frase:'proveniente de las bases internas de Adium' },
+      { v:'publicacion', t:'Publicación científica adicional', frase:'proveniente de una publicación científica adicional' },
+      { v:'equipo', t:'Estimación del equipo comercial', frase:'construido como estimación del equipo comercial local' },
+      { v:'pagador', t:'Aportado por el propio pagador', frase:'aportado directamente por el pagador en conversaciones previas' },
+    ]},
+];
+let BUILDER2_SEL = {};
+
+function renderChipBuilder2(){
+  const box = document.getElementById('chipBuilder2');
+  if(!box) return;
+  box.innerHTML = BUILDER2_DIMS.map(dim => `
+    <div class="chip-row">
+      <div class="chip-row-lbl">${dim.label}</div>
+      <div class="chip-opts">
+        ${dim.opts.map(o => `<div class="chip-opt" data-dim2="${dim.id}" data-val="${o.v}" onclick="pickChip2('${dim.id}','${o.v}',this)">${o.t}</div>`).join('')}
+      </div>
+    </div>`).join('');
+  updateDescOut2();
+}
+function pickChip2(dimId, val, el){
+  const yaEstaba = el.classList.contains('sel');
+  document.querySelectorAll(`.chip-opt[data-dim2="${dimId}"]`).forEach(c=>c.classList.remove('sel'));
+  if(yaEstaba){
+    delete BUILDER2_SEL[dimId];
+  } else {
+    el.classList.add('sel');
+    BUILDER2_SEL[dimId] = val;
+  }
+  updateDescOut2();
+  saveDebounced();
+}
+function updateDescOut2(){
+  const out = document.getElementById('descOut2');
+  if(!out) return;
+  const frases = BUILDER2_DIMS.map(dim=>{
+    const sel = BUILDER2_SEL[dim.id];
+    if(!sel) return null;
+    const opt = dim.opts.find(o=>o.v===sel);
+    return opt ? opt.frase : null;
+  }).filter(Boolean);
+  const valor = (document.getElementById('ta-p2-valor')||{}).value?.trim() || '';
+  if(frases.length===0 && !valor){ out.textContent = 'Selecciona las opciones de arriba para generar el texto.'; return; }
+  let texto = frases.length ? `Se incorpora ${frases.join(', ')}.` : 'Dato adicional aportado por el equipo.';
+  if(valor) texto += ` Hallazgo específico: <strong>${valor}</strong>.`;
+  out.innerHTML = texto;
+}
+
+function showStep(n,tabEl){
+  document.querySelectorAll('.step-tab').forEach(t=>t.classList.remove('active'));
+  tabEl.classList.add('active');
+  document.querySelectorAll('.step-content').forEach(c=>c.classList.remove('on'));
+  document.getElementById('step'+n).classList.add('on');
+}
+
+function restart(){
+  ST={country:null,perfil:null,meta:null};
+  COMBO_TOOLS=[];
+  document.querySelectorAll('.c-btn,.p-card,.m-card').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('ctxPanel').classList.remove('on');
+  ['btn1','btn2','btn3'].forEach(id=>document.getElementById(id).disabled=true);
+  go(1);
+}
+
+document.addEventListener('input', function(e){
+  if(e.target && e.target.tagName === 'TEXTAREA'){
+    saveDebounced();
+  }
+});
+document.getElementById('teamNameInput').addEventListener('input', function(){
+  document.getElementById('btnTeam').disabled = !this.value.trim();
+});
+init();
+updateStepperActive(0);
+</script>
+</body>
+</html>

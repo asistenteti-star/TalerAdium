@@ -58,8 +58,7 @@ pero el guardado remoto no responderá porque `/api/save` no existe en
 │       ├── data/                 CONTENIDO: se edita para el taller
 │       │   ├── actors.js         PERFILES de decisor y METAS de acceso
 │       │   ├── countries.js      Ficha de sistema de salud por país + fuentes
-│       │   ├── tools.js          Herramientas de economía de la salud, evidencia, métricas
-│       │   ├── storytelling.js   Visualizaciones y guiones del Módulo 2
+│       │   ├── tools.js          Herramientas, evidencia, advertencias, métricas
 │       │   └── builders.js       Opciones de los constructores de texto
 │       ├── state.js              Estado de la sesión del equipo
 │       ├── storage.js            Respaldo local + envío al Sheet
@@ -222,16 +221,16 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
   existe, cada meta tiene herramientas y métricas asociadas, y no hay ids
   duplicados ni clases sin estilo. `npm run check` lo verifica.
 - **Contenido: 8 países, 4 perfiles de decisor, 6 metas, 7 herramientas**, 39
-  fuentes oficiales de país y 5 publicaciones de evidencia de Suprahyal, todas
-  con enlace.
+  fuentes oficiales de país y 17 publicaciones de evidencia, todas con enlace.
+  Incluye la contraevidencia y los conflictos de interés declarados que el
+  equipo tiene que anticipar, siempre a la vista y nunca plegados.
 
 ## Lo que quedó pendiente
 
-En contenido quedan **19 de las 24 combinaciones de perfil × meta sin guion
-propio** (las 5 que sí lo tienen ya se muestran en el Paso 3) y **siete de los
-ocho países con ficha reducida**: solo Colombia tiene la ficha ampliada del
-sistema de salud. Ambas cosas son redacción e investigación con fuente
-primaria, no programación.
+En contenido queda sobre todo la **ficha ampliada de siete de los ocho
+países**: solo Colombia tiene estructura del sistema, financiamiento, proceso
+de inclusión y mecanismo de compra. Es investigación con fuente primaria, no
+programación.
 
 El detalle completo, con lo ya resuelto y lo que falta, está en
 **[docs/ROADMAP.md](docs/ROADMAP.md)**.

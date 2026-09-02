@@ -25,6 +25,25 @@ function enlaceExterno(url, texto){
   return `<a class="link-ext" href="${url}" target="_blank" rel="noopener">${texto}${icon('external')}</a>`;
 }
 
+/** Advertencia sobre una herramienta o un mercado. No va en un acordeón: es lo
+    que el equipo se va a encontrar enfrente en la reunión, y si hay que abrirla
+    para verla, nadie la abre el día del taller. */
+function aviso(texto, etiqueta, fuentes){
+  if(!texto) return '';
+  // La contraevidencia solo sirve si se puede verificar. Sin el enlace, el
+  // aviso menciona un estudio que el equipo no puede abrir.
+  const refs = (fuentes || []).map(k=>{
+    const e = EVREF[k];
+    return e ? enlaceExterno(e.url, e.paper) : '';
+  }).filter(Boolean).join('');
+  return `<div class="aviso" role="note">
+    ${icon('info','aviso-icono')}
+    <div><span class="aviso-lbl">${etiqueta || 'Hay que declararlo'}</span>
+      <span class="aviso-text">${texto}</span>
+      ${refs ? `<span class="aviso-refs">${refs}</span>` : ''}</div>
+  </div>`;
+}
+
 /** Lista de papers. Un solo lugar para las cuatro copias que había repartidas
     entre module1, module2 y proposal. */
 function listaEvidencia(claves, textoEnlace){

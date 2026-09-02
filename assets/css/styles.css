@@ -718,6 +718,7 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
 
 /* El detalle de herramienta es un <details>: la cabecera va en el summary. */
 .tool-card{background:var(--surface-2);border:1px solid var(--line);border-radius:14px;padding:0 1.2rem}
+.tool-card>.disclose{border-top:none;margin-top:0}
 .tool-card>summary{padding:1rem 0}
 .tool-card .disclose-body{padding-bottom:1.2rem}
 .tool-card-name{font-size:0.92rem;font-weight:700;line-height:1.35}
@@ -852,6 +853,46 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
   .prop-pie{padding:1.1rem 1.2rem 1.3rem}
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   AVISOS
+   Contraevidencia, conflictos de interés declarados y posturas
+   oficiales en contra. Van a la vista, nunca plegados: son lo que el
+   equipo se va a encontrar enfrente en la reunión.
+   ═══════════════════════════════════════════════════════════════════ */
+.aviso{
+  display:flex;align-items:flex-start;gap:0.65rem;
+  background:var(--amber-bg);border:1px solid var(--amber-border);
+  border-left:3px solid var(--amber);border-radius:0 10px 10px 0;
+  padding:0.85rem 1.05rem;margin:0.9rem 0;
+}
+.aviso-icono{width:18px;height:18px;color:var(--amber);margin-top:0.15rem;flex-shrink:0}
+.aviso-lbl{
+  display:block;font-size:0.64rem;letter-spacing:0.1em;text-transform:uppercase;
+  font-weight:700;color:var(--amber);margin-bottom:0.25rem;
+}
+.aviso-text{font-size:0.86rem;line-height:1.7;color:var(--text)}
+.aviso-refs{display:flex;flex-wrap:wrap;gap:0.9rem;margin-top:0.5rem}
+.aviso-refs .link-ext{color:var(--amber)}
+.tool-card>.aviso{margin:0 0 1.1rem;border-left-width:3px}
+
+/* ═══ PUBLICACIONES DEL PASO 2 ═══
+   Enlaces, sin cifras: el equipo va a la fuente y no a un número resumido. */
+.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:0.75rem;margin-bottom:1.6rem}
+.paper-card{
+  display:flex;flex-direction:column;gap:0.55rem;justify-content:space-between;
+  background:var(--surface-2);border:1px solid var(--line);border-radius:12px;
+  padding:1.05rem 1.15rem;text-decoration:none;color:inherit;
+  transition:border-color .18s,background-color .18s,transform .12s;
+  min-height:96px;
+}
+.paper-card:hover{border-color:var(--teal-border);background:var(--teal-bg-soft);transform:translateY(-2px)}
+.paper-card-name{font-size:0.88rem;font-weight:600;line-height:1.45}
+.paper-card-cta{
+  display:inline-flex;align-items:center;gap:0.35rem;
+  font-size:0.74rem;font-weight:600;color:var(--teal);
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    ASPECTO PAPEL
    Como todo el diseño está tokenizado, la hoja impresa es un juego de
@@ -922,7 +963,7 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
   transform:scale(var(--preview-scale,1));
 }
 /* La hoja va en un iframe para que las consultas de medios resuelvan contra
-   sus 182mm de ancho —el mismo que usa @page— y no contra el viewport del
+   sus 182mm de ancho (el mismo que usa @page) y no contra el viewport del
    dispositivo. Sin eso, la vista previa en un teléfono mostraba una maqueta
    distinta a la que sale impresa. */
 .preview-frame{

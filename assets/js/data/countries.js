@@ -3,7 +3,7 @@ const COUNTRIES = {
   CO:{name:'Colombia',flag:'CO',flagEmoji:'🇨🇴',sistema:'SGSSS (Sistema General de Seguridad Social en Salud)',
     gasto:'13.7% (2021)',
     hta:'IETS (Instituto de Evaluación Tecnológica en Salud)',
-    umbral:'Estimación empírica publicada.',
+    umbral:"Estimación empírica publicada.",
     cobertura:'98,56% de afiliación al SGSSS al cierre de 2024 (MinSalud, BDUA + proyección DANE).',
     estructura:'Aseguramiento mixto con dos regímenes: Contributivo (trabajadores formales y sus familias, financiado por cotizaciones) y Subsidiado (población sin capacidad de pago, financiado con recursos fiscales). Ambos acceden al mismo Plan de Beneficios en Salud (PBS). Operan EPS habilitadas en uno o ambos regímenes (listado vigente MinSalud, junio 2025).',
     financiamiento:'La Unidad de Pago por Capitación (UPC) es el valor per cápita anual que la ADRES reconoce a cada EPS por afiliado para cubrir el PBS. Para 2025: UPC contributiva $1.521.489,60 y UPC subsidiada $1.323.403,20 (Resolución 2717/2024, MinSalud). Existen primas adicionales por ciudad y por dispersión geográfica.',
@@ -27,7 +27,7 @@ const COUNTRIES = {
   MX:{name:'México',flag:'MX',flagEmoji:'🇲🇽',sistema:'IMSS · ISSSTE · IMSS-Bienestar · Sector privado',
     desc:'Sistema fragmentado. La inclusión de tecnologías pasa por el Consejo de Salubridad General (CSG) a través de la Comisión del CNIS. El CNIS 2025 fue publicado el 26 de abril de 2025 en el DOF. El CENETEC provee el soporte técnico. NOTA: CONETEC es una agencia argentina, no mexicana.',
     gasto:'41.4% (2021)',hta:'CSG + Comisión CNIS + CENETEC',
-    umbral:'Estimación empírica publicada.',cobertura:'65,8% de la población con acceso a servicios de salud en 2024 (34,2% con carencia, 44,5 millones de personas). INEGI, medición de pobreza multidimensional 2024.',
+    umbral:"Sin valor numérico oficial verificado. La Guía para la Conducción de Estudios de Evaluación Económica del CSG (enero 2023) fija los criterios y el Reglamento del CNIS (DOF 22/11/2022) impide dictaminar favorablemente si no se cumple la relación costo-efecto.",
     refs:[
       {label:'INEGI · Comunicado 118/25 · Pobreza multidimensional 2024 · carencia acceso a salud 34,2%',url:'https://www.inegi.org.mx/contenidos/saladeprensa/boletines/2025/pm/pm2025_08.pdf'},
       {label:'CSG · Guía para la Conducción de Estudios de Evaluación Económica (GCEEE) enero 2023',url:'https://www.gob.mx/cms/uploads/attachment/file/920130/GCEEE_Enero_2023.pdf'},
@@ -39,7 +39,7 @@ const COUNTRIES = {
   PE:{name:'Perú',flag:'PE',flagEmoji:'🇵🇪',sistema:'EsSalud · SIS / MINSA · FFAA · Privado',
     desc:'EsSalud tiene el IETSI, que en 2025 publicó la Resolución N° 136 con metodología vinculante para evaluar tecnologías fuera del petitorio. Perú tiene los mecanismos de riesgo compartido más avanzados de la región.',
     gasto:'27.2% (2021)',hta:'IETSI, Resolución N° 136-IETSI-ESSALUD-2025',
-    umbral:'Estimación empírica publicada.',cobertura:'90,7% de la población con algún seguro de salud (III trimestre 2024): 62,8% solo SIS, 23,3% EsSalud, 4,5% otros. INEI, ENAHO 2024.',
+    umbral:"Sin umbral oficial vinculante. DIGEMID/MINSA publicó una estimación de S/ 9.500 a S/ 19.300 por año de vida ganado (2,2 a 4,4 UIT de 2021).",
     refs:[
       {label:'INEI · ENAHO 2024 · 90,7% con seguro de salud (vía Gestión, 26 dic 2024)',url:'https://gestion.pe/peru/peruanos-afiliados-al-sis-essalud-y-seguros-privados-inei-reporta-crecimiento-noticia/'},
       {label:'DIGEMID/MINSA · Estimación del umbral de costo-efectividad para evaluaciones económicas',url:'https://api-repositorio-digemid.minsa.gob.pe/server/api/core/bitstreams/b0536c58-f2b3-4a7f-9999-c57956e8c9aa/content'},
@@ -49,7 +49,9 @@ const COUNTRIES = {
   CL:{name:'Chile',flag:'CL',flagEmoji:'🇨🇱',sistema:'FONASA · ISAPREs · GES/AUGE · Ley Ricarte Soto',
     desc:'El departamento ETESA-SBE del MINSAL evalúa tecnologías para el GES/AUGE (87 patologías) y la Ley Ricarte Soto. CENABAST centraliza licitaciones. En junio 2025 se publicó el nuevo Formulario de Condiciones Comerciales bajo la Ley Ricarte Soto.',
     gasto:'29.8% (2022)',hta:'ETESA-SBE, MINSAL · Resolución Ministerial N° 707/2017',
-    umbral:'Estimación empírica publicada.',cobertura:'FONASA: 16.752.189 beneficiarios a diciembre 2024 (aprox. 83% de la población según proyección INE). Isapres: 2.531.551 beneficiarios a septiembre 2025 (Superintendencia de Salud).',
+    umbral:"ETESA-SBE publica la Guía Metodológica para la Evaluación Económica de Intervenciones en Salud en Chile. No se localizó un valor numérico de umbral publicado en fuente oficial.",
+    advertencia:"La guía MINSAL 2018 de tratamiento de artrosis SUGIERE NO USAR inyecciones de ácido hialurónico en artrosis moderada (recomendación condicional, certeza muy baja). No aplica a artrosis leve, donde no hay recomendación. Cualquier conversación en Chile debe anticipar esta postura antes de entrar.",
+    advRefs:["minsalcl"],
     refs:[
       {label:'Superintendencia de Salud · Sistema Isapre 2,53 millones de beneficiarios sept 2025',url:'https://www.superdesalud.gob.cl/noticias/2026/01/sistema-isapre-registra-25-millones-de-beneficiarios-a-septiembre-de-2025/'},
       {label:'ETESA-SBE · Manuales, guías e instructivos metodológicos',url:'https://etesa-sbe.minsal.cl/manuales_metodologicos/'},
@@ -60,7 +62,7 @@ const COUNTRIES = {
   EC:{name:'Ecuador',flag:'EC',flagEmoji:'🇪🇨',sistema:'MSP · IESS · ISSFA · ISSPOL · MIES · Privado',
     desc:'Sin agencia HTA formal. La inclusión en el CNMB pasa por el CONASA a través de la CONAMEI. Las compras públicas se hacen mediante Subasta Inversa Corporativa (SICM). En 2025 el CONASA aprobó la 12ª revisión del CNMB con 512 principios activos, que entra en vigencia en 2026.',
     gasto:'30.6% (2021)',hta:'CONASA / CONAMEI. Sin agencia HTA formal. ARCSA regula el registro.',
-    umbral:'Estimación empírica publicada.',cobertura:'Sin cifra oficial 2024 o posterior localizada. Último dato oficial: 32,9% de la población con algún seguro de salud (INEC, ENEMDU 2021).',
+    umbral:"Sin umbral oficial publicado.",
     refs:[
       {label:'INEC ENEMDU 2021 · Acceso a seguros de salud por sexo (Consejo Nacional para la Igualdad de Género)',url:'https://www.igualdadgenero.gob.ec/wp-content/uploads/downloads/2022/09/ACCESO-A-SEGUROS-DE-SALUD-POR-SEXO.pdf'},
       {label:'CONASA · 12ª Revisión CNMB 2025 · 512 principios activos',url:'https://www.edicionmedica.ec/secciones/profesionales/se-amplia-el-cuadro-nacional-de-medicamentos-basicos-a-512-principios-activos-105213'},
@@ -69,7 +71,7 @@ const COUNTRIES = {
   PY:{name:'Paraguay',flag:'PY',flagEmoji:'🇵🇾',sistema:'MSPBS · IPS · FFAA · Privado',
     desc:'Sin agencia HTA formal. Las licitaciones públicas se gestionan a través del portal DNCP. El IPS opera el seguro social de forma independiente al MSPBS. El consenso de expertos y la evidencia regional tienen mayor peso que el modelo económico en las decisiones de este mercado.',
     gasto:'35.9% (2021)',hta:'Sin agencia HTA. DINAVISA regula. Decisiones por comité ad hoc MSPBS.',
-    umbral:'Estimación empírica publicada.',cobertura:'28,6% de la población con seguro médico en 2024; IPS cubre 21%. 71,4% sin ningún seguro. INE, EPHC 2024.',
+    umbral:"Sin umbral oficial publicado.",
     refs:[
       {label:'INE Paraguay · EPHC 2024 · acceso a la salud y seguro médico',url:'https://www.ine.gov.py/noticias/2353/el-ine-comparte-los-datos-relevantes-sobre-el-acceso-a-la-salud-en-paraguay'},
       {label:'MSPBS · Plan Estratégico Institucional 2024–2028',url:'https://www.mspbs.gov.py/adjunto/Plan-Estrategico-Institucional-MSPBS-2024-2028.pdf'},
@@ -78,7 +80,7 @@ const COUNTRIES = {
   AR:{name:'Argentina',flag:'AR',flagEmoji:'🇦🇷',sistema:'Obras Sociales · PAMI · Medicina Prepagada · Sistema público provincial',
     desc:'Sistema fragmentado. CONETEC (Resolución 623/2018) es el equivalente argentino al IETS colombiano: evalúa tecnologías sanitarias. ANMAT gestiona el registro. Las obras sociales definen coberturas propias dentro del PMO.',
     gasto:'~22% (2021)',hta:'CONETEC, Resolución 623/2018 (agencia argentina, no existe en México)',
-    umbral:'Estimación empírica publicada.',cobertura:'60,9% de la población con obra social, prepaga o PAMI; algo más de 3 de cada 10 solo con sistema público. INDEC, Censo 2022 (último dato oficial disponible).',
+    umbral:"Sin umbral oficial publicado. CONETEC produce evaluaciones pero no ha adoptado un valor de referencia vinculante.",
     refs:[
       {label:'INDEC · Censo 2022 · 60,9% con obra social, prepaga o PAMI',url:'https://censo.gob.ar/index.php/el-609-de-la-poblacion-tiene-obra-social-prepaga-o-cobertura-de-pami/'},
       {label:'CONETEC · Resolución 623/2018 · boletinoficial.gob.ar',url:'https://www.boletinoficial.gob.ar/detalleAviso/primera/193408/20180918'},
@@ -87,7 +89,7 @@ const COUNTRIES = {
   CR:{name:'Costa Rica',flag:'CR',flagEmoji:'🇨🇷',sistema:'CCSS, cobertura casi universal',
     desc:'La CCSS concentra aseguramiento, prestación y compra. El Comité Central de Farmacoterapia (CCF) gestiona la LOM. La versión 7 de 2025 fue publicada en julio de 2025, con 88 nuevos medicamentos en 2023-2025. La Sala IV es la vía de judicialización de acceso cuando la CCSS no cubre una tecnología.',
     gasto:'20.7% (2021)',hta:'CCF, Comité Central de Farmacoterapia de la CCSS (no CCFT)',
-    umbral:'Estimación empírica publicada.',cobertura:'86,4% de la población reporta contar con algún seguro de la CCSS (Encuesta Actualidades 2024, UCR; fuente académica). No se localizó cifra oficial CCSS 2024.',
+    umbral:"Sin umbral oficial publicado. El CCF evalúa con criterios de eficacia, seguridad, costo y disponibilidad.",
     refs:[
       {label:'UCR · Encuesta Actualidades 2024 · 86,4% con seguro CCSS',url:'https://www.ucr.ac.cr/noticias/2025/2/19/la-ccss-se-mantiene-como-el-pilar-de-la-salud-en-costa-rica.html'},
       {label:'CCSS · Estadísticas actuariales (fuente oficial para verificación)',url:'https://www.ccss.sa.cr/est_actuarial'},
