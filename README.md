@@ -169,8 +169,9 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
 - **Referencias cruzadas de datos** — cada herramienta apunta a evidencia que
   existe, cada meta tiene herramientas y métricas asociadas, y no hay ids
   duplicados ni clases sin estilo. `npm run check` lo verifica.
-- **Contenido: 8 países, 4 perfiles de decisor, 6 metas, 7 herramientas** y 41
-  fuentes primarias enlazadas.
+- **Contenido: 8 países, 4 perfiles de decisor, 6 metas, 7 herramientas**, 39
+  fuentes oficiales de país y 5 publicaciones de evidencia de Suprahyal, todas
+  con enlace.
 
 ## Lo que quedó pendiente
 
