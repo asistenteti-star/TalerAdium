@@ -1,5 +1,7 @@
 # Taller de Farmacoeconomía Aplicada · Adium LATAM
 
+**En producción:** https://taler-adium.vercel.app
+
 Herramienta de trabajo en vivo para el taller de farmacoeconomía de Adium LATAM
 (octubre 2026). Cada equipo participante recorre dos módulos desde su propio
 dispositivo y termina con una propuesta imprimible.
@@ -101,28 +103,57 @@ para mostrarle al equipo si su trabajo quedó guardado.
 Navegador ──POST /api/save──▶ Función Vercel ──POST /exec──▶ Apps Script ──▶ Google Sheet
 ```
 
-### Puesta en marcha
+El Sheet del taller **ya está conectado** en producción. `SHEETS_WEBHOOK_URL`
+y `SHEETS_WEBHOOK_TOKEN` están cargadas en Vercel para Production y Preview, y
+el registro de punta a punta quedó verificado: dos recorridos completos de
+equipo aterrizaron en el Sheet con las 24 columnas de datos llenas y el
+indicador del encabezado en "Guardado".
 
-1. Crear un Google Sheet nuevo.
+### Volver a montarlo desde cero
+
+Si hay que rehacerlo —otro Sheet, otra cuenta, rotación del token— los pasos
+son estos:
+
+1. Crear un Google Sheet nuevo. La hoja `Registros` y su encabezado los crea
+   el script solo.
 2. Extensiones → Apps Script, pegar `docs/AppsScript_TallerAdium.gs` y
    reemplazar `CAMBIA_ESTE_TOKEN` por un token propio
-   (`openssl rand -hex 24`).
+   (`openssl rand -hex 24`). **El token va solo en el editor de Apps Script,
+   nunca en este repositorio, que es público** — `npm run check` falla si
+   alguien lo guarda en la plantilla.
 3. Implementar → Nueva implementación → Aplicación web, ejecutar **como yo** y
    con acceso para **cualquier persona**. Copiar la URL que termina en `/exec`.
-4. En Vercel → Settings → Environment Variables, para Production y Preview:
+   Si el acceso queda restringido, Google redirige al login y la función
+   recibe HTML en vez de JSON.
+4. Cargar las variables en Vercel, para Production y Preview:
 
    | Variable | Valor |
    |---|---|
    | `SHEETS_WEBHOOK_URL` | la URL `/exec` del paso 3 |
    | `SHEETS_WEBHOOK_TOKEN` | el mismo token del paso 2 |
 
-5. Volver a desplegar para que el despliegue tome las variables.
+5. Volver a desplegar: las variables solo aplican a despliegues nuevos.
+
+Al editar el código del script hay que **crear una versión nueva de la
+implementación** (Implementar → Gestionar implementaciones → ✏️ → Nueva
+versión). Guardar el archivo no actualiza la aplicación web, porque cada
+implementación queda fijada a una versión. La URL `/exec` no cambia.
 
 Detalle de las columnas y de cómo se actualiza cada fila: `docs/SHEET.md`.
 
-**Mientras el Sheet no esté configurado** la app funciona igual: `/api/save`
+**Si las variables no están configuradas** la app funciona igual: `/api/save`
 responde `501`, el indicador del encabezado dice "Guardado en este equipo" y
 todo el trabajo se conserva en el navegador del equipo.
+
+### Capacidad
+
+Apps Script serializa las escrituras con un lock: medido con 8 equipos
+guardando a la vez, cada escritura toma unos 2,8 s y el último de la cola
+espera ~22 s. De ahí salen tres números del proyecto: `maxDuration` de 60 s en
+`vercel.json`, `waitLock` de 45 s en el Apps Script, y un debounce de 3 s en
+el cliente. Además el cliente descarta los envíos cuyo contenido no cambió y
+mantiene una sola petición en vuelo por equipo, así que escribir en un campo
+de texto no genera una escritura por pulsación.
 
 ### Respaldo local
 
@@ -135,15 +166,21 @@ caduca a las 12 horas y "Nuevo caso" lo borra, previa confirmación.
 
 ## Despliegue en Vercel
 
+El repositorio está conectado a Vercel: cada push a `main` despliega a
+producción y cada rama abre una vista previa. Para desplegar a mano:
+
 ```bash
-npx vercel@latest link      # una vez, para vincular el proyecto
-npx vercel@latest           # despliegue de vista previa
-npx vercel@latest --prod    # producción
+npx vercel@latest link          # una vez, para vincular el proyecto
+npx vercel@latest deploy        # vista previa
+npx vercel@latest deploy --prod # producción
 ```
 
-Con el repositorio conectado a Vercel, cada push a `main` despliega a
-producción y cada rama abre una vista previa. `vercel.json` fija el runtime
-Node 24 para la función y agrega encabezados de seguridad básicos.
+`vercel.json` solo lleva `maxDuration` y los encabezados de seguridad. La
+versión de Node se declara en `engines.node` del `package.json`: la clave
+`runtime` dentro de `functions` es para runtimes de comunidad y exige el
+formato `nombre@versión`, así que poner ahí `nodejs24.x` —válido solo en
+Next.js— hace que Vercel rechace el archivo y el despliegue falle en la
+validación previa, antes de construir.
 
 El sitio lleva `<meta name="robots" content="noindex, nofollow">`: es material
 de trabajo para un cliente, no una página que deba aparecer en buscadores.
@@ -152,6 +189,14 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
 
 ## Verificado en esta versión
 
+- **Registro en el Sheet, de punta a punta en producción** — dos recorridos
+  completos de equipo, con las 24 columnas de datos llenas, indicador en
+  "Guardado". Y los casos de borde de `/api/save`: token correcto `200`, el
+  mismo equipo dos veces reusa su fila en lugar de duplicarla, token
+  equivocado `502` con el motivo, sin nombre de equipo `400`, `GET` `405`, sin
+  variables `501`.
+- **Concurrencia** — 8 equipos escribiendo simultáneamente: 8 filas distintas,
+  ningún choque, ningún fallo.
 - **Responsive** — recorrido completo en Chromium a 360, 390, 768, 1024 y
   1440 px de ancho, sin errores de consola. El
   documento nunca hace scroll horizontal; las rejillas de países, perfiles,
@@ -174,10 +219,6 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
   con enlace.
 
 ## Lo que quedó pendiente
-
-Lo que bloquea el ensayo general es **conectar el Google Sheet**: el puente
-está construido y probado del lado de la app, faltan el Sheet y las variables
-de entorno.
 
 En contenido quedan **19 de las 24 combinaciones de perfil × meta sin guion
 propio** —las 5 que sí lo tienen ya se muestran en el Paso 3— y **siete de los

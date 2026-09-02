@@ -99,31 +99,37 @@ contra su fuente. Prioridad por número esperado de equipos por país.
 
 ---
 
-## Bloque B · Conexión del Sheet (bloquea el ensayo general)
+## Bloque B · Conexión del Sheet — resuelto
 
-### 4. Crear el Sheet y configurar las variables
+### 4. Sheet conectado y verificado
 
-El puente está construido y probado del lado de la app: la función
-`/api/save` valida el registro, lo recorta y lo reenvía. Falta lo que depende
-de las credenciales:
+El Google Sheet está creado, el Apps Script implementado como aplicación web
+(versión 2) y las variables `SHEETS_WEBHOOK_URL` y `SHEETS_WEBHOOK_TOKEN`
+cargadas en Vercel para Production y Preview. Verificado en producción con dos
+recorridos completos de equipo: las 24 columnas de datos llegaron llenas y el
+indicador del encabezado quedó en "Guardado".
 
-1. Crear el Google Sheet.
-2. Pegar `docs/AppsScript_TallerAdium.gs`, poner un token propio e implementar
-   como aplicación web.
-3. Cargar `SHEETS_WEBHOOK_URL` y `SHEETS_WEBHOOK_TOKEN` en Vercel.
-4. Volver a desplegar y comprobar con los dos `curl` de `docs/SHEET.md`.
+Dos fallos aparecieron en `/api/save` al probar contra el Apps Script real y
+quedaron corregidos, porque ninguno era visible sin el Sheet conectado:
 
-Mientras esto no esté, la app guarda todo en el navegador de cada equipo y el
-indicador dice "Guardado en este equipo". Nada se rompe, pero el facilitador no
-ve nada desde el salón.
+- Apps Script responde `302` hacia `script.googleusercontent.com`, y al seguir
+  el salto se arrastraba la cabecera `Content-Type: application/json` de la
+  primera petición. Google la rechaza con `405` **aunque la escritura ya se
+  hizo**, así que la app habría mostrado "Sin conexión" sobre un guardado
+  exitoso. Ahora el salto se sigue a mano con un GET limpio.
+- Apps Script devuelve `200` incluso cuando rechaza el registro: el veredicto
+  viene en el cuerpo. Un token mal copiado se habría visto como guardado
+  correcto, y el problema aparecería el día del taller al abrir el Sheet
+  vacío. Ahora se lee el cuerpo y un `ok:false` devuelve `502` con el motivo.
 
 ### 5. Decidir si el Sheet guarda estado o histórico
 
-Hoy cada equipo ocupa una fila que se sobreescribe. Sirve para facilitar en
-vivo. Si además se quiere ver cómo evolucionó el trabajo de cada equipo durante
-la sesión, hay que cambiar el Apps Script para que siempre haga `appendRow`.
-Son dos líneas, pero cambia cómo se lee la hoja y por eso es una decisión, no
-un ajuste.
+Hoy cada equipo ocupa una fila que se sobreescribe, y eso es lo que sirve para
+facilitar en vivo: se mira `paso_actual` y se sabe quién va adelantado. Si
+además se quiere ver cómo evolucionó el trabajo de cada equipo durante la
+sesión, hay que cambiar el Apps Script para que siempre haga `appendRow`. Son
+dos líneas, pero cambia cómo se lee la hoja, así que es una decisión y no un
+ajuste.
 
 ---
 
@@ -149,8 +155,9 @@ Lo que falta probar y no se puede simular:
 - Safari en iPhone y iPad — es el navegador más probable en el salón y el que
   más difiere.
 - La impresión a PDF desde un teléfono.
-- Varios equipos guardando a la vez contra el Sheet real. El Apps Script usa
-  un lock, pero conviene verlo con 6–8 equipos simultáneos.
+- Safari otra vez, ahora contra el Sheet conectado. La concurrencia ya se
+  midió —8 equipos simultáneos, 8 filas distintas, sin choques— pero desde
+  Chromium.
 - La red del lugar del taller. Si es inestable, el respaldo local cubre al
   equipo, pero el facilitador vería el Sheet incompleto.
 
