@@ -4,7 +4,7 @@
   "private": true,
   "description": "Herramienta de trabajo del Taller de Farmacoeconomía Aplicada · Adium LATAM",
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": { "node": "24.x" },
   "scripts": {
     "dev": "python3 -m http.server 8080",
     "dev:vercel": "vercel dev --listen 3000",
