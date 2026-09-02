@@ -1,8 +1,8 @@
 /* ═══ PERSISTENCIA ═══
    Dos capas independientes:
-   1. localStorage — respaldo local inmediato. Si el equipo recarga la página
+   1. localStorage: respaldo local inmediato. Si el equipo recarga la página
       o se le cierra el navegador a mitad del taller, no pierde el trabajo.
-   2. /api/save — función serverless que reenvía el registro al Google Sheet.
+   2. /api/save: función serverless que reenvía el registro al Google Sheet.
       El navegador nunca ve la URL del Apps Script ni las credenciales.
       Si la variable de entorno no está configurada en Vercel, /api/save
       responde 501 y la app sigue funcionando solo con el respaldo local. */
@@ -29,7 +29,7 @@ function setSaveIndicator(state){
   if(state==='saving')     el.innerHTML = dot('#c47f00') + ' Guardando…';
   else if(state==='saved') el.innerHTML = dot('var(--teal)') + ' Guardado';
   else if(state==='local') el.innerHTML = dot('var(--gray)') + ' Guardado en este equipo';
-  else if(state==='error') el.innerHTML = dot('#c94b4b') + ' Sin conexión — respaldo local';
+  else if(state==='error') el.innerHTML = dot('#c94b4b') + ' Sin conexión, respaldo local';
   else el.innerHTML = '';
 }
 
@@ -73,7 +73,7 @@ function collectData(){
   };
 }
 
-/* — Capa 1: respaldo local ————————————————————————— */
+/* Capa 1: respaldo local */
 
 function saveLocal(){
   try{
@@ -104,7 +104,7 @@ function clearLocal(){
   try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
 }
 
-/* — Capa 2: Google Sheet vía función serverless ——————— */
+/* Capa 2: Google Sheet vía función serverless */
 
 function saveToSheet(){
   saveLocal();                           // el respaldo local nunca espera a la red

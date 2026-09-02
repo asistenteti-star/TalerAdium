@@ -1,5 +1,5 @@
 /**
- * POST /api/save — puente entre la app y el Google Sheet del taller.
+ * POST /api/save: puente entre la app y el Google Sheet del taller.
  *
  * Por qué existe esta función en lugar de llamar al Apps Script desde el
  * navegador: así la URL del Apps Script y el token compartido viven solo en
@@ -80,7 +80,7 @@ export default async function handler(req, res) {
  * La redirección se sigue a mano y no con `redirect: 'follow'`. Apps Script
  * contesta 302 hacia script.googleusercontent.com, y si la segunda petición
  * arrastra la cabecera `Content-Type: application/json` de la primera, Google
- * la rechaza con 405 y una página de error HTML — aunque la escritura en el
+ * la rechaza con 405 y una página de error HTML, aunque la escritura en el
  * Sheet ya se hizo. El resultado sería reportar un fallo sobre un guardado
  * exitoso. Siguiendo el salto con un GET limpio, sin cabeceras, la respuesta
  * llega como el JSON que devuelve el script.

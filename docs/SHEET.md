@@ -7,7 +7,7 @@ entrar. Cada vez que avanza o escribe algo, la app reenvía el registro completo
 y el Apps Script sobreescribe esa fila.
 
 La consecuencia práctica: la hoja siempre muestra el estado actual de cada
-equipo, no un histórico. Es lo que sirve para facilitar — se mira la columna
+equipo, no un histórico. Es lo que sirve para facilitar: se mira la columna
 `paso_actual` y se sabe quién va adelantado y quién está trabado, sin filtrar
 miles de filas.
 

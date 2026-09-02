@@ -167,14 +167,14 @@ h1{font-family:Helvetica,Arial,sans-serif;font-size:clamp(1.7rem,4vw,2.3rem);lin
 .step-content{display:none}
 .step-content.on{display:block;animation:rise .3s ease}
 
-/* PASO 1 — CONTEXTO */
+/* PASO 1 CONTEXTO */
 .paso1-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
 .ctx2-card{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:1.3rem}
 .ctx2-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.1em;font-weight:600;margin-bottom:0.5rem;display:block}
 .ctx2-val{font-size:0.88rem;color:var(--white);font-weight:600;margin-bottom:0.3rem}
 .ctx2-detail{font-size:0.78rem;color:var(--gray);line-height:1.55}
 
-/* PASO 2 — VISUALIZACIÓN */
+/* PASO 2 VISUALIZACIÓN */
 .viz-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.2rem}
 .viz-card{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:1.2rem}
 .viz-title{font-size:0.75rem;font-weight:700;color:var(--teal);margin-bottom:0.8rem;text-transform:uppercase;letter-spacing:0.08em}
@@ -188,7 +188,7 @@ h1{font-family:Helvetica,Arial,sans-serif;font-size:clamp(1.7rem,4vw,2.3rem);lin
 .viz-bar-fill{height:100%;border-radius:4px;background:var(--teal)}
 .viz-source{font-size:0.65rem;color:var(--gray-d);margin-top:0.6rem;font-style:italic}
 
-/* PASO 3 — STORYTELLING */
+/* PASO 3 STORYTELLING */
 .story3-grid{display:grid;grid-template-columns:1fr;gap:1rem;margin-bottom:1.2rem}
 .story3-section{border-radius:12px;border:1px solid var(--line);overflow:hidden}
 .story3-head{padding:0.8rem 1.2rem;display:flex;align-items:center;justify-content:space-between}
@@ -341,15 +341,51 @@ textarea::placeholder{color:var(--gray)}
 .prop-box{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:1rem}
 @media(max-width:640px){.prop-2col,.prop-3col{grid-template-columns:1fr}}
 @media print{
-  body{background:#fff;color:#111}
-  .bg-grad,header,.prog,.no-print,.module-tabs{display:none!important}
+  /* Las pantallas entran con la animación `rise`, que arranca en opacity:0.
+     Si el navegador arma el PDF mientras esa animación está en curso, imprime
+     la página transparente: medido, salía en blanco la mitad de las veces.
+     En papel no hay animación que valga, así que se apagan todas. */
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .screen.on,.step-content.on,.ctx.on{opacity:1!important;transform:none!important}
+
+  @page{size:A4;margin:14mm}
+
+  body{background:#fff;color:#111;overflow:visible;font-size:10.5pt}
+  .app{min-height:0}
   main{padding:0}
+  .inner{max-width:none}
+
+  /* Fuera todo lo que es navegación en pantalla. Las migas de arriba repiten
+     los datos que el encabezado de la propuesta ya trae. */
+  .bg-grad,.topbar,header,.prog,.no-print,.module-tabs,.crumbs{display:none!important}
+
+  /* Que ninguna caja se corte a mitad de página. Las secciones sí pueden
+     continuar en la hoja siguiente: forzarlas enteras dejaría media página
+     vacía cada vez que una no alcanza. */
+  .prop-box,.prop-field,.conc-card,.ev-item,.tool-card,.resumen-row>div{
+    break-inside:avoid;page-break-inside:avoid;
+  }
+  .prop-hero{break-inside:avoid;break-after:avoid}
+  .prop-sec-num,.prop-sec-title,.prop-field-lbl,.ev-lbl{break-after:avoid}
+  .prop-sec{break-before:auto}
+  p,.prop-field-val{orphans:2;widows:2}
+
+  /* Colores: el encabezado conserva el verde de marca porque es la portada
+     del documento; el resto pasa a tinta sobre blanco para que se lea igual
+     impreso en monocromo. */
   .prop-wrap{border-color:#ccc;background:#fff}
   .prop-hero{background:#0f3d3a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .prop-box{background:#f4f6f6;border-color:#ddd}
-  .prop-field-val,.prop-sec-title{color:#111}
-  .prop-field-lbl,.prop-sec-num{color:#555}
+  /* El listado de evidencia suele cruzar de página. Sin su fondo gris, el
+     corte no deja un rectángulo vacío al pie de la hoja. */
+  .ev-block{background:none;border:none;padding:0}
+  .prop-field-val,.prop-sec-title,.ev-paper,.ev-result{color:#111}
+  .prop-field-lbl,.prop-sec-num,.ev-lbl{color:#555}
+  .prop-field-val.empty{color:#888}
   .crumb{color:#111;border-color:#bbb}
+  .prop-hero .crumb{color:#e2f0ee;border-color:rgba(226,240,238,.45)}
+  .ev-dot{background:#0f3d3a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .ev-item a{color:#0f3d3a;overflow-wrap:anywhere}
 }
 /* BUTTONS */
 .btn-row{display:flex;gap:0.65rem;flex-wrap:wrap;margin-top:1.4rem}
@@ -427,7 +463,7 @@ body{overflow-x:hidden}
 }
 
 
-/* Guion sugerido del Paso 3 — solo aparece en las combinaciones de perfil ×
+/* Guion sugerido del Paso 3: solo aparece en las combinaciones de perfil ×
    meta que tienen guion propio (ver docs/ROADMAP.md, punto 1). */
 .guion-box{
   background:rgba(0,180,180,.05);border:1px solid var(--pub-b);border-radius:12px;

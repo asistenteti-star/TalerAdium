@@ -10,12 +10,12 @@ contenido** y la conexión del Sheet. La lista está en orden de impacto.
 
 ## Bloque A · Contenido
 
-### 1. Guiones por perfil × meta — resuelto a medias
+### 1. Guiones por perfil × meta: resuelto a medias
 
 **Lo que se encontró.** El archivo original traía un objeto `STORY` con
-guiones completos por combinación de decisor y meta —dónde ocurre la
+guiones completos por combinación de decisor y meta (dónde ocurre la
 conversación, quiénes son los protagonistas, cuál es el problema, qué acciones
-proponer a corto y a largo plazo, y el resumen reto/solución/resultado— pero la
+proponer a corto y a largo plazo, y el resumen reto/solución/resultado), pero la
 función que los lee, `getStory()`, **no se invocaba en ninguna parte**. Unos
 30 KB de contenido curado que nunca llegaba a la pantalla.
 
@@ -53,11 +53,11 @@ los grupos.
 perfil "gestor de acceso" que ya no existe en la lista de perfiles. Es el único
 guion de la meta *riesgo compartido*, así que hoy ninguna combinación de esa
 meta tiene guion. El contenido está intacto y es candidato a reasignarse a un
-perfil existente —el escenario describe una negociación con un pagador, así que
-encajaría en *pagador orientado a valor* o en *decisor financiero*—, pero
+perfil existente: el escenario describe una negociación con un pagador, así que
+encajaría en *pagador orientado a valor* o en *decisor financiero*. Pero
 reasignarlo cambia lo que ve el equipo en el salón y eso lo decide contenido.
 
-### 2. Datos de la meta 6 — resuelto
+### 2. Datos de la meta 6: resuelto
 
 `VIZ` no tenía entrada para *"Defender el precio frente a una objeción de
 costo"* y caía silenciosamente en los datos de presupuesto. Ya tiene sus dos
@@ -93,13 +93,13 @@ el taller se dicta con grupos por país, la asimetría se va a notar.
 
 **Pendiente:** completar los seis campos por país siguiendo el modelo de
 Colombia en `assets/js/data/countries.js`. Es investigación con fuente
-primaria —normativa, resoluciones, cifras oficiales de cobertura y gasto—, no
+primaria (normativa, resoluciones, cifras oficiales de cobertura y gasto), no
 programación, y no es material que convenga redactar sin verificar cada dato
 contra su fuente. Prioridad por número esperado de equipos por país.
 
 ---
 
-## Bloque B · Conexión del Sheet — resuelto
+## Bloque B · Conexión del Sheet: resuelto
 
 ### 4. Sheet conectado y verificado
 
@@ -152,7 +152,7 @@ arrastre, y el respaldo local reanudando correctamente tras recargar.
 
 Lo que falta probar y no se puede simular:
 
-- Safari en iPhone y iPad — es el navegador más probable en el salón y el que
+- **Safari en iPhone y iPad.** Es el navegador más probable en el salón y el que
   más difiere.
 - La impresión a PDF desde un teléfono.
 - **Safari en iPhone y iPad.** Es el navegador más probable en el salón y el

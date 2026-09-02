@@ -6,12 +6,12 @@ Herramienta de trabajo en vivo para el taller de farmacoeconomía de Adium LATAM
 (octubre 2026). Cada equipo participante recorre dos módulos desde su propio
 dispositivo y termina con una propuesta imprimible.
 
-**Módulo 1 · Segmentación** — el equipo elige su mercado (8 países de LATAM),
+**Módulo 1 · Segmentación.** El equipo elige su mercado (8 países de LATAM),
 el tipo de decisor que va a enfrentar y la meta de acceso que persigue. La app
 devuelve el contexto verificado del sistema de salud de ese país y el conjunto
 de herramientas de economía de la salud que aplica al caso.
 
-**Módulo 2 · Storytelling** — con esa combinación, el equipo construye el
+**Módulo 2 · Storytelling.** Con esa combinación, el equipo construye el
 argumento en tres pasos: comprensión del decisor, datos que lo sustentan y la
 narrativa con un plan de trabajo a 12 meses.
 
@@ -55,7 +55,7 @@ pero el guardado remoto no responderá porque `/api/save` no existe en
 │   ├── css/styles.css            Todos los estilos, incluida la hoja de impresión
 │   ├── favicon.svg
 │   └── js/
-│       ├── data/                 CONTENIDO — es lo que se edita para el taller
+│       ├── data/                 CONTENIDO: se edita para el taller
 │       │   ├── actors.js         PERFILES de decisor y METAS de acceso
 │       │   ├── countries.js      Ficha de sistema de salud por país + fuentes
 │       │   ├── tools.js          Herramientas de economía de la salud, evidencia, métricas
@@ -111,7 +111,7 @@ indicador del encabezado en "Guardado".
 
 ### Volver a montarlo desde cero
 
-Si hay que rehacerlo —otro Sheet, otra cuenta, rotación del token— los pasos
+Si hay que rehacerlo (otro Sheet, otra cuenta, rotación del token), los pasos
 son estos:
 
 1. Crear un Google Sheet nuevo. La hoja `Registros` y su encabezado los crea
@@ -119,7 +119,7 @@ son estos:
 2. Extensiones → Apps Script, pegar `docs/AppsScript_TallerAdium.gs` y
    reemplazar `CAMBIA_ESTE_TOKEN` por un token propio
    (`openssl rand -hex 24`). **El token va solo en el editor de Apps Script,
-   nunca en este repositorio, que es público** — `npm run check` falla si
+   nunca en este repositorio, que es público.** `npm run check` falla si
    alguien lo guarda en la plantilla.
 3. Implementar → Nueva implementación → Aplicación web, ejecutar **como yo** y
    con acceso para **cualquier persona**. Copiar la URL que termina en `/exec`.
@@ -178,8 +178,8 @@ npx vercel@latest deploy --prod # producción
 `vercel.json` solo lleva `maxDuration` y los encabezados de seguridad. La
 versión de Node se declara en `engines.node` del `package.json`: la clave
 `runtime` dentro de `functions` es para runtimes de comunidad y exige el
-formato `nombre@versión`, así que poner ahí `nodejs24.x` —válido solo en
-Next.js— hace que Vercel rechace el archivo y el despliegue falle en la
+formato `nombre@versión`, así que poner ahí `nodejs24.x`, que solo es válido en
+Next.js, hace que Vercel rechace el archivo y el despliegue falle en la
 validación previa, antes de construir.
 
 El sitio lleva `<meta name="robots" content="noindex, nofollow">`: es material
@@ -189,36 +189,36 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
 
 ## Verificado en esta versión
 
-- **Registro en el Sheet, de punta a punta en producción** — dos recorridos
+- **Registro en el Sheet, de punta a punta en producción.** Dos recorridos
   completos de equipo, con las 24 columnas de datos llenas, indicador en
   "Guardado". Y los casos de borde de `/api/save`: token correcto `200`, el
   mismo equipo dos veces reusa su fila en lugar de duplicarla, token
   equivocado `502` con el motivo, sin nombre de equipo `400`, `GET` `405`, sin
   variables `501`.
-- **Concurrencia** — 8 equipos escribiendo simultáneamente: 8 filas distintas,
+- **Concurrencia.** 8 equipos escribiendo simultáneamente: 8 filas distintas,
   ningún choque, ningún fallo.
-- **Responsive** — recorrido completo en Chromium a 360, 390, 768, 1024 y
+- **Responsive.** Recorrido completo en Chromium a 360, 390, 768, 1024 y
   1440 px de ancho, sin errores de consola. El
   documento nunca hace scroll horizontal; las rejillas de países, perfiles,
   visualizaciones y columnas de la propuesta colapsan a una sola columna en
   móvil, y los botones pasan a ancho completo.
-- **Táctil** — el catálogo de herramientas del Paso 4 se armaba solo por
+- **Táctil.** El catálogo de herramientas del Paso 4 se armaba solo por
   arrastre HTML5, que no dispara en tablet ni en móvil. Ahora un toque mueve
   la tarjeta entre columnas y el arrastre sigue disponible en escritorio.
-- **Teclado y lectores de pantalla** — las tarjetas y los chips, que son
+- **Teclado y lectores de pantalla.** Las tarjetas y los chips, que son
   `<div>`, recibieron rol, foco y respuesta a Enter/Espacio, con `aria-pressed`
   y `aria-checked` reflejando la selección. El indicador de guardado es una
   región `aria-live`.
-- **Safari en iOS, por revisión de código** — no se pudo ejecutar (WebKit
+- **Safari en iOS, por revisión de código.** No se pudo ejecutar (WebKit
   necesita librerías del sistema con `sudo`), pero quedaron corregidos los tres
   problemas conocidos que sí se detectan leyendo: `backdrop-filter` sin
   prefijo `-webkit-`, `min-height:100vh` que en iOS no descuenta la barra del
   navegador, y campos de texto por debajo de 16px, que hacen que Safari amplíe
   la página al enfocarlos y no vuelva al zoom original. Falta la prueba en un
   dispositivo real; está anotada en el ROADMAP.
-- **Impresión** — la hoja de impresión oculta el encabezado y los controles y
+- **Impresión.** La hoja de impresión oculta el encabezado y los controles y
   fuerza el color del bloque de portada, para que el PDF salga presentable.
-- **Referencias cruzadas de datos** — cada herramienta apunta a evidencia que
+- **Referencias cruzadas de datos.** Cada herramienta apunta a evidencia que
   existe, cada meta tiene herramientas y métricas asociadas, y no hay ids
   duplicados ni clases sin estilo. `npm run check` lo verifica.
 - **Contenido: 8 países, 4 perfiles de decisor, 6 metas, 7 herramientas**, 39
@@ -228,7 +228,7 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
 ## Lo que quedó pendiente
 
 En contenido quedan **19 de las 24 combinaciones de perfil × meta sin guion
-propio** —las 5 que sí lo tienen ya se muestran en el Paso 3— y **siete de los
+propio** (las 5 que sí lo tienen ya se muestran en el Paso 3) y **siete de los
 ocho países con ficha reducida**: solo Colombia tiene la ficha ampliada del
 sistema de salud. Ambas cosas son redacción e investigación con fuente
 primaria, no programación.

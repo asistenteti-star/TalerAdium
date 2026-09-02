@@ -17,7 +17,7 @@ const html = readFileSync(join(raiz, 'index.html'), 'utf8');
 const errores = [];
 const avisos = [];
 
-/* 1 — Todos los recursos referenciados existen */
+/* 1. Todos los recursos referenciados existen */
 const recursos = [...html.matchAll(/(?:src|href)="([^"]+)"/g)]
   .map(m => m[1])
   .filter(r => !/^(https?:|#|mailto:|data:)/.test(r));
@@ -25,7 +25,7 @@ for (const r of recursos) {
   if (!existsSync(join(raiz, r))) errores.push(`Recurso inexistente: ${r}`);
 }
 
-/* 2 — Cada archivo JS compila */
+/* 2. Cada archivo JS compila */
 const scripts = [...html.matchAll(/<script src="([^"]+)"><\/script>/g)].map(m => m[1]);
 for (const s of scripts) {
   try {
@@ -40,12 +40,12 @@ try {
   errores.push(`Error de sintaxis en api/save.js:\n${e.stderr?.toString().trim()}`);
 }
 
-/* 3 — Ids únicos */
+/* 3. Ids únicos */
 const ids = [...html.matchAll(/id="([^"]+)"/g)].map(m => m[1]);
 const repetidos = ids.filter((id, i) => ids.indexOf(id) !== i);
 if (repetidos.length) errores.push(`Ids duplicados: ${[...new Set(repetidos)].join(', ')}`);
 
-/* 4 — Cada función invocada desde el HTML está declarada en algún script */
+/* 4. Cada función invocada desde el HTML está declarada en algún script */
 const fuente = scripts.map(s => readFileSync(join(raiz, s), 'utf8')).join('\n');
 const declaradas = new Set([...fuente.matchAll(/function\s+([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
 const invocadas = new Set([...html.matchAll(/on\w+="([A-Za-z_$][\w$]*)\(/g)].map(m => m[1]));
@@ -53,7 +53,7 @@ for (const f of invocadas) {
   if (!declaradas.has(f)) errores.push(`El HTML llama a ${f}() pero no está declarada en ningún script`);
 }
 
-/* 5 — Ningún identificador global se declara dos veces.
+/* 5. Ningún identificador global se declara dos veces.
    Los scripts son clásicos y comparten un solo ámbito global: dos `let` con
    el mismo nombre en archivos distintos rompen la página completa con
    "Identifier has already been declared". */
@@ -67,7 +67,7 @@ for (const s of scripts) {
   }
 }
 
-/* 6 — Los ids que el JS lee deben existir en el HTML o generarse en el JS */
+/* 6. Los ids que el JS lee deben existir en el HTML o generarse en el JS */
 const leidos = new Set([...fuente.matchAll(/getElementById\('([^']+)'\)/g)].map(m => m[1]));
 const idsHtml = new Set(ids);
 for (const id of leidos) {
@@ -76,14 +76,14 @@ for (const id of leidos) {
   }
 }
 
-/* 7 — No quedaron marcadores de plantilla sin reemplazar */
+/* 7. No quedaron marcadores de plantilla sin reemplazar */
 for (const [archivo, texto] of [['index.html', html], ['scripts', fuente]]) {
   if (/PEGA_AQUI|TODO_REEMPLAZAR|CAMBIA_ESTE/.test(texto)) {
     errores.push(`Quedó un marcador sin reemplazar en ${archivo}`);
   }
 }
 
-/* 8 — La plantilla del Apps Script no debe llevar el token real.
+/* 8. La plantilla del Apps Script no debe llevar el token real.
    El repositorio es público: el archivo de docs/ es una plantilla y el token
    se pega únicamente en el editor de Apps Script. Si alguien guarda aquí el
    valor real y lo sube, queda expuesto junto con la URL del webhook. */
@@ -94,7 +94,7 @@ if (!plantillaGs.includes("var TOKEN = 'CAMBIA_ESTE_TOKEN'")) {
     'Restaura el marcador y deja el token solo en el editor de Apps Script.');
 }
 
-/* 9 — Los estilos usados existen */
+/* 9. Los estilos usados existen */
 const css = readFileSync(join(raiz, 'assets/css/styles.css'), 'utf8');
 const clasesCss = new Set([...css.matchAll(/\.([a-zA-Z][\w-]*)/g)].map(m => m[1]));
 const clasesUsadas = new Set();
@@ -104,7 +104,7 @@ for (const m of fuente.matchAll(/class="([^"$]*)"/g)) m[1].split(/\s+/).forEach(
 const sinEstilo = [...clasesUsadas].filter(c => !clasesCss.has(c) && !c.includes('${'));
 if (sinEstilo.length) avisos.push(`Clases sin definición en CSS: ${sinEstilo.join(', ')}`);
 
-/* — Informe — */
+/* Informe */
 for (const a of avisos) console.log(`AVISO   ${a}`);
 for (const e of errores) console.error(`ERROR   ${e}`);
 console.log(`\n${scripts.length} scripts · ${recursos.length} recursos · ${ids.length} ids · ${errores.length} errores · ${avisos.length} avisos`);

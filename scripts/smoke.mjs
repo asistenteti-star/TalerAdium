@@ -32,7 +32,7 @@ page.on('console', m => {
 
 await page.goto(`${BASE}/index.html`, { waitUntil: 'load' });
 
-// — Recorrido —
+// Recorrido
 await page.fill('#teamNameInput', 'Equipo de prueba');
 await page.click('#btnTeam');
 await page.click('.c-btn >> nth=0');
@@ -67,7 +67,7 @@ await page.click('button:has-text("Listo para presentar")');
 await page.waitForSelector('#s6.on');
 if (!(await page.textContent('.prop-title')).trim()) fallos.push('La propuesta final salió vacía');
 
-// — Desborde horizontal en cada ancho y cada pantalla —
+// Desborde horizontal en cada ancho y cada pantalla
 for (const w of ANCHOS) {
   await page.setViewportSize({ width: w, height: 900 });
   for (const s of ['s0','s1','s2','s3','s4','s5','s6']) {
@@ -84,7 +84,7 @@ for (const w of ANCHOS) {
   }
 }
 
-// — Reanudar sesión —
+// Reanudar sesión
 const p2 = await browser.newPage({ viewport: { width: 390, height: 844 } });
 await p2.goto(`${BASE}/index.html`);
 if (await p2.isVisible('#resumeBar')) fallos.push('La barra de reanudar aparece en una primera visita');

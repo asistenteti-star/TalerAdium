@@ -1,4 +1,4 @@
-/* ═══ MÓDULO 2 · STORYTELLING — contexto, datos y narrativa ═══ */
+/* ═══ MÓDULO 2 · STORYTELLING · contexto, datos y narrativa ═══ */
 
 /* ═══ GUION SUGERIDO ═══
    STORY tiene guiones redactados para algunas combinaciones de perfil × meta.
@@ -35,7 +35,7 @@ function guionEscenario_(){
     <div class="guion-box">
       <div class="guion-head">
         <span class="guion-lbl">Guion sugerido para esta combinación</span>
-        <span class="guion-nota">Punto de partida — escríbanlo con sus palabras</span>
+        <span class="guion-nota">Punto de partida: escríbanlo con sus palabras</span>
       </div>
       ${fila('Dónde ocurre', e.donde)}
       ${fila('Protagonistas', e.protagonistas)}
@@ -163,8 +163,13 @@ function updateDescOut(){
     return;
   }
 
-  let texto = `Este interlocutor es un <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong> (${country.hta}). `;
-  texto += frases.join('. ') + '. ';
+  // Las frases de la primera dimensión están redactadas en minúscula, para
+  // continuar una oración; las demás empiezan en mayúscula. Al unirlas todas
+  // con punto quedaban frases como "(IETS). no tiene una postura definida",
+  // así que la inicial se ajusta al unirlas.
+  const mayus = (f) => f.charAt(0).toUpperCase() + f.slice(1);
+  let texto = `Este interlocutor es un <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong>, donde la evaluación de tecnologías está a cargo de ${country.hta}. `;
+  texto += frases.map(mayus).join('. ') + '. ';
   texto += `El objetivo de esta conversación es <em>${meta.title.toLowerCase()}</em>.`;
   out.innerHTML = texto;
 }
@@ -206,8 +211,9 @@ function updateDescOut2(){
 function insertSuggestion(taId, text){
   const ta = document.getElementById(taId);
   if(!ta) return;
-  ta.value = ta.value.trim() ? (ta.value.trim() + ' ' + text) : text;
+  ta.value = ta.value.trim() ? (ta.value.trim() + '\n' + text) : text;
   ta.focus();
+  saveDebounced();
 }
 function renderSuggestions(){
   const country=COUNTRIES[ST.country], perfil=PERFILES.find(x=>x.id===ST.perfil), meta=METAS.find(x=>x.id===ST.meta);
@@ -228,7 +234,7 @@ function renderSuggestions(){
   const evKeys = [...new Set(base.flatMap(k=>TOOLS[k].ev))];
   const desSugs = evKeys.map(k=>{
     const e = EVREF[k];
-    return `Según ${e.paper}, ${e.result.toLowerCase()}.`;
+    return `Según ${e.paper}: ${e.result}.`;
   });
   desSugs.push('Si no se actúa, el sistema asumirá un costo mayor en el mediano plazo.');
   desSugs.push('La opción que proponemos es incorporar Suprahyal con el respaldo de esta evidencia.');

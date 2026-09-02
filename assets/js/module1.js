@@ -1,4 +1,4 @@
-/* ═══ MÓDULO 1 · SEGMENTACIÓN — país, decisor, meta y herramientas ═══ */
+/* ═══ MÓDULO 1 · SEGMENTACIÓN · país, decisor, meta y herramientas ═══ */
 
 /* Las tarjetas de selección son <div>, no <button>, para conservar el diseño.
    makeSelectable_ les devuelve el comportamiento de un botón real: foco,
@@ -146,14 +146,14 @@ function renderResult(){
   COMBO_TOOLS = [...base];
 
   const metaMetricPills = (META_METRICS[ST.meta]||[]).map(k=>`<span class="kpi-pill">${k}</span>`).join('');
-  const gapNote = `<div class="gap-note"><span class="gap-note-icon">Nota:</span><span class="gap-note-text">Toda esta evidencia proviene de Colombia y de consensos regionales. Si <strong>${country.name}</strong> aún no cuenta con un estudio propio —un CEA, un AIP o un análisis de carga de enfermedad con datos locales— esa brecha específica es, justamente, el tipo de proyecto que un equipo especializado en economía de la salud construye de la mano de un cliente.</span></div>`;
+  const gapNote = `<div class="gap-note"><span class="gap-note-icon">Nota:</span><span class="gap-note-text">Toda esta evidencia proviene de Colombia y de consensos regionales. Si <strong>${country.name}</strong> aún no cuenta con un estudio propio (un CEA, un AIP o un análisis de carga de enfermedad con datos locales), esa brecha específica es, justamente, el tipo de proyecto que un equipo especializado en economía de la salud construye de la mano de un cliente.</span></div>`;
 
   document.getElementById('resBox').innerHTML=`
     <div class="res-wrap">
       <div class="res-hero">
         <div class="res-tag">${country.flag} ${country.name} · ${perfil.icon} ${perfil.title} · ${meta.num}</div>
         <div class="res-title">Arma tu combinación de herramientas</div>
-        <div class="res-sub">${meta.title}. Ya precargamos las herramientas que aplican a tu meta. Toca o arrastra para quitar o agregar otras — el argumento de abajo se redacta solo con la evidencia de Suprahyal.</div>
+        <div class="res-sub">${meta.title}. Ya precargamos las herramientas que aplican a tu meta. Toca o arrastra para quitar o agregar otras. El argumento de abajo se redacta solo con la evidencia de Suprahyal.</div>
       </div>
       <div class="res-body">
         <div class="drag-instructions"><span class="drag-instructions-icon">Instrucciones:</span><span><strong>Toca</strong> una tarjeta del <strong>catálogo completo</strong> para llevarla a <strong>tu combinación</strong>, y tócala de nuevo para devolverla. En computador también puedes arrastrarla entre las dos columnas.</span></div>

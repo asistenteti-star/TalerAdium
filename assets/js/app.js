@@ -14,7 +14,7 @@ function showScreen_(id){
   document.getElementById(id).classList.add('on');
 }
 
-/* Borra todo — estado, textos escritos y respaldo local — y vuelve al inicio.
+/* Borra todo (estado, textos escritos y respaldo local) y vuelve al inicio.
    Se confirma porque el equipo puede llevar 40 minutos de trabajo encima. */
 function restart(){
   if(!confirm('Esto borra todo el trabajo de este equipo y empieza un caso nuevo. ¿Continuar?')) return;
