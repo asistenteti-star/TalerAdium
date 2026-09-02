@@ -175,10 +175,18 @@ de trabajo para un cliente, no una página que deba aparecer en buscadores.
 
 ## Lo que quedó pendiente
 
-Hay tres huecos de contenido que la validación dejó a la vista y que necesitan
-decisión del equipo antes del taller — el más importante es que los guiones
-por perfil×meta están escritos pero no se muestran en pantalla. Están
-detallados, con opciones y orden sugerido, en **[docs/ROADMAP.md](docs/ROADMAP.md)**.
+Lo que bloquea el ensayo general es **conectar el Google Sheet**: el puente
+está construido y probado del lado de la app, faltan el Sheet y las variables
+de entorno.
+
+En contenido quedan **19 de las 24 combinaciones de perfil × meta sin guion
+propio** —las 5 que sí lo tienen ya se muestran en el Paso 3— y **siete de los
+ocho países con ficha reducida**: solo Colombia tiene la ficha ampliada del
+sistema de salud. Ambas cosas son redacción e investigación con fuente
+primaria, no programación.
+
+El detalle completo, con lo ya resuelto y lo que falta, está en
+**[docs/ROADMAP.md](docs/ROADMAP.md)**.
 
 ---
 

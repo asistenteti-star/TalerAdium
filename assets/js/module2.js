@@ -1,20 +1,58 @@
 /* ═══ MÓDULO 2 · STORYTELLING — contexto, datos y narrativa ═══ */
 
-/* PENDIENTE DE DECISIÓN — ver docs/ROADMAP.md, punto 1.
-   getStory() no se invoca en ninguna parte de la app: todo el contenido de
-   STORY (guiones de escenario, acciones y resumen por perfil×meta) está en el
-   archivo pero nunca llega a la pantalla. Se conserva intacto a la espera de
-   definir si se muestra como guion sugerido en el Paso 3 o se retira.
-   Además, solo 5 de las 24 combinaciones tienen guion propio; el resto caería
-   en el genérico fin×presup, que hablaría de un director financiero incluso a
-   un equipo que eligió clínico prescriptor. */
+/* ═══ GUION SUGERIDO ═══
+   STORY tiene guiones redactados para algunas combinaciones de perfil × meta.
+   Solo se muestran en las combinaciones que tienen guion propio: el fallback
+   genérico hablaría de un director financiero y de techos presupuestales
+   incluso a un equipo que eligió clínico prescriptor, y eso sería peor que no
+   mostrar nada. Las combinaciones sin guion siguen viendo las preguntas guía.
+   La cobertura actual y las opciones para ampliarla están en
+   docs/ROADMAP.md, punto 1. */
+
 function getStory(){
-  return STORY[ST.perfil]?.[ST.meta] || STORY.fin.presup;
+  return STORY[ST.perfil]?.[ST.meta] || null;
 }
 
-/* Devuelve true solo si la combinación elegida tiene guion propio. */
 function tieneGuionPropio(){
   return Boolean(STORY[ST.perfil] && STORY[ST.perfil][ST.meta]);
+}
+
+/* Frases insertables en un textarea. El equipo escribe su propia versión:
+   el guion es un punto de partida, no la respuesta. */
+function guionChips_(taId, frases){
+  return `<div class="sugg-row">` + frases.map(t =>
+    `<div class="sugg-chip" role="button" tabindex="0" onclick="insertSuggestion('${taId}', this.textContent)" onkeydown="chipKey_(event,this)">${t}</div>`
+  ).join('') + `</div>`;
+}
+
+/* Bloque del guion del escenario, con las cuatro piezas de la narrativa. */
+function guionEscenario_(){
+  const g = getStory();
+  if(!g) return '';
+  const e = g.escenario;
+  const fila = (lbl, val) => `<div class="guion-item"><span class="guion-item-lbl">${lbl}</span><div class="guion-item-val">${val}</div></div>`;
+  return `
+    <div class="guion-box">
+      <div class="guion-head">
+        <span class="guion-lbl">Guion sugerido para esta combinación</span>
+        <span class="guion-nota">Punto de partida — escríbanlo con sus palabras</span>
+      </div>
+      ${fila('Dónde ocurre', e.donde)}
+      ${fila('Protagonistas', e.protagonistas)}
+      ${fila('El problema', e.problema)}
+      ${fila('Qué hay que hacer', e.accion)}
+      <div class="guion-accion">
+        <button type="button" class="btn-g" onclick="insertSuggestion('ta-escenario', GUION_ESCENARIO_)">Insertar este guion abajo para editarlo</button>
+      </div>
+    </div>`;
+}
+
+/* El texto que inserta el botón. Se guarda aparte para no repetir las cuatro
+   frases como chips debajo del guion, que ya están a la vista completas. */
+let GUION_ESCENARIO_ = '';
+function prepararGuionEscenario_(){
+  const g = getStory();
+  GUION_ESCENARIO_ = g ? [g.escenario.donde, g.escenario.protagonistas, g.escenario.problema, g.escenario.accion].join(' ') : '';
 }
 
 function getViz(){return VIZ[ST.meta]||VIZ.presup}
@@ -42,7 +80,9 @@ function startM2(){
     '¿Cuándo y dónde tiene lugar la historia?',
     '¿Quiénes son los protagonistas?',
     'La situación: el problema y la posible mejora.',
-    '¿Qué necesitamos hacer para resolver la situación?']);
+    '¿Qué necesitamos hacer para resolver la situación?'])
+    + guionEscenario_();
+  prepararGuionEscenario_();
   const base=TOOLS_BY_META[ST.meta]||[];
   const evKeys=[...new Set(base.flatMap(k=>TOOLS[k].ev))];
   const evh=evKeys.map(e=>EVREF[e]).map(e=>`<div class="ev-item"><div class="ev-dot"></div><div><div class="ev-paper">${e.paper}</div><div class="ev-result">${e.result}</div><a href="${e.url}" target="_blank" rel="noopener" style="font-size:0.72rem;color:var(--teal);text-decoration:none">↗ Ver paper</a></div></div>`).join('');
@@ -54,12 +94,16 @@ function startM2(){
     'Ilustra los beneficios de la solución.'])+`<div class="ev-block" style="margin-top:.9rem;margin-bottom:0"><div class="ev-lbl">Datos disponibles para sustentar el desarrollo</div>${evh}</div>`;
 
   const hint=(t)=>`<div class="conc-item"><div class="conc-dot" style="background:var(--gray-d)"></div><div style="color:var(--gray)">${t}</div></div>`;
-  document.getElementById('acciones-cp').innerHTML=hint('Acciones concretas hasta tres meses.')+`<textarea style="margin-top:.6rem;min-height:110px" id="ta-cp" placeholder="Escribe aquí las acciones a corto plazo..."></textarea>`;
-  document.getElementById('acciones-lp').innerHTML=hint('Acciones concretas más allá de tres meses, dentro del plan a 12 meses.')+`<textarea style="margin-top:.6rem;min-height:110px" id="ta-lp" placeholder="Escribe aquí las acciones a largo plazo..."></textarea>`;
+  const guion=getStory();
+  const chipsCp = guion ? guionChips_('ta-cp', guion.cp) : '';
+  const chipsLp = guion ? guionChips_('ta-lp', guion.lp) : '';
+  document.getElementById('acciones-cp').innerHTML=hint('Acciones concretas hasta tres meses.')+`<textarea style="margin-top:.6rem;min-height:110px" id="ta-cp" placeholder="Escribe aquí las acciones a corto plazo..."></textarea>`+chipsCp;
+  document.getElementById('acciones-lp').innerHTML=hint('Acciones concretas más allá de tres meses, dentro del plan a 12 meses.')+`<textarea style="margin-top:.6rem;min-height:110px" id="ta-lp" placeholder="Escribe aquí las acciones a largo plazo..."></textarea>`+chipsLp;
+  const r = guion ? guion.resumen : null;
   document.getElementById('resumen-final').innerHTML=`
-    <div><div class="resumen-item-lbl">EL RETO</div><textarea id="ta-reto" style="min-height:80px" placeholder="En una frase..."></textarea></div>
-    <div><div class="resumen-item-lbl">LA SOLUCIÓN</div><textarea id="ta-sol" style="min-height:80px" placeholder="En una frase..."></textarea></div>
-    <div><div class="resumen-item-lbl">RESULTADOS ESPERADOS</div><textarea id="ta-res" style="min-height:80px" placeholder="En una frase..."></textarea></div>`;
+    <div><div class="resumen-item-lbl">EL RETO</div><textarea id="ta-reto" style="min-height:80px" placeholder="En una frase..."></textarea>${r?guionChips_('ta-reto',[r.reto]):''}</div>
+    <div><div class="resumen-item-lbl">LA SOLUCIÓN</div><textarea id="ta-sol" style="min-height:80px" placeholder="En una frase..."></textarea>${r?guionChips_('ta-sol',[r.solucion]):''}</div>
+    <div><div class="resumen-item-lbl">RESULTADOS ESPERADOS</div><textarea id="ta-res" style="min-height:80px" placeholder="En una frase..."></textarea>${r?guionChips_('ta-res',[r.resultado]):''}</div>`;
 
   BUILDER_SEL = {};
   BUILDER2_SEL = {};

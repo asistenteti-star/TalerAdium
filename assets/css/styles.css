@@ -425,3 +425,18 @@ body{overflow-x:hidden}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
 }
+
+
+/* Guion sugerido del Paso 3 — solo aparece en las combinaciones de perfil ×
+   meta que tienen guion propio (ver docs/ROADMAP.md, punto 1). */
+.guion-box{
+  background:rgba(0,180,180,.05);border:1px solid var(--pub-b);border-radius:12px;
+  padding:1.1rem 1.2rem;margin-top:1rem;
+}
+.guion-head{display:flex;align-items:baseline;justify-content:space-between;gap:0.8rem;flex-wrap:wrap;margin-bottom:0.9rem}
+.guion-lbl{font-size:0.68rem;letter-spacing:0.1em;color:var(--teal);font-weight:700;text-transform:uppercase}
+.guion-nota{font-size:0.68rem;color:var(--gray);font-style:italic}
+.guion-item{margin-bottom:0.75rem}
+.guion-item-lbl{font-size:0.62rem;letter-spacing:0.09em;color:var(--gray);font-weight:600;text-transform:uppercase;display:block;margin-bottom:0.2rem}
+.guion-item-val{font-size:0.82rem;color:var(--white);line-height:1.65}
+.guion-accion{margin-top:0.9rem;padding-top:0.85rem;border-top:1px solid var(--line)}

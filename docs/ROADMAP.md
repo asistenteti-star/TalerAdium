@@ -8,68 +8,67 @@ contenido** y la conexión del Sheet. La lista está en orden de impacto.
 
 ---
 
-## Bloque A · Decisiones de contenido (necesitan al gerente)
+## Bloque A · Contenido
 
-### 1. Los guiones por perfil × meta están escritos pero no se muestran
+### 1. Guiones por perfil × meta — resuelto a medias
 
-**El hallazgo.** El archivo trae un objeto `STORY` con guiones completos por
-combinación de decisor y meta: dónde ocurre la conversación, quiénes son los
-protagonistas, cuál es el problema, qué acciones proponer a corto y a largo
-plazo, y el resumen reto/solución/resultado. Son unos 30 KB de contenido
-curado. La función que lo lee, `getStory()`, **no se llama en ninguna parte**:
-todo ese material nunca llega a la pantalla. Hoy el Paso 3 muestra solo las
-preguntas guía genéricas ("¿Cuándo y dónde tiene lugar la historia?") y las
-frases sugeridas que se arman con el país y la meta.
+**Lo que se encontró.** El archivo original traía un objeto `STORY` con
+guiones completos por combinación de decisor y meta —dónde ocurre la
+conversación, quiénes son los protagonistas, cuál es el problema, qué acciones
+proponer a corto y a largo plazo, y el resumen reto/solución/resultado— pero la
+función que los lee, `getStory()`, **no se invocaba en ninguna parte**. Unos
+30 KB de contenido curado que nunca llegaba a la pantalla.
 
-**El segundo hallazgo.** De las 24 combinaciones posibles (4 perfiles × 6
-metas), solo 5 tienen guion propio:
+**Lo que se hizo.** El guion ya se muestra en el Paso 3, pero **solo en las
+combinaciones que tienen guion propio**. Aparece como bloque "Guion sugerido
+para esta combinación" con las cuatro piezas de la narrativa y un botón que las
+inserta en el campo de texto para que el equipo las edite; las acciones de
+corto y largo plazo y las tres frases del resumen se ofrecen como frases
+insertables junto a cada campo.
 
-| Con guion propio | Sin guion |
+La restricción es deliberada. El fallback original devolvía el guion de
+*decisor financiero × presupuesto*, así que un equipo que eligiera **clínico
+prescriptor × diferenciación** habría visto un guion sobre un director
+financiero y techos presupuestales. `getStory()` ahora devuelve `null` cuando
+no hay guion propio y esas combinaciones siguen viendo solo las preguntas guía.
+
+**Lo que queda pendiente.** 5 de las 24 combinaciones tienen guion:
+
+| Combinación | Estado |
 |---|---|
-| pagador orientado a valor × inclusión | las otras 19 combinaciones |
-| decisor financiero × presupuesto | |
-| decisor financiero × negociación | |
-| clínico prescriptor × prescripción | |
-| clínico administrativo × inclusión | |
+| pagador orientado a valor × inclusión | guion propio |
+| decisor financiero × presupuesto | guion propio |
+| decisor financiero × negociación | guion propio |
+| clínico prescriptor × prescripción | guion propio |
+| clínico administrativo × inclusión | guion propio |
+| las otras 19 combinaciones | preguntas guía únicamente |
 
-El fallback devuelve el guion de *decisor financiero × presupuesto*. Si se
-enciende `getStory()` tal cual está, un equipo que eligió **clínico prescriptor
-× diferenciación** vería un guion que habla de un director financiero y de
-techos presupuestales. Sería peor que no mostrar nada.
+Redactar las 19 faltantes es trabajo de contenido, no de código: la estructura
+ya está y cada guion nuevo se agrega a `assets/js/data/storytelling.js`
+copiando la forma de los existentes. Conviene priorizar por las combinaciones
+que se esperen más frecuentes en el salón, y eso depende de la composición de
+los grupos.
 
-Hay además una clave `STORY.acc` para un perfil "gestor de acceso" que no
-existe en la lista de perfiles: contenido escrito para un perfil que se eliminó.
+**Decisión suelta.** Hay una clave `STORY.acc` con un guion escrito para un
+perfil "gestor de acceso" que ya no existe en la lista de perfiles. Es el único
+guion de la meta *riesgo compartido*, así que hoy ninguna combinación de esa
+meta tiene guion. El contenido está intacto y es candidato a reasignarse a un
+perfil existente —el escenario describe una negociación con un pagador, así que
+encajaría en *pagador orientado a valor* o en *decisor financiero*—, pero
+reasignarlo cambia lo que ve el equipo en el salón y eso lo decide contenido.
 
-**Opciones.**
+### 2. Datos de la meta 6 — resuelto
 
-- **A — Mostrarlo solo donde existe.** Encender `getStory()` con la
-  comprobación `tieneGuionPropio()` (ya está escrita en `module2.js`), y en las
-  5 combinaciones con guion mostrar un bloque "Guion sugerido para esta
-  combinación" con botones para insertar el texto en los campos. Las otras 19
-  siguen como hoy. Es media jornada de trabajo y no requiere escribir
-  contenido nuevo.
-- **B — Completar las 24 combinaciones** y encenderlo para todas. Son 19
-  guiones nuevos: el trabajo está en la redacción, no en el código.
-- **C — Retirar `STORY`** y quedarse con las frases sugeridas actuales. Deja
-  el repositorio más limpio, a costa de descartar contenido ya escrito.
+`VIZ` no tenía entrada para *"Defender el precio frente a una objeción de
+costo"* y caía silenciosamente en los datos de presupuesto. Ya tiene sus dos
+tarjetas propias, construidas con las cifras que ya estaban verificadas en el
+repositorio (Castro 2015 y Vásquez 2024) pero encuadradas para una mesa de
+negociación: costo total del tratamiento contra precio unitario, y el ahorro
+documentado a 5 años como referencia contra la cual medir el descuento que
+pide el comité.
 
-**Recomendación: A ahora, y B para las combinaciones que el gerente espere que
-sean más frecuentes en el salón.** Cuáles son esas depende de la composición
-de los grupos, y esa información la tiene él.
-
-### 2. La meta 6 no tiene datos propios en el Paso 2
-
-`VIZ` no tiene entrada para la meta *"Defender el precio frente a una objeción
-de costo"*, así que cae en los datos de la meta de presupuesto (ICER dominante
-y ahorro de USD 576 por paciente). Para defender un precio esas cifras son
-pertinentes, pero el encuadre no es el mismo: la conversación de negociación
-gira alrededor del costo total del tratamiento contra el precio unitario del
-genérico.
-
-**Pendiente:** definir las dos tarjetas de datos de esa meta. La evidencia
-disponible ya en el repositorio (Castro 2015 y Altman 2015) alcanza; falta
-decidir qué cifras se destacan y con qué redacción. No conviene que lo
-improvise el código.
+No se inventó ninguna cifra. Si el equipo médico prefiere otro encuadre o
+destacar otros números, se cambia en `assets/js/data/storytelling.js`.
 
 ### 3. Siete de los ocho países tienen ficha reducida
 
@@ -93,9 +92,10 @@ Un equipo que elige México ve bastante menos que uno que elige Colombia. Si
 el taller se dicta con grupos por país, la asimetría se va a notar.
 
 **Pendiente:** completar los seis campos por país siguiendo el modelo de
-Colombia en `assets/js/data/countries.js`. Es trabajo de investigación con
-fuente primaria, no de programación. Prioridad por número esperado de equipos
-por país — el gerente decide el orden.
+Colombia en `assets/js/data/countries.js`. Es investigación con fuente
+primaria —normativa, resoluciones, cifras oficiales de cobertura y gasto—, no
+programación, y no es material que convenga redactar sin verificar cada dato
+contra su fuente. Prioridad por número esperado de equipos por país.
 
 ---
 
