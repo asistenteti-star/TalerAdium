@@ -39,7 +39,10 @@ var COLUMNAS = [
 function doPost(e) {
   var lock = LockService.getScriptLock();
   try {
-    lock.waitLock(20000);
+    // Medido con 8 equipos simultáneos: Apps Script serializa las escrituras
+    // a unos 2,8 s cada una, así que el último en la cola espera ~22 s. Con 45 s
+    // hay margen para un salón de 15 equipos guardando a la vez.
+    lock.waitLock(45000);
 
     var datos = JSON.parse(e.postData.contents);
 

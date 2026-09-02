@@ -9,10 +9,18 @@
 
 const STORAGE_KEY = 'taller-adium-v1';
 const SAVE_ENDPOINT = '/api/save';
-const SAVE_DEBOUNCE_MS = 1200;
+// Apps Script serializa las escrituras (~2,8 s cada una, medido con 8 equipos
+// a la vez). Con una espera corta, varios equipos escribiendo al mismo tiempo
+// hacen cola y el último tarda decenas de segundos. Tres segundos reducen el
+// volumen sin que el equipo lo note: el guardado es de fondo y el respaldo
+// local es inmediato.
+const SAVE_DEBOUNCE_MS = 3000;
 
 let saveDebounceTimer = null;
 let remoteSaveDisabled = false;
+let saveEnVuelo = false;
+let savePendienteAlTerminar = false;
+let ultimoEnviado = '';
 
 function setSaveIndicator(state){
   const el = document.getElementById('saveIndicator');
@@ -99,23 +107,36 @@ function clearLocal(){
 /* — Capa 2: Google Sheet vía función serverless ——————— */
 
 function saveToSheet(){
-  saveLocal();
+  saveLocal();                           // el respaldo local nunca espera a la red
   if(!TEAM_NAME) return;                 // sin nombre de equipo no hay fila que actualizar
   if(remoteSaveDisabled){ setSaveIndicator('local'); return; }
+
+  const payload = JSON.stringify(collectData());
+  if(payload === ultimoEnviado) return;  // nada cambió desde el último envío exitoso
+
+  // Una sola petición en vuelo por equipo. Si llega otra mientras espera, se
+  // agenda para cuando termine en lugar de sumarse a la cola del Apps Script.
+  if(saveEnVuelo){ savePendienteAlTerminar = true; return; }
+  saveEnVuelo = true;
 
   setSaveIndicator('saving');
   fetch(SAVE_ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(collectData()),
+    body: payload,
   }).then(r=>{
     if(r.status === 501){                // el Sheet no está configurado en este despliegue
       remoteSaveDisabled = true;
       setSaveIndicator('local');
       return;
     }
+    if(r.ok) ultimoEnviado = payload;
     setSaveIndicator(r.ok ? 'saved' : 'error');
-  }).catch(()=> setSaveIndicator('error'));
+  }).catch(()=> setSaveIndicator('error'))
+    .finally(()=>{
+      saveEnVuelo = false;
+      if(savePendienteAlTerminar){ savePendienteAlTerminar = false; saveDebounced(); }
+    });
 }
 
 function saveDebounced(){

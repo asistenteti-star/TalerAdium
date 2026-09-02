@@ -56,20 +56,55 @@ export default async function handler(req, res) {
   registro.recibido_en = new Date().toISOString();
 
   try {
-    const upstream = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(registro),
-      redirect: 'follow', // Apps Script redirige a script.googleusercontent.com
-    });
-    const texto = await upstream.text();
-    if (!upstream.ok) {
-      return res.status(502).json({ error: 'El Sheet rechazó el registro', detalle: texto.slice(0, 300) });
+    const texto = await enviarAlAppsScript(url, registro);
+
+    // Apps Script responde HTTP 200 incluso cuando rechaza el registro: el
+    // veredicto viene en el cuerpo. Sin leerlo, un token equivocado se vería
+    // como un guardado exitoso y nadie se enteraría hasta abrir el Sheet.
+    const resultado = safeParse(texto);
+    if (resultado && resultado.ok === false) {
+      return res.status(502).json({ error: 'El Sheet rechazó el registro', detalle: resultado.error || '' });
     }
-    return res.status(200).json({ ok: true });
+    if (!resultado) {
+      return res.status(502).json({ error: 'El Sheet respondió algo que no es JSON', detalle: texto.slice(0, 200) });
+    }
+    return res.status(200).json({ ok: true, fila: resultado.fila });
   } catch (err) {
     return res.status(502).json({ error: 'No se pudo contactar el Sheet', detalle: String(err.message || err) });
   }
+}
+
+/**
+ * Envía el registro y devuelve el cuerpo de la respuesta como texto.
+ *
+ * La redirección se sigue a mano y no con `redirect: 'follow'`. Apps Script
+ * contesta 302 hacia script.googleusercontent.com, y si la segunda petición
+ * arrastra la cabecera `Content-Type: application/json` de la primera, Google
+ * la rechaza con 405 y una página de error HTML — aunque la escritura en el
+ * Sheet ya se hizo. El resultado sería reportar un fallo sobre un guardado
+ * exitoso. Siguiendo el salto con un GET limpio, sin cabeceras, la respuesta
+ * llega como el JSON que devuelve el script.
+ */
+async function enviarAlAppsScript(url, registro) {
+  const respuesta = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(registro),
+    redirect: 'manual',
+  });
+
+  if (respuesta.status >= 300 && respuesta.status < 400) {
+    const destino = respuesta.headers.get('location');
+    if (!destino) throw new Error('El Sheet redirigió sin indicar destino');
+    const eco = await fetch(destino); // GET limpio, sin cabeceras heredadas
+    const texto = await eco.text();
+    if (!eco.ok) throw new Error(`El destino de la redirección respondió ${eco.status}`);
+    return texto;
+  }
+
+  const texto = await respuesta.text();
+  if (!respuesta.ok) throw new Error(`El Sheet respondió ${respuesta.status}: ${texto.slice(0, 200)}`);
+  return texto;
 }
 
 function safeParse(s) {
