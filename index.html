@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Taller Farmacoeconomía Aplicada · Adium LATAM</title>
+<meta name="description" content="Herramienta de trabajo del Taller de Farmacoeconomía Aplicada de Adium LATAM: segmentación de mercado y decisor, selección de herramientas de economía de la salud y construcción del storytelling con evidencia de Suprahyal.">
+<meta name="theme-color" content="#111615">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<div class="bg-grad"></div>
+<div class="app">
+
+<div class="topbar">
+<header>
+  <div class="logo">
+    <div class="logo-pip"></div>
+    <div>
+      <div class="logo-name">AL<em>ZAK</em> <span style="font-weight:300;color:var(--gray)">Consulting & Research</span></div>
+      <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Octubre 2026</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.8rem">
+    <span id="saveIndicator" role="status" aria-live="polite" style="font-size:0.68rem;color:var(--gray);display:flex;align-items:center;gap:0.35rem"></span>
+    <div class="module-tabs">
+      <button type="button" class="mod-tab active" id="tab1">Módulo 1 · Segmentación</button>
+      <button type="button" class="mod-tab" id="tab2">Módulo 2 · Storytelling</button>
+    </div>
+  </div>
+</header>
+
+<div class="prog"><div class="prog-bar" id="progBar" role="progressbar" aria-label="Avance del taller" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></div></div>
+</div><!-- fin topbar -->
+
+<main><div class="inner">
+
+  <!-- ═══ MÓDULO 1 ═══ -->
+
+  <!-- Aviso de sesión previa guardada en este navegador -->
+  <div class="resume-bar" id="resumeBar" hidden>
+    <div>
+      <div class="resume-lbl">Hay trabajo guardado en este dispositivo</div>
+      <div class="resume-team">Equipo: <strong id="resumeTeam"></strong></div>
+    </div>
+    <div class="resume-actions">
+      <button type="button" class="btn-p" id="btnResume">Continuar donde quedamos</button>
+      <button type="button" class="btn-g" id="btnDiscard">Empezar de cero</button>
+    </div>
+  </div>
+
+  <!-- S0 NOMBRE EQUIPO -->
+  <div class="screen on" id="s0">
+    <div class="kicker">Antes de empezar</div>
+    <h1>¿Cómo se llama tu equipo?</h1>
+    <p class="lead">Este nombre identifica tu progreso en el registro del taller. Úsalo en todos los dispositivos si trabajan en más de uno.</p>
+    <label for="teamNameInput" class="sr-only">Nombre del equipo</label>
+    <input id="teamNameInput" type="text" autocomplete="off" placeholder="Ej: Grupo México 1, Equipo Andrea..." style="width:100%;max-width:420px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:0.85rem 1.1rem;color:var(--white);font-family:Helvetica,Arial,sans-serif;font-size:0.95rem;margin-bottom:1.4rem" />
+    <div class="btn-row">
+      <button class="btn-p" id="btnTeam" disabled onclick="confirmTeam()">Comenzar →</button>
+    </div>
+
+    <div class="purpose-box">
+      <div class="purpose-lbl">Propósito del taller</div>
+      <p class="purpose-text">El objetivo es construir, con evidencia real de Suprahyal, un argumento de valor propio para el pagador o decisor que cada equipo enfrenta en su mercado. Van a elegir el país, identificar con quién van a hablar y qué quieren lograr, y a partir de ahí armar el argumento con las herramientas de economía de la salud que correspondan. El taller termina con un plan de trabajo concreto a 12 meses, listo para presentar.</p>
+    </div>
+  </div>
+
+  <!-- S1 PAÍS -->
+  <div class="screen" id="s1">
+    <div class="kicker">Módulo 1 · Paso 1 de 4</div>
+    <h1>Selecciona tu mercado de interés</h1>
+    <p class="lead" style="max-width:none">El sistema de salud, los actores y las rutas de acceso son distintos en cada país.</p>
+    <div class="country-grid" id="countryGrid"></div>
+    <div class="ctx" id="ctxPanel"></div>
+    <div class="btn-row"><button class="btn-p" id="btn1" disabled onclick="go(2)">Continuar →</button></div>
+  </div>
+
+  <!-- S2 PERFIL -->
+  <div class="screen" id="s2">
+    <div class="crumbs" id="cr2"></div>
+    <div class="kicker">Módulo 1 · Paso 2 de 4</div>
+    <h1>¿Con qué tipo de decisor vas a hablar?</h1>
+    <p class="lead">El argumento correcto depende de cómo razona la persona que tienes enfrente.</p>
+    <div class="perfil-grid" id="perfilGrid"></div>
+    <div class="btn-row">
+      <button class="btn-g" onclick="go(1)">← Volver</button>
+      <button class="btn-p" id="btn2" disabled onclick="go(3)">Continuar →</button>
+    </div>
+  </div>
+
+  <!-- S3 META -->
+  <div class="screen" id="s3">
+    <div class="crumbs" id="cr3"></div>
+    <div class="kicker">Módulo 1 · Paso 3 de 4</div>
+    <h1>¿Qué quieres lograr con Suprahyal?</h1>
+    <p class="lead">El objetivo de tu conversación determina el tipo de argumento, la evidencia que llevas y el número que necesitas tener listo.</p>
+    <div class="meta-grid" id="metaGrid"></div>
+    <div class="btn-row">
+      <button class="btn-g" onclick="go(2)">← Volver</button>
+      <button class="btn-p" id="btn3" disabled onclick="go(4)">Ver mis herramientas →</button>
+    </div>
+  </div>
+
+  <!-- S4 RESULTADO M1 -->
+  <div class="screen" id="s4">
+    <div class="crumbs" id="cr4"></div>
+    <div class="kicker">Módulo 1 · Paso 4 de 4 — Tus herramientas</div>
+    <div id="resBox"></div>
+    <div class="btn-row">
+      <button class="btn-g" onclick="go(3)">← Volver</button>
+      <button class="btn-amber" onclick="startM2()">Módulo 2 · Construir el storytelling →</button>
+    </div>
+  </div>
+
+  <!-- ═══ MÓDULO 2 ═══ -->
+  <div class="screen" id="s5">
+    <div class="crumbs" id="cr5"></div>
+
+    <!-- Header del reto -->
+    <div class="story-header">
+      <div class="story-header-top">
+        <div class="story-badge">Módulo 2 · Storytelling de Suprahyal</div>
+        <div class="story-timer">⏱ 40 min en total</div>
+      </div>
+      <div class="story-title">Construye el argumento que mueve a este decisor</div>
+      <div class="story-desc">Has conseguido un espacio con un decisor que no es receptivo a las propuestas estándar de la industria. El desafío es construir un storytelling con datos reales de Suprahyal que le haga sentir que la conversación vale su tiempo — y que proponga un plan de trabajo concreto a 12 meses.</div>
+    </div>
+
+    <!-- Tabs de pasos -->
+    <div class="story-steps" role="tablist" aria-label="Pasos del Módulo 2">
+      <div class="step-tab active" role="tab" tabindex="0" aria-selected="true" onclick="showStep(1,this)" onkeydown="chipKey_(event,this)">
+        <div class="step-num">01</div>
+        <span class="step-label">Comprensión del contexto</span>
+        <span class="step-time">10 minutos</span>
+      </div>
+      <div class="step-tab" role="tab" tabindex="0" aria-selected="false" onclick="showStep(2,this)" onkeydown="chipKey_(event,this)">
+        <div class="step-num">02</div>
+        <span class="step-label">Visualización de datos</span>
+        <span class="step-time">10 minutos</span>
+      </div>
+      <div class="step-tab" role="tab" tabindex="0" aria-selected="false" onclick="showStep(3,this)" onkeydown="chipKey_(event,this)">
+        <div class="step-num">03</div>
+        <span class="step-label">Storytelling</span>
+        <span class="step-time">20 minutos</span>
+      </div>
+    </div>
+
+    <!-- PASO 1 -->
+    <div class="step-content on" id="step1">
+      
+      <div class="paso1-grid">
+        <div class="ctx2-card">
+          <span class="ctx2-lbl">¿A quién? — Audiencia</span>
+          <div class="ctx2-val" id="p1-quien"></div>
+          <div class="ctx2-detail" id="p1-quien-detail"></div>
+        </div>
+        <div class="ctx2-card">
+          <span class="ctx2-lbl">¿Para qué? — Objetivo</span>
+          <div class="ctx2-val" id="p1-objetivo"></div>
+          <div class="ctx2-detail" id="p1-objetivo-detail"></div>
+        </div>
+      </div>
+      <div class="builder-title">Construye la situación de este decisor</div>
+      <div class="builder-sub">Selecciona una opción en cada fila. El sistema arma la descripción del decisor con base en tus elecciones.</div>
+      <div id="chipBuilder"></div>
+      <div class="desc-out-wrap">
+        <div class="desc-out-lbl">Descripción general del decisor</div>
+        <div class="desc-out" id="descOut">Selecciona las opciones de arriba para generar la descripción.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-p" onclick="showStep(2,document.querySelectorAll('.step-tab')[1])">Paso 2 — Ver los datos →</button>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="step-content" id="step2">
+      <div class="edit-hint">Datos verificados de Suprahyal precargados según tu combinación. Úsalos como base visual para sustentar tu propuesta.</div>
+      <div class="viz-grid" id="vizGrid"></div>
+      <div class="builder-title">Agrega evidencia adicional de tu mercado</div>
+      <div class="builder-sub">Selecciona el tipo y la fuente del dato. Cuando tengas el estudio o la cifra exacta, escríbela abajo — el sistema arma la descripción por ti.</div>
+      <div id="chipBuilder2"></div>
+      <span class="field-lbl">Cifra o hallazgo específico (opcional)</span>
+      <textarea id="ta-p2-valor" style="min-height:60px" oninput="updateDescOut2();saveDebounced()" placeholder="Ej: 8.400 pacientes con OA de rodilla activos · COP 28 millones por artroplastia"></textarea>
+      <div class="desc-out-wrap">
+        <div class="desc-out-lbl">Dato adicional para tu propuesta</div>
+        <div class="desc-out" id="descOut2">Selecciona las opciones de arriba para generar el texto.</div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-g" onclick="showStep(1,document.querySelectorAll('.step-tab')[0])">← Paso 1</button>
+        <button class="btn-p" onclick="showStep(3,document.querySelectorAll('.step-tab')[2])">Paso 3 — Construir la historia →</button>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="step-content" id="step3">
+      <div class="edit-hint">Construye los tres momentos de la historia con tu equipo. Tienes las preguntas guía y los datos verificados; el argumento es tuyo.</div>
+
+      <!-- Escenario -->
+      <div class="story3-section" style="margin-bottom:1rem">
+        <div class="story3-head" style="background:rgba(0,100,100,.3)">
+          <div>
+            <div class="story3-head-title">Escenario de la historia</div>
+            <div class="story3-hint">¿Cuándo y dónde? · ¿Quiénes son los protagonistas? · ¿Cuál es el problema?</div>
+          </div>
+          <span style="font-size:0.65rem;color:var(--teal);padding:0.2rem 0.6rem;border:1px solid var(--pub-b);border-radius:10px">Estructura narrativa</span>
+        </div>
+        <div class="story3-body">
+          <div id="escenario-content"></div>
+          <span class="field-lbl">Frases sugeridas — haz clic para insertarlas y luego edítalas</span>
+          <div class="sugg-row" id="suggEscenario"></div>
+          <textarea id="ta-escenario" placeholder="Haz clic en las frases sugeridas de arriba o escribe directamente aquí..."></textarea>
+        </div>
+      </div>
+
+      <!-- Desarrollo -->
+      <div class="story3-section" style="margin-bottom:1rem">
+        <div class="story3-head" style="background:rgba(100,50,0,.3)">
+          <div>
+            <div class="story3-head-title">Desarrollo de la historia</div>
+            <div class="story3-hint">Datos · ¿Qué pasa si no se actúa? · Opciones · Beneficios</div>
+          </div>
+        </div>
+        <div class="story3-body">
+          <div id="desarrollo-content"></div>
+          <span class="field-lbl">Frases sugeridas — haz clic para insertarlas y luego edítalas</span>
+          <div class="sugg-row" id="suggDesarrollo"></div>
+          <textarea id="ta-desarrollo" placeholder="Haz clic en las frases sugeridas de arriba o escribe directamente aquí..."></textarea>
+        </div>
+      </div>
+
+      <!-- Conclusión -->
+      <div class="story3-section" style="margin-bottom:1.2rem">
+        <div class="story3-head" style="background:rgba(0,80,60,.3)">
+          <div>
+            <div class="story3-head-title">Conclusión — Plan de trabajo a 12 meses</div>
+            <div class="story3-hint">Acciones concretas · Métricas · Resumen final</div>
+          </div>
+        </div>
+        <div class="story3-body">
+          <div class="conclusion-grid">
+            <div class="conc-card">
+              <div class="conc-head" style="background:rgba(0,180,180,.15)">
+                <div class="conc-head-title" style="color:var(--teal)">Acciones a corto plazo</div>
+                <div class="conc-head-sub" style="color:var(--teal)">Hasta 3 meses</div>
+              </div>
+              <div class="conc-body" id="acciones-cp"></div>
+            </div>
+            <div class="conc-card">
+              <div class="conc-head" style="background:rgba(29,158,117,.15)">
+                <div class="conc-head-title" style="color:var(--green)">Acciones a largo plazo</div>
+                <div class="conc-head-sub" style="color:var(--green)">Más de 3 meses</div>
+              </div>
+              <div class="conc-body" id="acciones-lp"></div>
+            </div>
+          </div>
+          <div class="resumen-box">
+            <div class="resumen-lbl">Resumen final — Reto · Solución · Resultados esperados</div>
+            <div class="resumen-row" id="resumen-final"></div>
+          </div>
+          <span class="field-lbl">¿Cuáles son las métricas con las que vas a validar el resultado de este plan?</span>
+          <textarea id="ta-metricas" placeholder="Ej: Tasa de cirugía evitada a 6 meses · Número de pacientes en programa de viscosuplementación · Reducción de costos por evento quirúrgico..."></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-g" onclick="showStep(2,document.querySelectorAll('.step-tab')[1])">← Paso 2</button>
+        <button class="btn-g" onclick="restart()">↩ Empezar de nuevo</button>
+        <button class="btn-p" onclick="buildProposal()">Listo para presentar</button>
+      </div>
+    </div>
+
+  </div><!-- fin s5 -->
+
+  <!-- ═══ PROPUESTA FINAL ═══ -->
+  <div class="screen" id="s6">
+    <div class="crumbs" id="cr6"></div>
+    <div id="propBox"></div>
+    <div class="btn-row no-print">
+      <button class="btn-g" onclick="go(5)">← Volver a editar</button>
+      <button class="btn-g" onclick="window.print()">Imprimir / guardar PDF</button>
+      <button class="btn-g" onclick="restart()">↩ Nuevo caso</button>
+    </div>
+  </div>
+
+
+</div></main>
+</div>
+
+<script src="assets/js/data/actors.js"></script>
+<script src="assets/js/data/countries.js"></script>
+<script src="assets/js/data/tools.js"></script>
+<script src="assets/js/data/storytelling.js"></script>
+<script src="assets/js/data/builders.js"></script>
+<script src="assets/js/state.js"></script>
+<script src="assets/js/storage.js"></script>
+<script src="assets/js/module1.js"></script>
+<script src="assets/js/module2.js"></script>
+<script src="assets/js/proposal.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

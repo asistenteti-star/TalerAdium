@@ -1,0 +1,16 @@
+# Vercel
+.vercel
+
+# Entorno local — nunca subir credenciales del Sheet
+.env
+.env.local
+.env*.local
+
+# Dependencias
+node_modules/
+
+# Ruido del sistema y de herramientas
+.DS_Store
+Thumbs.db
+*.log
+snowflake.log
