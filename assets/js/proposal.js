@@ -15,7 +15,13 @@ function buildProposal(){
   if(!country||!perfil||!meta) return;
   const base=(typeof COMBO_TOOLS !== 'undefined' && COMBO_TOOLS.length) ? COMBO_TOOLS : (TOOLS_BY_META[ST.meta]||[]);
   const tools=base.map(k=>`<div class="prop-box"><div class="prop-tool-name">${icon(TOOLS[k].ic)}${sigla(TOOLS[k].icon)}<span>${TOOLS[k].nombre}</span></div><div class="prop-tool-desc">${TOOLS[k].entrega}</div></div>`).join('');
-  const argGen = document.getElementById('argGenerado') ? document.getElementById('argGenerado').innerText.trim() : '';
+  // El argumento se rearma desde los datos, no desde el texto de la pantalla:
+  // así la propuesta conserva la lista numerada y las citas separadas.
+  const piezas = argumentoPiezas();
+  const argGen = piezas.length ? `<span class="arg-lead">${argumentoEntrada()}</span>
+    <ol class="arg-list">${piezas.map(pz =>
+      `<li><span class="arg-pieza">${pz.entrega}</span><span class="arg-cite">${pz.paper}</span></li>`
+    ).join('')}</ol>` : '';
   const evKeys=[...new Set(base.flatMap(k=>TOOLS[k].ev))];
   const evh=listaEvidencia(evKeys);
   const fecha=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
@@ -25,10 +31,10 @@ function buildProposal(){
       <img class="prop-logo" src="assets/brand/alzak-claro.png" alt="ALZAK Consulting &amp; Research" width="360" height="128">
       <div class="prop-kicker">Propuesta del grupo de trabajo · ${fecha}</div>
       <div class="prop-title">${meta.title}</div>
-      <div class="prop-lede">Plan de trabajo a 12 meses con Suprahyal ante ${perfil.title.toLowerCase()} · ${country.flagEmoji} ${country.name}</div>
+      <div class="prop-lede">Plan de trabajo a 12 meses con Suprahyal ante ${perfil.title.toLowerCase()} · ${bandera(country.flagEmoji)}${country.name}</div>
       <div class="prop-meta">
-        <span class="crumb on"><span class="crumb-lbl">Mercado</span><span>${country.flagEmoji} ${country.name}</span></span>
-        <span class="crumb on"><span class="crumb-lbl">Decisor</span><span>${perfil.title}</span></span>
+        <span class="crumb on"><span class="crumb-lbl">Mercado</span><span>${bandera(country.flagEmoji)}${country.name}</span></span>
+        <span class="crumb on"><span class="crumb-lbl">Perfil</span><span>${perfil.title}</span></span>
         <span class="crumb on"><span class="crumb-lbl">Meta</span><span>${meta.num}</span></span>
       </div>
     </div>
@@ -49,7 +55,10 @@ function buildProposal(){
       ${fld('Datos propios de nuestro mercado o cartera', generado('descOut2'))}
       <div class="prop-field-lbl" style="margin-top:.6rem">Herramientas de economía de la salud seleccionadas por el equipo</div>
       <div class="prop-2col" style="margin-top:.4rem">${tools}</div>
-      ${fld('Argumento generado con esta combinación', argGen)}
+      <div class="prop-field">
+        <div class="prop-field-lbl">Argumento generado con esta combinación</div>
+        <div class="prop-field-val prop-field-rico ${argGen ? '' : 'empty'}">${argGen || 'Sin completar'}</div>
+      </div>
     </div>
 
     <div class="prop-sec">

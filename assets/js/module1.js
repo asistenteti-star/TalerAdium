@@ -75,8 +75,8 @@ function go(n){
 function renderCrumbs(id){
   const el=document.getElementById(id);
   let h='';
-  if(ST.country)h+=`<div class="crumb on"><span class="crumb-lbl">País</span><span>${COUNTRIES[ST.country].flagEmoji} ${COUNTRIES[ST.country].name}</span></div>`;
-  if(ST.perfil){const p=PERFILES.find(x=>x.id===ST.perfil);h+=`<div class="crumb on"><span class="crumb-lbl">Decisor</span><span>${icon(p.ic)} ${p.title}</span></div>`;}
+  if(ST.country)h+=`<div class="crumb on"><span class="crumb-lbl">País</span><span>${bandera(COUNTRIES[ST.country].flagEmoji)}${COUNTRIES[ST.country].name}</span></div>`;
+  if(ST.perfil){const p=PERFILES.find(x=>x.id===ST.perfil);h+=`<div class="crumb on"><span class="crumb-lbl">Perfil</span><span>${icon(p.ic)} ${p.title}</span></div>`;}
   if(ST.meta){const m=METAS.find(x=>x.id===ST.meta);h+=`<div class="crumb on"><span class="crumb-lbl">Meta</span><span>${m.title}</span></div>`;}
   el.innerHTML=h;
 }
@@ -162,7 +162,7 @@ function renderResult(){
   document.getElementById('resBox').innerHTML=`
     <div class="res-wrap">
       <div class="res-hero">
-        <div class="res-tag">${country.flagEmoji} ${country.name} · ${perfil.title} · ${meta.num}</div>
+        <div class="res-tag">${bandera(country.flagEmoji)}${country.name} · ${perfil.title} · ${meta.num}</div>
         <div class="res-title">Arma tu combinación de herramientas</div>
         <div class="res-sub">${meta.title}. Ya precargamos las herramientas que aplican a tu meta. Toca o arrastra para quitar o agregar otras. El argumento de abajo se redacta solo con la evidencia de Suprahyal.</div>
       </div>
@@ -255,6 +255,32 @@ function renderDragZones(){
   });
 }
 
+/* ═══ ARGUMENTO GENERADO ═══
+   Lo que aporta cada herramienta ya es una oración completa, así que
+   encadenarlas con conectores producía frases imposibles ("A eso se suma que,
+   Razón de costo-efectividad incremental"). Va como lista: cada pieza se lee
+   entera y se ve de un golpe cuántas sostienen el argumento.
+
+   Las dos funciones siguientes devuelven los datos, no el marcado. La pantalla
+   y la propuesta imprimible los maquetan cada una a su manera. Antes la
+   propuesta leía el innerText del bloque de pantalla, y al pasar a lista se
+   llevaba los saltos y las sangrías de la plantilla y pegaba textos que en
+   pantalla estaban separados por elementos distintos. */
+
+function argumentoEntrada(){
+  const country=COUNTRIES[ST.country], perfil=PERFILES.find(x=>x.id===ST.perfil), meta=METAS.find(x=>x.id===ST.meta);
+  if(!country||!perfil||!meta) return '';
+  return `Para <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong>, `
+       + `con el objetivo de <em>${meta.title.toLowerCase()}</em>, el argumento se sostiene en estas piezas:`;
+}
+
+function argumentoPiezas(){
+  return COMBO_TOOLS.map(k=>{
+    const t = TOOLS[k];
+    return { entrega: t.entrega, paper: EVREF[t.ev[0]].paper };
+  });
+}
+
 function renderArgumento(){
   const out = document.getElementById('argGenerado');
   if(!out) return;
@@ -263,17 +289,10 @@ function renderArgumento(){
     out.innerHTML = 'Arrastra al menos una herramienta a "Tu combinación" para generar el argumento.';
     return;
   }
-  const fragmentos = COMBO_TOOLS.map(k=>{
-    const t = TOOLS[k];
-    const e = EVREF[t.ev[0]];
-    return `${t.entrega} <span class="arg-cite">(${e.paper})</span>`;
-  });
-  const ENLACES = ['A eso se suma que', 'Sobre esa base', 'En el mismo sentido', 'Y como respaldo adicional'];
-  let texto = `Para <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong>, con el objetivo de <em>${meta.title.toLowerCase()}</em>, el argumento se construye así: ${fragmentos[0]}.`;
-  for(let i=1;i<fragmentos.length;i++){
-    texto += ` ${ENLACES[(i-1) % ENLACES.length]}, ${fragmentos[i]}.`;
-  }
-  out.innerHTML = texto;
+  out.innerHTML = `<span class="arg-lead">${argumentoEntrada()}</span>
+    <ol class="arg-list">${argumentoPiezas().map(pz =>
+      `<li><span class="arg-pieza">${pz.entrega}</span><span class="arg-cite">${pz.paper}</span></li>`
+    ).join('')}</ol>`;
 }
 
 function renderComboDetails(){

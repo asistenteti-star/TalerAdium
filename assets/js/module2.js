@@ -229,10 +229,15 @@ function renderSuggestions(){
   const country=COUNTRIES[ST.country], perfil=PERFILES.find(x=>x.id===ST.perfil), meta=METAS.find(x=>x.id===ST.meta);
   if(!country||!perfil||!meta) return;
 
+  // Cada frase se inserta en su propio renglón, así que tiene que sostenerse
+  // sola. Antes eran fragmentos pensados para encadenarse en una sola oración
+  // y quedaban líneas huérfanas: una terminaba en coma y la siguiente
+  // arrancaba en mayúscula sin continuarla.
   const escSugs = [
-    `En una reunión con ${perfil.title.toLowerCase()} de ${country.name},`,
-    `el reto que enfrentamos es ${meta.tag.toLowerCase()}.`,
-    `El paciente típico con osteoartrosis de rodilla en este sistema`,
+    `La conversación ocurre en una reunión con ${perfil.title.toLowerCase()} de ${country.name}.`,
+    `El objetivo es ${meta.title.toLowerCase()}.`,
+    `Estamos en un escenario de ${meta.tag.toLowerCase().replace(' · ', ', con ')}.`,
+    `El protagonista es el paciente con osteoartrosis de rodilla que hoy espera una alternativa en este sistema.`,
     `Hoy, sin una alternativa clara, el sistema asume el costo de no actuar a tiempo.`,
   ];
   const suggEsc = document.getElementById('suggEscenario');

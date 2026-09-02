@@ -522,7 +522,10 @@ textarea::placeholder{color:var(--text-3)}
 .prop-field{margin-bottom:0.9rem}
 .prop-field-lbl{font-size:0.63rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;margin-bottom:0.3rem}
 .prop-field-val{font-size:0.88rem;line-height:1.65;white-space:pre-wrap}
-.prop-field-val.empty{color:var(--gray-d);font-style:italic}
+.prop-field-val.empty{color:var(--text-3);font-style:italic}
+/* Campo con marcado propio: el pre-wrap que conserva los saltos de los
+   campos de texto libre aquí duplicaría el espaciado de la lista. */
+.prop-field-rico{white-space:normal}
 .prop-2col{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
 .prop-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 .prop-box{background:var(--surface-3);border:1px solid var(--line);border-radius:10px;padding:1rem}
@@ -550,6 +553,14 @@ textarea::placeholder{color:var(--text-3)}
 }
 .icon-btn:hover{color:var(--teal);border-color:var(--teal-border);background:var(--teal-bg-soft)}
 .icon-btn .ic{width:18px;height:18px}
+
+/* Bandera del país. El emoji necesita su propio margen: la fuente lo dibuja
+   sin espacio lateral, y el espacio del texto no alcanza para separarlo de la
+   palabra siguiente. */
+.bandera{
+  display:inline-block;margin-right:0.4em;
+  font-size:1.05em;line-height:1;vertical-align:-0.08em;
+}
 
 /* Sigla de la herramienta o del perfil. En economía de la salud la sigla es
    el nombre que la gente usa en la mesa, así que se conserva junto al icono
@@ -654,6 +665,26 @@ textarea::placeholder{color:var(--text-3)}
 .p-desc,.m-desc{font-size:0.84rem;line-height:1.65}
 .desc-out{font-size:1rem;line-height:1.8}
 .arg-text{font-size:1rem;line-height:1.85}
+.arg-lead{display:block;margin-bottom:0.9rem}
+.arg-list{
+  list-style:none;counter-reset:pieza;
+  display:flex;flex-direction:column;gap:0.75rem;margin:0;
+}
+.arg-list li{
+  counter-increment:pieza;position:relative;padding-left:1.9rem;
+  font-size:0.96rem;line-height:1.7;
+}
+.arg-list li::before{
+  content:counter(pieza);position:absolute;left:0;top:0.15em;
+  width:1.35rem;height:1.35rem;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-ui);font-size:0.68rem;font-weight:700;
+  color:var(--teal);background:var(--teal-bg);
+  border:1px solid var(--teal-border-soft);
+  font-variant-numeric:tabular-nums;
+}
+.arg-pieza{display:block}
+.arg-cite{display:block;margin-top:0.2rem;font-size:0.78rem;font-family:var(--font-ui)}
 .res-item-val,.story3-item-val{font-size:0.9rem;line-height:1.65}
 .prop-field-val{font-size:0.95rem;line-height:1.7;max-width:var(--measure)}
 .purpose-text{font-size:1rem;line-height:1.85}
@@ -890,17 +921,18 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
   transform-origin:top left;
   transform:scale(var(--preview-scale,1));
 }
-.preview-page{
-  background:#fff;color:#111;
-  padding:0;margin:0 auto 1.1rem;
-  min-height:var(--sheet-h);
+/* La hoja va en un iframe para que las consultas de medios resuelvan contra
+   sus 182mm de ancho —el mismo que usa @page— y no contra el viewport del
+   dispositivo. Sin eso, la vista previa en un teléfono mostraba una maqueta
+   distinta a la que sale impresa. */
+.preview-frame{
+  display:block;border:0;background:#fff;
   box-shadow:0 4px 18px rgba(0,0,0,.35);
-  position:relative;
 }
 
 /* Guías de corte sobre el contenido continuo: una línea cada alto de hoja. */
 .preview-guides{
-  position:absolute;inset:0;pointer-events:none;
+  position:absolute;inset:0;pointer-events:none;z-index:2;
   background-image:repeating-linear-gradient(
     to bottom,
     transparent 0,
@@ -914,16 +946,8 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
   font-size:0.74rem;color:rgba(255,255,255,.75);text-align:center;line-height:1.6;
 }
 
-/* Las consultas de medios responden al ancho del viewport, no al de la hoja.
-   Sin esto, en un teléfono la vista previa apilaba las rejillas en una columna
-   y anunciaba una hoja más de las que realmente salen: mostraría una maqueta
-   distinta a la que va a imprimir. La hoja siempre mide 182mm, así que dentro
-   de la previsualización se reafirma la maqueta de página completa. */
-.preview .prop-2col,.preview .conclusion-grid,.preview .tool-card-grid,
-.preview .paso1-grid,.preview .viz-grid{grid-template-columns:1fr 1fr}
-.preview .prop-3col,.preview .resumen-row{grid-template-columns:repeat(3,1fr)}
-.preview .btn-row{position:static;background:none;border:none;margin:0;padding:0}
-.preview .prop-field-val,.preview .prop-lede{max-width:none}
+/* Las guías de corte van sobre la hoja, una línea cada alto de página. */
+.preview-sheet{position:relative}
 @media (max-width:820px){
   .preview-scroll{padding:1rem 0.5rem 2.5rem}
   .preview-bar .btn-g,.preview-bar .btn-p{flex:1 1 auto;justify-content:center;min-height:44px}
@@ -967,6 +991,14 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
   .prop-sec-num,.prop-sec-title,.prop-field-lbl,.ev-lbl{break-after:avoid;break-after:avoid-page}
   .prop-sec-num{break-after:avoid}
   .prop-hero,.prop-hero *{color:#e6f2f0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Los números de la lista del argumento son círculos rellenos: sin forzar
+     el color, el navegador los imprime en blanco y el número desaparece. */
+  .arg-list li::before{
+    background:#eaf1f0!important;color:#0f3d3a!important;border-color:#c4d6d4!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .arg-cite{color:#555}
+  .bandera{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   .prop-pie{border-top:1px solid #ddd}
   .prop-pie p{color:#555}
   .prop-logo{opacity:1}
