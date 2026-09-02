@@ -1,6 +1,14 @@
 /* ═══ PROPUESTA FINAL · consolidado imprimible ═══ */
 
 function val(id){const el=document.getElementById(id);return el&&el.value.trim()?el.value.trim():'';}
+
+/* Texto generado por un constructor. Devuelve vacío mientras el bloque siga
+   mostrando su texto de ayuda, para que el documento no lo cite como dato. */
+function generado(id){
+  const el = document.getElementById(id);
+  if(!el || el.dataset.vacio) return '';
+  return el.innerText.trim();
+}
 function fld(lbl,v){return `<div class="prop-field"><div class="prop-field-lbl">${lbl}</div><div class="prop-field-val ${v?'':'empty'}">${v||'Sin completar'}</div></div>`;}
 function buildProposal(){
   const country=COUNTRIES[ST.country], perfil=PERFILES.find(x=>x.id===ST.perfil), meta=METAS.find(x=>x.id===ST.meta);
@@ -14,6 +22,7 @@ function buildProposal(){
   document.getElementById('propBox').innerHTML=`
   <div class="prop-wrap">
     <div class="prop-hero">
+      <img class="prop-logo" src="assets/brand/alzak-claro.png" alt="ALZAK Consulting &amp; Research" width="360" height="128">
       <div class="prop-kicker">Propuesta del grupo de trabajo · ${fecha}</div>
       <div class="prop-title">${meta.title}</div>
       <div class="prop-lede">Plan de trabajo a 12 meses con Suprahyal ante ${perfil.title.toLowerCase()} · ${country.flagEmoji} ${country.name}</div>
@@ -30,14 +39,14 @@ function buildProposal(){
         <div class="prop-box">${fld('A quién · audiencia', perfil.title+'\n'+country.name+' · '+country.hta)}</div>
         <div class="prop-box">${fld('Para qué · objetivo', meta.title+'\n'+meta.tag)}</div>
       </div>
-      ${fld('Descripción general del decisor', document.getElementById('descOut') ? document.getElementById('descOut').innerText.trim() : '')}
+      ${fld('Descripción general del decisor', generado('descOut'))}
       <div class="prop-box"><div class="prop-field-lbl">Contexto del sistema</div><div class="prop-field-val" style="font-size:0.8rem">Gasto de bolsillo ${country.gasto} · ${country.hta}<br>${country.cobertura}</div></div>
     </div>
 
     <div class="prop-sec">
       <div class="prop-sec-num">02</div><div class="prop-sec-title">Datos que sustentan la propuesta</div>
       <div class="ev-block"><div class="ev-lbl">Evidencia verificada de Suprahyal</div><ul class="ev-list">${evh}</ul></div>
-      ${fld('Datos propios de nuestro mercado o cartera', document.getElementById('descOut2') ? document.getElementById('descOut2').innerText.trim() : '')}
+      ${fld('Datos propios de nuestro mercado o cartera', generado('descOut2'))}
       <div class="prop-field-lbl" style="margin-top:.6rem">Herramientas de economía de la salud seleccionadas por el equipo</div>
       <div class="prop-2col" style="margin-top:.4rem">${tools}</div>
       ${fld('Argumento generado con esta combinación', argGen)}
@@ -61,6 +70,12 @@ function buildProposal(){
         <div class="prop-box">${fld('La solución', val('ta-sol'))}</div>
         <div class="prop-box">${fld('Resultados esperados', val('ta-res'))}</div>
       </div>
+    </div>
+
+    <div class="prop-pie">
+      <p>&copy; ${new Date().getFullYear()} ALZAK Consulting &amp; Research · Taller de Farmacoeconomía Aplicada para Adium LATAM.
+        Todos los derechos reservados.</p>
+      <p>Documento de trabajo confidencial. Preparado por el equipo <strong>${TEAM_NAME || 'participante'}</strong> el ${fecha}.</p>
     </div>
   </div>`;
   saveToSheet();

@@ -14,3 +14,6 @@ node_modules/
 Thumbs.db
 *.log
 snowflake.log
+
+# PDFs generados por la propia app, útiles para revisar pero no para versionar
+docs/*.pdf

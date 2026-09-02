@@ -71,7 +71,8 @@ for (const s of scripts) {
 const leidos = new Set([...fuente.matchAll(/getElementById\('([^']+)'\)/g)].map(m => m[1]));
 const idsHtml = new Set(ids);
 for (const id of leidos) {
-  if (!idsHtml.has(id) && !fuente.includes(`id="${id}"`)) {
+  const asignadoEnJs = new RegExp(`\\.id\\s*=\\s*['"]${id}['"]`).test(fuente);
+  if (!idsHtml.has(id) && !fuente.includes(`id="${id}"`) && !asignadoEnJs) {
     avisos.push(`El JS busca #${id} y no aparece en el HTML ni se genera dinámicamente`);
   }
 }

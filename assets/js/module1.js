@@ -268,9 +268,10 @@ function renderArgumento(){
     const e = EVREF[t.ev[0]];
     return `${t.entrega} <span class="arg-cite">(${e.paper})</span>`;
   });
+  const ENLACES = ['A eso se suma que', 'Sobre esa base', 'En el mismo sentido', 'Y como respaldo adicional'];
   let texto = `Para <strong>${perfil.title.toLowerCase()}</strong> en <strong>${country.name}</strong>, con el objetivo de <em>${meta.title.toLowerCase()}</em>, el argumento se construye así: ${fragmentos[0]}.`;
   for(let i=1;i<fragmentos.length;i++){
-    texto += ` Además, ${fragmentos[i]}.`;
+    texto += ` ${ENLACES[(i-1) % ENLACES.length]}, ${fragmentos[i]}.`;
   }
   out.innerHTML = texto;
 }

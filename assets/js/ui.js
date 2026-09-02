@@ -57,6 +57,7 @@ function aplicarTema(tema){
   document.documentElement.dataset.theme = tema;
   try{ localStorage.setItem(TEMA_KEY, tema); }catch(e){}
   pintarBotonTema();
+  pintarLogos();
 }
 
 function pintarBotonTema(){
@@ -69,8 +70,19 @@ function pintarBotonTema(){
   btn.setAttribute('title', `Cambiar a tema ${claro ? 'oscuro' : 'claro'}`);
 }
 
+/* El logotipo es blanco o tinta según el fondo: no se puede recolorear con
+   CSS como un icono, así que se cambia el archivo con el tema. */
+function pintarLogos(){
+  const claro = temaActual() === 'light';
+  const archivo = claro ? 'assets/brand/alzak-oscuro.png' : 'assets/brand/alzak-claro.png';
+  document.querySelectorAll('.logo-img,.pie-logo').forEach(img => {
+    if(!img.src.endsWith(archivo)) img.src = archivo;
+  });
+}
+
 function initTema(){
   pintarBotonTema();
+  pintarLogos();
   const btn = document.getElementById('themeToggle');
   if(btn) btn.addEventListener('click', ()=> aplicarTema(temaActual() === 'light' ? 'dark' : 'light'));
 
@@ -79,7 +91,10 @@ function initTema(){
   let guardado = null;
   try{ guardado = localStorage.getItem(TEMA_KEY); }catch(e){}
   if(!guardado){
-    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', pintarBotonTema);
+    window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', ()=>{
+      pintarBotonTema();
+      pintarLogos();
+    });
   }
 }
 
@@ -102,5 +117,137 @@ function restaurarAcordeones(){
   acordeonesCerrados = [];
 }
 
-window.addEventListener('beforeprint', abrirTodoParaImprimir);
-window.addEventListener('afterprint', restaurarAcordeones);
+window.addEventListener('beforeprint', ()=>{
+  abrirTodoParaImprimir();
+  // El aspecto de papel está definido una sola vez, en `.paper`. Ponerlo en
+  // el <html> al imprimir garantiza que el PDF salga igual que la vista
+  // previa, sin una segunda copia de los colores en la hoja de impresión.
+  document.documentElement.classList.add('paper');
+});
+window.addEventListener('afterprint', ()=>{
+  restaurarAcordeones();
+  document.documentElement.classList.remove('paper');
+});
+
+/* ═══ PREVISUALIZACIÓN ═══
+   En escritorio el navegador ya muestra su propia vista previa al imprimir.
+   En iOS no hay diálogo: la impresión sale por la hoja de compartir y el
+   equipo termina guardando un PDF que no vio. Esta capa iguala las dos
+   plataformas, y de paso marca dónde se va a cortar cada hoja.
+
+   La hoja se dibuja en milímetros reales, con el mismo ancho útil que declara
+   @page, así que el corte que marca la guía es el que hará el navegador. */
+
+const HOJA_ALTO_MM = 269;   // A4 (297mm) menos 14mm de margen arriba y abajo
+
+function abrirPrevisualizacion(){
+  const propBox = document.getElementById('propBox');
+  if(!propBox || !propBox.innerHTML.trim()) return;
+
+  let capa = document.getElementById('previewLayer');
+  if(!capa){
+    capa = document.createElement('div');
+    capa.id = 'previewLayer';
+    capa.className = 'preview paper';
+    capa.setAttribute('role','dialog');
+    capa.setAttribute('aria-modal','true');
+    capa.setAttribute('aria-label','Vista previa del documento');
+    document.body.appendChild(capa);
+  }
+
+  capa.innerHTML = `
+    <div class="preview-bar">
+      <div class="preview-title">Vista previa del documento
+        <span id="previewPaginas"></span></div>
+      <button type="button" class="btn-g" id="previewCerrar">Volver a editar</button>
+      <button type="button" class="btn-p" id="previewImprimir">
+        ${icon('printer')} Guardar PDF o imprimir</button>
+    </div>
+    <div class="preview-scroll">
+      <div class="preview-sheet">
+        <div class="preview-page" id="previewHoja">
+          <div class="preview-guides"></div>
+          <div id="previewContenido"></div>
+        </div>
+      </div>
+      <p class="preview-nota">Las líneas rojas marcan dónde termina cada hoja.
+        Al guardar, el navegador corta ahí mismo.</p>
+    </div>`;
+
+  // Se clona el contenido ya construido en lugar de rearmarlo: la vista previa
+  // muestra exactamente lo que el equipo tiene, no una segunda versión.
+  const contenido = document.getElementById('previewContenido');
+  contenido.innerHTML = propBox.innerHTML;
+  contenido.querySelectorAll('details').forEach(d => d.open = true);
+  contenido.querySelectorAll('.no-print').forEach(el => el.remove());
+
+  document.getElementById('previewCerrar').onclick = cerrarPrevisualizacion;
+  document.getElementById('previewImprimir').onclick = ()=> window.print();
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('keydown', cerrarConEscape);
+
+  ajustarEscalaPrevisualizacion();
+  window.addEventListener('resize', ajustarEscalaPrevisualizacion);
+  document.getElementById('previewCerrar').focus();
+}
+
+/* La hoja mide 182mm de ancho, unos 688px, que no caben en un teléfono. Se
+   reduce para que entre completa en lugar de obligar a desplazarse a lo
+   ancho, que es justo lo que impide juzgar una maqueta. */
+function ajustarEscalaPrevisualizacion(){
+  const capa = document.getElementById('previewLayer');
+  if(!capa) return;
+  const scroll = capa.querySelector('.preview-scroll');
+  const hoja = capa.querySelector('.preview-sheet');
+  if(!scroll || !hoja) return;
+
+  hoja.style.setProperty('--preview-scale', '1');
+  const disponible = scroll.clientWidth - 24;
+  const anchoHoja = hoja.getBoundingClientRect().width;
+  const escala = Math.min(1, disponible / anchoHoja);
+  hoja.style.setProperty('--preview-scale', escala.toFixed(4));
+
+  // Con transform la caja sigue ocupando su alto original, así que el
+  // contenedor necesita compensarlo para no dejar un hueco al final.
+  // Con transform la caja sigue ocupando su alto sin escalar, así que hay que
+  // descontar la diferencia o queda un hueco al final del desplazamiento.
+  const alto = hoja.getBoundingClientRect().height;
+  hoja.style.marginBottom = escala < 1 ? `${(alto / escala - alto) * -1}px` : '';
+  // A escala 1 la hoja se centra; reducida, arranca pegada al borde izquierdo.
+  hoja.style.marginLeft = escala < 1 ? '0' : 'auto';
+  hoja.style.marginRight = escala < 1 ? '0' : 'auto';
+
+  contarHojas();
+}
+
+function contarHojas(){
+  const capa = document.getElementById('previewLayer');
+  const contenido = capa && capa.querySelector('#previewContenido');
+  const etiqueta = capa && capa.querySelector('#previewPaginas');
+  if(!contenido || !etiqueta) return;
+  // 1mm = 96/25.4 px en CSS.
+  const altoHojaPx = HOJA_ALTO_MM * (96 / 25.4);
+  const hojas = Math.max(1, Math.ceil(contenido.scrollHeight / altoHojaPx));
+  etiqueta.textContent = `${hojas} ${hojas === 1 ? 'hoja' : 'hojas'} en A4`;
+}
+
+function cerrarPrevisualizacion(){
+  const capa = document.getElementById('previewLayer');
+  if(capa) capa.remove();
+  document.body.style.overflow = '';
+  document.removeEventListener('keydown', cerrarConEscape);
+  window.removeEventListener('resize', ajustarEscalaPrevisualizacion);
+  const btn = document.getElementById('btnPreview');
+  if(btn) btn.focus();
+}
+
+function cerrarConEscape(e){
+  if(e.key === 'Escape') cerrarPrevisualizacion();
+}
+
+/* El año del pie se toma del reloj: el taller es en octubre de 2026 pero la
+   herramienta puede volver a usarse en ediciones siguientes. */
+document.addEventListener('DOMContentLoaded', ()=>{
+  const anio = document.getElementById('pieAnio');
+  if(anio) anio.textContent = String(new Date().getFullYear());
+});

@@ -59,14 +59,11 @@
 
 <div class="topbar">
 <header>
-  <div class="logo">
-    <div class="logo-pip"></div>
-    <div>
-      <div class="logo-name">AL<em>ZAK</em> <span style="font-weight:300;color:var(--gray)">Consulting & Research</span></div>
-      <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Octubre 2026</span>
-    </div>
-  </div>
-  <div style="display:flex;align-items:center;gap:0.8rem">
+  <a class="logo" href="./" aria-label="ALZAK Consulting &amp; Research · inicio del taller">
+    <img class="logo-img" src="assets/brand/alzak-oscuro.png" alt="ALZAK Consulting &amp; Research" width="360" height="128">
+    <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Octubre 2026</span>
+  </a>
+  <div class="header-acciones">
     <span id="saveIndicator" role="status" aria-live="polite"></span>
     <button type="button" id="themeToggle" class="icon-btn">
       <svg class="ic" aria-hidden="true"><use href="#ic-sun"></use></svg>
@@ -104,7 +101,7 @@
     <h1>¿Cómo se llama tu equipo?</h1>
     <p class="lead">Este nombre identifica tu progreso en el registro del taller. Úsalo en todos los dispositivos si trabajan en más de uno.</p>
     <label for="teamNameInput" class="sr-only">Nombre del equipo</label>
-    <input id="teamNameInput" type="text" autocomplete="off" placeholder="Ej: Grupo México 1, Equipo Andrea..." style="width:100%;max-width:420px;background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:0.85rem 1.1rem;color:var(--white);font-family:Helvetica,Arial,sans-serif;font-size:0.95rem;margin-bottom:1.4rem" />
+    <input id="teamNameInput" class="campo-texto" type="text" autocomplete="off" placeholder="Ej: Grupo México 1, Equipo Andrea..." />
     <div class="btn-row">
       <button class="btn-p" id="btnTeam" disabled onclick="confirmTeam()">Comenzar</button>
     </div>
@@ -252,7 +249,7 @@
             <div class="story3-head-title">Escenario de la historia</div>
             <div class="story3-hint">¿Cuándo y dónde? · ¿Quiénes son los protagonistas? · ¿Cuál es el problema?</div>
           </div>
-          <span style="font-size:0.65rem;color:var(--teal);padding:0.2rem 0.6rem;border:1px solid var(--pub-b);border-radius:10px">Estructura narrativa</span>
+          <span class="story3-tag">Estructura narrativa</span>
         </div>
         <div class="story3-body">
           <div id="escenario-content"></div>
@@ -327,13 +324,30 @@
     <div id="propBox"></div>
     <div class="btn-row no-print">
       <button class="btn-g" onclick="go(5)"><svg class="ic" aria-hidden="true"><use href="#ic-pen"></use></svg> Volver a editar</button>
-      <button class="btn-g" onclick="window.print()"><svg class="ic" aria-hidden="true"><use href="#ic-printer"></use></svg> Imprimir o guardar PDF</button>
+      <button class="btn-p" id="btnPreview" onclick="abrirPrevisualizacion()"><svg class="ic" aria-hidden="true"><use href="#ic-printer"></use></svg> Ver e imprimir</button>
       <button class="btn-g" onclick="restart()"><svg class="ic" aria-hidden="true"><use href="#ic-restart"></use></svg> Nuevo caso</button>
     </div>
   </div>
 
 
 </div></main>
+
+<footer class="pie no-print">
+  <div class="pie-inner">
+    <div class="pie-marca">
+      <img class="pie-logo" src="assets/brand/alzak-oscuro.png" alt="ALZAK Consulting &amp; Research" width="360" height="128">
+      <p class="pie-nota">Herramienta de trabajo del Taller de Farmacoeconomía Aplicada,
+        desarrollada para Adium LATAM. La evidencia de Suprahyal citada corresponde a las
+        publicaciones enlazadas en cada tarjeta; las fichas de país citan fuentes oficiales
+        primarias.</p>
+    </div>
+    <div class="pie-legal">
+      <p>&copy; <span id="pieAnio">2026</span> ALZAK Consulting &amp; Research. Todos los derechos reservados.</p>
+      <p>Documento de uso interno del taller. El contenido y los argumentos de valor aquí
+        recogidos son confidenciales y no deben distribuirse fuera del equipo participante.</p>
+    </div>
+  </div>
+</footer>
 </div>
 
 <script src="assets/js/data/actors.js"></script>

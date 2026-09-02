@@ -203,7 +203,7 @@ header{
 .prog{height:2px;background:var(--line)}
 .prog-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal-d),var(--teal));transition:width .5s ease}
 
-main{flex:1;display:flex;justify-content:center;padding:2.5rem 1.4rem 6rem}
+main{flex:1 0 auto;display:flex;justify-content:center;padding:2.5rem 1.4rem 6rem}
 .inner{width:100%;max-width:1040px}
 
 /* SCREENS */
@@ -289,10 +289,6 @@ h1{font-family:var(--font-ui);font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.1
 .res-item-val{font-size:0.83rem;line-height:1.5}
 .ev-block{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem}
 .ev-lbl{font-size:0.62rem;color:var(--gray);letter-spacing:0.1em;font-weight:600;margin-bottom:0.65rem}
-.ev-item{display:flex;align-items:flex-start;gap:0.6rem;font-size:0.79rem;line-height:1.5;margin-bottom:0.45rem}
-.ev-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:5px}
-.ev-paper{color:var(--white);font-weight:500}
-.ev-result{color:var(--gray);margin-top:1px}
 .kpi-block{background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:1rem 1.2rem;margin-bottom:1.2rem}
 .kpi-lbl{font-size:0.62rem;color:var(--teal);letter-spacing:0.1em;font-weight:600;margin-bottom:0.55rem}
 .kpi-pills{display:flex;flex-wrap:wrap;gap:0.38rem}
@@ -456,12 +452,28 @@ h1{font-family:var(--font-ui);font-size:clamp(1.7rem,4vw,2.3rem);line-height:1.1
 .edit-hint{font-size:0.72rem;color:var(--amber);margin-bottom:1.2rem;padding:0.6rem 1rem;background:var(--amber-l);border-radius:8px;border:1px solid var(--amber-border)}
 textarea{
   width:100%;background:var(--surface-3);border:1px solid var(--line);
-  border-radius:10px;padding:1rem;color:var(--white);font-family:var(--font-ui);
+  border-radius:10px;padding:1rem;color:var(--text);font-family:var(--font-read);
   font-size:0.85rem;line-height:1.65;resize:vertical;min-height:90px;
   transition:border-color .2s;
 }
 textarea:focus{outline:none;border-color:var(--teal)}
-textarea::placeholder{color:var(--gray)}
+textarea::placeholder{color:var(--text-3)}
+/* Campo de una línea. Comparte el aspecto del área de texto para que el
+   formulario se lea como un conjunto. */
+.campo-texto{
+  width:100%;max-width:420px;background:var(--surface-3);
+  border:1px solid var(--line);border-radius:10px;
+  padding:0.85rem 1.1rem;color:var(--text);
+  font-family:var(--font-read);font-size:1rem;margin-bottom:1.4rem;
+  transition:border-color .2s;
+}
+.campo-texto:focus{outline:none;border-color:var(--teal)}
+.campo-texto::placeholder{color:var(--text-3)}
+.header-acciones{display:flex;align-items:center;gap:0.6rem}
+.story3-tag{
+  font-size:0.65rem;color:var(--teal);padding:0.2rem 0.6rem;
+  border:1px solid var(--teal-border);border-radius:10px;white-space:nowrap;
+}
 .field-lbl{font-size:0.65rem;color:var(--teal);letter-spacing:0.08em;font-weight:600;margin-bottom:0.4rem;margin-top:0.85rem;display:block}
 
 /* CONCLUSIÓN */
@@ -491,6 +503,16 @@ textarea::placeholder{color:var(--gray)}
 /* PROPUESTA */
 .prop-wrap{border:1px solid var(--pub-b);border-radius:18px;overflow:hidden;margin-bottom:1.5rem;background:var(--surface-sunken)}
 .prop-hero{background:linear-gradient(135deg,var(--hero-1),var(--hero-2));padding:1.9rem 2.2rem}
+
+/* El fondo de estos tres bloques no cambia con el tema, así que su texto
+   tampoco puede heredarlo: se toma de los tokens de portada. */
+.prop-hero,.res-hero,.story-header{color:var(--hero-text)}
+.prop-title,.res-title,.story-title{color:var(--hero-text)}
+.prop-hero .crumb,.res-hero .crumb{color:var(--hero-text);border-color:rgba(230,242,240,.28);background:rgba(230,242,240,.07)}
+.prop-hero .crumb-lbl,.res-hero .crumb-lbl{color:var(--hero-text-2)}
+.res-sub,.story-desc,.prop-lede{color:var(--hero-text-2)}
+.prop-kicker,.res-tag,.story-badge{color:#5fd8d5;border-color:rgba(95,216,213,.35)}
+.story-timer{color:#f0be5c;background:rgba(240,190,92,.14);border-color:rgba(240,190,92,.35)}
 .prop-kicker{font-size:0.65rem;letter-spacing:0.12em;color:var(--teal);font-weight:600;margin-bottom:0.5rem}
 .prop-title{font-family:var(--font-ui);font-size:1.7rem;font-weight:400;margin-bottom:0.5rem}
 .prop-meta{display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.9rem}
@@ -748,6 +770,166 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
 /* El foco visible no puede depender del tema. */
 :focus-visible{outline:2px solid var(--teal);outline-offset:2px}
 
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   MARCA
+   El logotipo es un mapa de bits en blanco o en tinta, no un icono
+   recolorable: el archivo se cambia con el tema desde el JS.
+   ═══════════════════════════════════════════════════════════════════ */
+.logo{display:flex;flex-direction:column;align-items:flex-start;gap:0.3rem;text-decoration:none;color:inherit;min-width:0}
+/* align-self es imprescindible: en un contenedor flex en columna, el valor
+   por omisión de align-items estira la imagen al ancho disponible y con la
+   altura fija la deforma. */
+.logo-img{height:26px;width:auto;align-self:flex-start;display:block}
+.logo-sub{font-size:0.62rem;color:var(--text-2);letter-spacing:0.01em;line-height:1.35}
+.logo:hover .logo-sub{color:var(--text)}
+
+/* ═══ PIE DE PÁGINA ═══ */
+.pie{
+  position:relative;z-index:1;margin-top:auto;
+  border-top:1px solid var(--line);background:var(--surface-2);
+}
+.pie-inner{
+  max-width:1040px;margin:0 auto;
+  padding:2.2rem var(--pad-x) calc(2.2rem + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:1.4fr 1fr;gap:2rem;align-items:start;
+}
+.pie-marca{display:flex;flex-direction:column;align-items:flex-start;gap:0.9rem}
+.pie-logo{height:30px;width:auto;align-self:flex-start;display:block;opacity:.85}
+.pie-nota{
+  font-family:var(--font-read);font-size:0.82rem;line-height:1.7;
+  color:var(--text-2);max-width:52ch;margin:0;
+}
+.pie-legal{display:flex;flex-direction:column;gap:0.7rem}
+.pie-legal p{font-size:0.74rem;line-height:1.65;color:var(--text-3);margin:0}
+.pie-legal p:first-child{color:var(--text-2);font-weight:500}
+@media (max-width:820px){
+  .pie-inner{grid-template-columns:1fr;gap:1.5rem;padding-top:1.8rem}
+  .pie-nota{max-width:none}
+}
+
+/* Marca dentro de la propuesta imprimible. */
+.prop-logo{height:30px;width:auto;align-self:flex-start;display:block;margin-bottom:1.1rem;opacity:.95}
+.prop-pie{
+  padding:1.2rem 2.2rem 1.5rem;border-top:1px solid var(--line);
+  display:flex;flex-direction:column;gap:0.4rem;
+}
+.prop-pie p{font-size:0.72rem;line-height:1.6;color:var(--text-3);margin:0}
+.prop-pie p:first-child{color:var(--text-2)}
+@media (max-width:820px){
+  .prop-pie{padding:1.1rem 1.2rem 1.3rem}
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ASPECTO PAPEL
+   Como todo el diseño está tokenizado, la hoja impresa es un juego de
+   tokens y no una copia de la hoja de estilos. `.paper` lo aplica a la
+   previsualización, y el JS se lo pone al <html> antes de imprimir, así
+   que lo que se ve en la vista previa es lo que sale en el PDF.
+   ═══════════════════════════════════════════════════════════════════ */
+.paper{
+  color-scheme:light;
+  --bg:#ffffff;
+  --surface:#ffffff;
+  --surface-2:#f4f6f6;
+  --surface-3:#eef2f2;
+  --surface-sunken:#ffffff;
+  --line:#dcdcdc;
+  --line-strong:#bdbdbd;
+  --text:#111111;
+  --text-2:#3d3d3d;
+  --text-3:#767676;
+  --teal:#0f3d3a;
+  --teal-d:#0a2e2b;
+  --teal-bg:#eef4f3;
+  --teal-bg-soft:#f6f9f9;
+  --teal-border:#c3d5d3;
+  --teal-border-soft:#dae6e5;
+  --teal-sel:#e8f1f0;
+  --amber:#7a5200;
+  --amber-bg:#f7f0e0;
+  --amber-border:#ddc9a3;
+  --green:#0f6b4f;
+  --green-bg:#e9f2ee;
+  --shadow-card:none;
+  --shadow-lift:none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   PREVISUALIZACIÓN
+   En escritorio el diálogo del navegador ya muestra una vista previa,
+   pero en iOS no hay diálogo: la impresión sale por la hoja de compartir
+   y el equipo guarda un PDF sin haberlo visto. Esta capa iguala las dos
+   plataformas y además marca dónde se va a cortar cada hoja.
+   ═══════════════════════════════════════════════════════════════════ */
+.preview{
+  position:fixed;inset:0;z-index:900;
+  display:flex;flex-direction:column;
+  background:#4a5250;
+}
+.preview-bar{
+  display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;
+  padding:0.75rem 1rem;
+  padding-top:calc(0.75rem + env(safe-area-inset-top));
+  background:var(--bg);border-bottom:1px solid var(--line);
+  color:var(--text);
+}
+.preview-title{font-size:0.82rem;font-weight:600;margin-right:auto}
+.preview-title span{display:block;font-size:0.68rem;color:var(--text-2);font-weight:400;margin-top:1px}
+.preview-scroll{flex:1;overflow:auto;padding:1.5rem 1rem 3rem;-webkit-overflow-scrolling:touch}
+
+/* La hoja se dibuja en milímetros reales, con el mismo ancho útil que
+   usa @page (A4 menos 14mm de margen por lado). Así el corte que marca
+   la guía es el corte que hará el navegador. */
+.preview-sheet{
+  --sheet-w:182mm;
+  --sheet-h:269mm;
+  width:var(--sheet-w);
+  margin:0 auto;
+  transform-origin:top left;
+  transform:scale(var(--preview-scale,1));
+}
+.preview-page{
+  background:#fff;color:#111;
+  padding:0;margin:0 auto 1.1rem;
+  min-height:var(--sheet-h);
+  box-shadow:0 4px 18px rgba(0,0,0,.35);
+  position:relative;
+}
+
+/* Guías de corte sobre el contenido continuo: una línea cada alto de hoja. */
+.preview-guides{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--sheet-h) - 1px),
+    rgba(200,60,60,.4) calc(var(--sheet-h) - 1px),
+    rgba(200,60,60,.4) var(--sheet-h)
+  );
+}
+.preview-nota{
+  max-width:var(--measure);margin:1.2rem auto 0;
+  font-size:0.74rem;color:rgba(255,255,255,.75);text-align:center;line-height:1.6;
+}
+
+/* Las consultas de medios responden al ancho del viewport, no al de la hoja.
+   Sin esto, en un teléfono la vista previa apilaba las rejillas en una columna
+   y anunciaba una hoja más de las que realmente salen: mostraría una maqueta
+   distinta a la que va a imprimir. La hoja siempre mide 182mm, así que dentro
+   de la previsualización se reafirma la maqueta de página completa. */
+.preview .prop-2col,.preview .conclusion-grid,.preview .tool-card-grid,
+.preview .paso1-grid,.preview .viz-grid{grid-template-columns:1fr 1fr}
+.preview .prop-3col,.preview .resumen-row{grid-template-columns:repeat(3,1fr)}
+.preview .btn-row{position:static;background:none;border:none;margin:0;padding:0}
+.preview .prop-field-val,.preview .prop-lede{max-width:none}
+@media (max-width:820px){
+  .preview-scroll{padding:1rem 0.5rem 2.5rem}
+  .preview-bar .btn-g,.preview-bar .btn-p{flex:1 1 auto;justify-content:center;min-height:44px}
+  .preview-title{flex-basis:100%;margin-right:0}
+}
+
 @media print{
   /* Las pantallas entran con la animación `rise`, que arranca en opacity:0.
      Si el navegador arma el PDF mientras esa animación está en curso, imprime
@@ -765,7 +947,7 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
 
   /* Fuera todo lo que es navegación en pantalla. Las migas de arriba repiten
      los datos que el encabezado de la propuesta ya trae. */
-  .bg-grad,.topbar,header,.prog,.no-print,.module-tabs,.crumbs,.icon-btn{display:none!important}
+  .bg-grad,.topbar,header,.prog,.no-print,.module-tabs,.crumbs,.icon-btn,.preview{display:none!important}
 
   /* En papel no hay nada que desplegar: los acordeones se muestran como
      secciones normales, sin la flecha ni el estado interactivo. El JS los
@@ -782,7 +964,13 @@ main{padding:var(--pad-top) var(--pad-x) var(--pad-bottom)}
     break-inside:avoid;page-break-inside:avoid;
   }
   .prop-hero{break-inside:avoid;break-after:avoid}
-  .prop-sec-num,.prop-sec-title,.prop-field-lbl,.ev-lbl{break-after:avoid}
+  .prop-sec-num,.prop-sec-title,.prop-field-lbl,.ev-lbl{break-after:avoid;break-after:avoid-page}
+  .prop-sec-num{break-after:avoid}
+  .prop-hero,.prop-hero *{color:#e6f2f0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .prop-pie{border-top:1px solid #ddd}
+  .prop-pie p{color:#555}
+  .prop-logo{opacity:1}
+  .prop-kicker{color:#8fded9!important}
   .prop-sec{break-before:auto}
   p,.prop-field-val{orphans:2;widows:2}
 
@@ -864,7 +1052,7 @@ button:focus-visible,input:focus-visible,textarea:focus-visible{
 body{overflow-x:hidden}
 .drag-zone,.viz-grid,.ctx-prose{max-width:100%}
 .viz-card,.tool-card,.prop-box{min-width:0}
-.ev-item a,.ctx-ref a{overflow-wrap:anywhere}
+.ctx-ref a,.link-ext{overflow-wrap:anywhere}
 
 /* Móvil: las áreas táctiles deben ser cómodas y los botones ocupar el ancho. */
 @media(max-width:640px){

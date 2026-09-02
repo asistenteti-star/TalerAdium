@@ -149,7 +149,7 @@ function updateDescOut(){
   const out = document.getElementById('descOut');
   if(!out) return;
   const country = COUNTRIES[ST.country], perfil = PERFILES.find(x=>x.id===ST.perfil), meta = METAS.find(x=>x.id===ST.meta);
-  if(!country||!perfil||!meta){ out.textContent = 'Completa el Módulo 1 primero.'; return; }
+  if(!country||!perfil||!meta){ out.textContent = 'Completa el Módulo 1 primero.'; out.dataset.vacio='1'; return; }
 
   const frases = BUILDER_DIMS.map(dim => {
     const sel = BUILDER_SEL[dim.id];
@@ -160,6 +160,7 @@ function updateDescOut(){
 
   if(frases.length === 0){
     out.innerHTML = `Interlocutor: <strong>${perfil.title}</strong> en <strong>${country.name}</strong>. Objetivo de la conversación: <em>${meta.title.toLowerCase()}</em>. Selecciona las opciones de arriba para enriquecer esta descripción.`;
+    out.dataset.vacio='1';
     return;
   }
 
@@ -172,6 +173,7 @@ function updateDescOut(){
   texto += frases.map(mayus).join('. ') + '. ';
   texto += `El objetivo de esta conversación es <em>${meta.title.toLowerCase()}</em>.`;
   out.innerHTML = texto;
+  delete out.dataset.vacio;
 }
 
 function renderChipBuilder2(){
@@ -202,8 +204,13 @@ function updateDescOut2(){
     return opt ? opt.frase : null;
   }).filter(Boolean);
   const valor = (document.getElementById('ta-p2-valor')||{}).value?.trim() || '';
-  if(frases.length===0 && !valor){ out.textContent = 'Selecciona las opciones de arriba para generar el texto.'; return; }
-  let texto = frases.length ? `Se incorpora ${frases.join(', ')}.` : 'Dato adicional aportado por el equipo.';
+  if(!frases.length && !valor){
+    out.textContent = 'Selecciona las opciones de arriba para generar el texto.';
+    out.dataset.vacio = '1';
+    return;
+  }
+  delete out.dataset.vacio;
+  let texto = frases.length ? `El equipo aporta ${frases.join(', ')}.` : 'Dato adicional aportado por el equipo.';
   if(valor) texto += ` Hallazgo específico: <strong>${valor}</strong>.`;
   out.innerHTML = texto;
 }
@@ -211,7 +218,10 @@ function updateDescOut2(){
 function insertSuggestion(taId, text){
   const ta = document.getElementById(taId);
   if(!ta) return;
-  ta.value = ta.value.trim() ? (ta.value.trim() + '\n' + text) : text;
+  // Cada frase ocupa su propio renglón, así que empieza una oración y no
+  // continúa la anterior: la inicial se pone en mayúscula.
+  const frase = text.trim().charAt(0).toUpperCase() + text.trim().slice(1);
+  ta.value = ta.value.trim() ? (ta.value.trim() + '\n' + frase) : frase;
   ta.focus();
   saveDebounced();
 }
