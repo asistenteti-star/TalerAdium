@@ -83,7 +83,18 @@ for (const [archivo, texto] of [['index.html', html], ['scripts', fuente]]) {
   }
 }
 
-/* 8 — Los estilos usados existen */
+/* 8 — La plantilla del Apps Script no debe llevar el token real.
+   El repositorio es público: el archivo de docs/ es una plantilla y el token
+   se pega únicamente en el editor de Apps Script. Si alguien guarda aquí el
+   valor real y lo sube, queda expuesto junto con la URL del webhook. */
+const plantillaGs = readFileSync(join(raiz, 'docs/AppsScript_TallerAdium.gs'), 'utf8');
+if (!plantillaGs.includes("var TOKEN = 'CAMBIA_ESTE_TOKEN'")) {
+  errores.push('docs/AppsScript_TallerAdium.gs ya no tiene el marcador CAMBIA_ESTE_TOKEN: ' +
+    'parece que se guardó un token real en una plantilla de un repositorio público. ' +
+    'Restaura el marcador y deja el token solo en el editor de Apps Script.');
+}
+
+/* 9 — Los estilos usados existen */
 const css = readFileSync(join(raiz, 'assets/css/styles.css'), 'utf8');
 const clasesCss = new Set([...css.matchAll(/\.([a-zA-Z][\w-]*)/g)].map(m => m[1]));
 const clasesUsadas = new Set();
