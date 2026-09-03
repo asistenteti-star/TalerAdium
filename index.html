@@ -530,7 +530,13 @@ textarea.is-example{color:var(--gray);font-style:italic}
 .ejemplo-strip{padding:0;background:transparent;border:none;margin-bottom:1rem}
 .prop-quote-card.mini{margin:0 0 0.9rem 0;padding:1rem 1.3rem}
 .prop-quote-card.mini::before{font-size:2.2rem;top:0.15rem}
-.prop-quote-card.mini .prop-quote-text{font-size:0.9rem;font-weight:600;padding-left:1.1rem;font-style:italic}
+.prop-quote-card.mini .prop-quote-text{
+  font-size:0.9rem;font-weight:400;padding-left:1.1rem;font-style:normal;
+  line-height:1.75;white-space:pre-line;
+}
+/* Las frases de apertura del cierre van una por renglón: son alternativas,
+   no un párrafo seguido. */
+.prop-quote-cierre.mini .prop-quote-text{display:flex;flex-direction:column;gap:0.6rem}
 .ejemplo-nota{font-size:0.851rem;color:var(--gray);font-style:italic;margin-top:0.2rem}
 .ejemplo-tools-lbl{font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:var(--gray);font-weight:600;margin-bottom:0.5rem}
 .ejemplo-segmento{font-size:0.85rem;color:var(--white);line-height:1.6;margin-bottom:0.9rem}
@@ -847,11 +853,12 @@ textarea::placeholder{color:var(--gray)}
   
         <div class="prop-quote-card prop-quote-mensaje mini">
           <div class="prop-quote-lbl">Mensaje clave</div>
-          <div class="prop-quote-text">Nuestro equipo propone que el mensaje clave sea: la evidencia muestra que a mayor número de ciclos, mayor tiempo libre de artroplastia. Si en consulta todavía duda cuántos ciclos ofrecer, esa duda le está costando a su paciente tiempo de función articular. El consenso latinoamericano de especialistas ya respalda la viscosuplementación en todos los estadios: la pregunta no es si tratar, es si está completando el esquema.</div>
+          <div class="prop-quote-text">Nuestro equipo, después de revisar la evidencia regional y de mundo real disponible, concluye que el argumento a llevar al clínico prescriptor debe construirse sobre dos pilares que se refuerzan entre sí: primero, el respaldo de 25 especialistas de 15 países latinoamericanos, sin financiación de ningún fabricante, que recomiendan la viscosuplementación en todos los estadios de la enfermedad con el grado de evidencia más alto disponible. Segundo, la evidencia de vida real que muestra un patrón dosis-respuesta consistente: a mayor número de ciclos completados, mayor tiempo libre de reemplazo articular, con diferencias de hasta 3,6 años frente a esquemas incompletos. El equipo identificó que la objeción más frecuente en consulta es precisamente la incertidumbre sobre cuántos ciclos ofrecer, y que esa incertidumbre tiene hoy un costo medible en función articular que antes no era visible. Con esos dos elementos, el mensaje que se lleva al prescriptor no depende de un solo estudio ni de una sola fuente: combina el peso del consenso regional independiente con el peso de la evidencia poblacional real.</div>
         </div>
         <div class="prop-quote-card prop-quote-cierre mini">
           <div class="prop-quote-lbl">Cierre: para agendar la reunión</div>
-          <div class="prop-quote-text">Los datos de mundo real muestran un efecto dosis-dependiente que puede cambiar cómo está manejando a estos pacientes hoy. Vale la pena que revisemos juntos el detalle antes de su próxima sesión clínica.</div>
+          <div class="prop-quote-text">«Doctor, ¿sabía que completar el esquema de ciclos puede retrasar hasta 3,6 años el reemplazo de rodilla de su paciente? Si no lo sabía, 15 minutos van a cambiar cómo prescribe desde hoy.»
+«Doctor, 25 especialistas de 15 países ya llegaron a la misma conclusión con el respaldo más alto posible. La pregunta ya no es si funciona, es si su consulta ya lo está aplicando.»</div>
         </div>
         <div class="ejemplo-nota">Esto es un ejemplo. Tu equipo va a construir el suyo propio, con su país, su decisor, sus herramientas y su evidencia.</div>
       </div>
