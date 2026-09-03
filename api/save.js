@@ -15,13 +15,18 @@
  * trabajando solo con su respaldo en localStorage.
  */
 
+// Las columnas del registro. Tienen que coincidir con lo que envía
+// collectData() en index.html y con COLUMNAS en el Apps Script: son tres
+// listas que hay que mantener sincronizadas a mano, y `npm run check` falla
+// si se separan. Ya pasó una vez: esta lista se quedó con los nombres de una
+// versión anterior y descartaba en silencio el mensaje clave y el cierre que
+// escribían los equipos.
 const CAMPOS = [
-  'equipo','paso_actual','pais','decisor','meta',
-  'apertura','presion','relacion','objecion','descripcion_decisor',
-  'dato_tipo','dato_fuente','dato_valor','dato_adicional_texto',
-  'herramienta_activa','escenario','desarrollo',
-  'acciones_corto_plazo','acciones_largo_plazo','metricas',
-  'reto','solucion','resultados_esperados','listo_para_presentar',
+  'equipo', 'paso_actual', 'pais', 'decisor',
+  'meta', 'apertura', 'presion', 'relacion',
+  'objecion', 'descripcion_decisor', 'dato_valor', 'herramienta_activa',
+  'mensaje_clave', 'acciones_corto_plazo', 'acciones_mediano_plazo', 'indicadores',
+  'cierre', 'listo_para_presentar',
 ];
 
 const LIMITE_CARACTERES = 8000; // ninguna celda del taller necesita más

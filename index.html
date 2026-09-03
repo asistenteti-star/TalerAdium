@@ -47,6 +47,39 @@ header{
 .logo{display:flex;align-items:center;gap:0.75rem}
 .logo-pip{width:3px;height:24px;border-radius:2px;background:var(--teal)}
 .logo-name{font-size:0.88rem;font-weight:700}
+/* El logotipo es un mapa de bits: align-self es imprescindible porque el
+   contenedor es flex y, sin él, la imagen se estira al ancho disponible y
+   con la altura fija se deforma. */
+.logo-img{height:30px;width:auto;align-self:flex-start;display:block}
+@media(max-width:640px){.logo-img{height:24px}}
+
+/* ═══ EJEMPLO PLEGABLE ═══
+   El ejemplo ocupaba media pantalla antes de que el equipo pudiera empezar.
+   Se recoge con un clic en su título. */
+.ejemplo-fold{margin-top:1.8rem}
+.ejemplo-summary{
+  display:flex;align-items:center;gap:0.7rem;cursor:pointer;list-style:none;
+  padding:0.55rem 0;min-height:44px;
+}
+.ejemplo-summary::-webkit-details-marker{display:none}
+.ejemplo-summary-lbl{
+  font-size:0.78rem;letter-spacing:0.14em;color:var(--teal);font-weight:600;
+  text-transform:uppercase;
+}
+.ejemplo-summary-hint{
+  font-size:0.78rem;color:var(--gray-d);font-style:italic;margin-left:auto;
+}
+/* La flecha se dibuja con bordes: no hay librería de iconos en este archivo
+   y una entidad de texto no gira. */
+.ejemplo-summary::before{
+  content:'';width:8px;height:8px;flex-shrink:0;
+  border-right:2px solid var(--teal);border-bottom:2px solid var(--teal);
+  transform:rotate(45deg);transition:transform .22s ease;
+  margin-bottom:3px;
+}
+.ejemplo-fold[open]>.ejemplo-summary::before{transform:rotate(-135deg);margin-bottom:0;margin-top:3px}
+.ejemplo-summary:hover .ejemplo-summary-lbl{color:var(--white)}
+.ejemplo-fold[open] .ejemplo-summary-hint{content:'clic para recoger'}
 .logo-name em{font-style:normal;color:var(--teal)}
 .logo-sub{font-size:0.78rem;color:var(--gray);display:block;margin-top:2px}
 .module-tabs{display:flex;gap:0.5rem}
@@ -604,7 +637,7 @@ textarea::placeholder{color:var(--gray)}
   <div class="logo">
     <div class="logo-pip"></div>
     <div>
-      <div class="logo-name">AL<em>ZAK</em> <span style="font-weight:300;color:var(--gray)">Consulting & Research</span></div>
+      <img class="logo-img" src="assets/brand/alzakgroup-claro.png" alt="ALZAK Consulting &amp; Research" width="362" height="128">
       <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Septiembre 2026</span>
     </div>
   </div>
@@ -643,33 +676,42 @@ textarea::placeholder{color:var(--gray)}
       <div class="disclaimer-text">El contenido de este taller (evidencia, mensajes sugeridos y recomendaciones) es ilustrativo, construido para efectos de este ejercicio práctico. No es el resultado de una revisión sistemática de literatura y no reemplaza el criterio médico, regulatorio ni el análisis técnico formal antes de usarse en un caso real. Su propósito es que cada equipo entienda qué tipo de herramienta de economía de la salud usar y cómo construir un argumento propio, no ofrecer conclusiones científicas definitivas.</div>
     </div>
 
-    <div class="kicker" style="margin-top:1.8rem">Ejemplo de lo que va a construir tu equipo</div>
-    <div class="ejemplo-card">
-      <div class="prop-summary-strip ejemplo-strip">
-        <div class="sum-chip"><span class="sum-chip-lbl">País</span><span class="sum-chip-val" style="font-size:1.4rem">🇲🇽</span></div>
-        <div class="sum-chip"><span class="sum-chip-lbl">Decisor</span><span class="sum-chip-val">Clínico prescriptor</span></div>
-        <div class="sum-chip"><span class="sum-chip-lbl">Meta</span><span class="sum-chip-val">Aumentar la prescripción donde ya tiene cobertura</span></div>
+    <!-- El ejemplo ocupaba media pantalla antes de que el equipo pudiera
+         empezar a trabajar. Ahora se recoge con un clic en su título. Abre
+         desplegado la primera vez, porque es lo que explica hacia dónde van,
+         y recuerda si lo recogieron. -->
+    <details class="ejemplo-fold" id="ejemploFold" open>
+      <summary class="ejemplo-summary">
+        <span class="ejemplo-summary-lbl">Ejemplo de lo que va a construir tu equipo</span>
+        <span class="ejemplo-summary-hint">clic para recoger</span>
+      </summary>
+      <div class="ejemplo-card">
+        <div class="prop-summary-strip ejemplo-strip">
+          <div class="sum-chip"><span class="sum-chip-lbl">País</span><span class="sum-chip-val" style="font-size:1.4rem">🇲🇽</span></div>
+          <div class="sum-chip"><span class="sum-chip-lbl">Decisor</span><span class="sum-chip-val">Clínico prescriptor</span></div>
+          <div class="sum-chip"><span class="sum-chip-lbl">Meta</span><span class="sum-chip-val">Aumentar la prescripción donde ya tiene cobertura</span></div>
+        </div>
+        <div class="ejemplo-tools-lbl">Segmentación del interlocutor</div>
+        <div class="ejemplo-segmento">Toma decisiones desde la práctica clínica priorizando la eficacia y la seguridad del tratamiento sobre el costo. Suele ser un especialista sin autoridad formal de compra, pero con alta influencia sobre lo que efectivamente se usa. El argumento económico tiene que presentarse como una extensión natural del criterio clínico, nunca como un reemplazo de este.</div>
+        <div class="sticky-note sticky-note-teal" style="margin-bottom:1.1rem"><div class="sticky-note-title">A este interlocutor le importa</div><div class="sticky-note-text"><strong>Resultado en salud sin generar un hueco al sistema.</strong> Llévale: evidencia clínica más una señal de sostenibilidad.</div></div>
+  
+        <div class="ejemplo-tools-lbl">Herramientas de economía de la salud utilizadas</div>
+        <div class="sum-chip-tools-row" style="margin-bottom:1.1rem">
+          <span class="chip on"><span class="chip-lbl">GRADE</span><span>Consenso de expertos</span></span>
+          <span class="chip on"><span class="chip-lbl">RWE</span><span>Evidencia de mundo real</span></span>
+        </div>
+  
+        <div class="prop-quote-card prop-quote-mensaje mini">
+          <div class="prop-quote-lbl">Mensaje clave</div>
+          <div class="prop-quote-text">Le hablo como especialista que ya prescribe en pacientes con osteoartrosis de rodilla con cobertura vigente. El consenso latinoamericano de especialistas respalda la viscosuplementación en todos los estadios de la enfermedad, y la evidencia de mundo real muestra un efecto dosis-dependiente: a mayor número de ciclos, mayor tiempo libre de artroplastia frente a no recibir tratamiento. Sé que la objeción más frecuente en consulta es la incertidumbre sobre cuántos ciclos ofrecer, y por eso quiero compartirle el detalle exacto de esa evidencia.</div>
+        </div>
+        <div class="prop-quote-card prop-quote-cierre mini">
+          <div class="prop-quote-lbl">Cierre: para agendar la reunión</div>
+          <div class="prop-quote-text">Los datos de mundo real muestran un efecto dosis-dependiente que puede cambiar cómo está manejando a estos pacientes hoy. Vale la pena que revisemos juntos el detalle antes de su próxima sesión clínica.</div>
+        </div>
+        <div class="ejemplo-nota">Esto es un ejemplo. Tu equipo va a construir el suyo propio, con su país, su decisor, sus herramientas y su evidencia.</div>
       </div>
-      <div class="ejemplo-tools-lbl">Segmentación del interlocutor</div>
-      <div class="ejemplo-segmento">Toma decisiones desde la práctica clínica priorizando la eficacia y la seguridad del tratamiento sobre el costo. Suele ser un especialista sin autoridad formal de compra, pero con alta influencia sobre lo que efectivamente se usa. El argumento económico tiene que presentarse como una extensión natural del criterio clínico, nunca como un reemplazo de este.</div>
-      <div class="sticky-note sticky-note-teal" style="margin-bottom:1.1rem"><div class="sticky-note-title">A este interlocutor le importa</div><div class="sticky-note-text"><strong>Resultado en salud sin generar un hueco al sistema.</strong> Llévale: evidencia clínica más una señal de sostenibilidad.</div></div>
-
-      <div class="ejemplo-tools-lbl">Herramientas de economía de la salud utilizadas</div>
-      <div class="sum-chip-tools-row" style="margin-bottom:1.1rem">
-        <span class="chip on"><span class="chip-lbl">GRADE</span><span>Consenso de expertos</span></span>
-        <span class="chip on"><span class="chip-lbl">RWE</span><span>Evidencia de mundo real</span></span>
-      </div>
-
-      <div class="prop-quote-card prop-quote-mensaje mini">
-        <div class="prop-quote-lbl">Mensaje clave</div>
-        <div class="prop-quote-text">Le hablo como especialista que ya prescribe en pacientes con osteoartrosis de rodilla con cobertura vigente. El consenso latinoamericano de especialistas respalda la viscosuplementación en todos los estadios de la enfermedad, y la evidencia de mundo real muestra un efecto dosis-dependiente: a mayor número de ciclos, mayor tiempo libre de artroplastia frente a no recibir tratamiento. Sé que la objeción más frecuente en consulta es la incertidumbre sobre cuántos ciclos ofrecer, y por eso quiero compartirle el detalle exacto de esa evidencia.</div>
-      </div>
-      <div class="prop-quote-card prop-quote-cierre mini">
-        <div class="prop-quote-lbl">Cierre: para agendar la reunión</div>
-        <div class="prop-quote-text">Los datos de mundo real muestran un efecto dosis-dependiente que puede cambiar cómo está manejando a estos pacientes hoy. Vale la pena que revisemos juntos el detalle antes de su próxima sesión clínica.</div>
-      </div>
-      <div class="ejemplo-nota">Esto es un ejemplo. Tu equipo va a construir el suyo propio, con su país, su decisor, sus herramientas y su evidencia.</div>
-    </div>
+    </details>
 
     <div class="obj-divider"></div>
 
@@ -1921,6 +1963,17 @@ document.addEventListener('input', function(e){
 document.getElementById('teamNameInput').addEventListener('input', function(){
   document.getElementById('btnTeam').disabled = !this.value.trim();
 });
+/* El estado del ejemplo se recuerda: si el equipo lo recogió, no vuelve a
+   abrirse en la siguiente visita. */
+(function(){
+  const fold = document.getElementById('ejemploFold');
+  if(!fold) return;
+  try{ if(localStorage.getItem('taller-adium-ejemplo') === 'cerrado') fold.open = false; }catch(e){}
+  fold.addEventListener('toggle', ()=>{
+    try{ localStorage.setItem('taller-adium-ejemplo', fold.open ? 'abierto' : 'cerrado'); }catch(e){}
+  });
+})();
+
 init();
 updateStepperActive(0);
 </script>

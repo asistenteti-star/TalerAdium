@@ -28,12 +28,11 @@ var TOKEN = 'CAMBIA_ESTE_TOKEN';
 var HOJA = 'Registros';
 
 var COLUMNAS = [
-  'equipo','recibido_en','paso_actual','pais','decisor','meta',
-  'apertura','presion','relacion','objecion','descripcion_decisor',
-  'dato_tipo','dato_fuente','dato_valor','dato_adicional_texto',
-  'herramienta_activa','escenario','desarrollo',
-  'acciones_corto_plazo','acciones_largo_plazo','metricas',
-  'reto','solucion','resultados_esperados','listo_para_presentar'
+  'equipo', 'recibido_en', 'paso_actual', 'pais',
+  'decisor', 'meta', 'apertura', 'presion',
+  'relacion', 'objecion', 'descripcion_decisor', 'dato_valor',
+  'herramienta_activa', 'mensaje_clave', 'acciones_corto_plazo', 'acciones_mediano_plazo',
+  'indicadores', 'cierre', 'listo_para_presentar'
 ];
 
 function doPost(e) {
