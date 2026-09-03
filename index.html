@@ -79,9 +79,10 @@ header{
 }
 .ejemplo-fold[open]>.ejemplo-summary::before{transform:rotate(-135deg);margin-bottom:0;margin-top:3px}
 .ejemplo-summary:hover .ejemplo-summary-lbl{color:var(--white)}
-.ejemplo-fold[open] .ejemplo-summary-hint{content:'clic para recoger'}
+.ejemplo-summary-hint[data-abierto]{display:none}
+.ejemplo-fold[open] .ejemplo-summary-hint[data-cerrado]{display:none}
+.ejemplo-fold[open] .ejemplo-summary-hint[data-abierto]{display:inline}
 .logo-name em{font-style:normal;color:var(--teal)}
-.logo-sub{font-size:0.78rem;color:var(--gray);display:block;margin-top:2px}
 .module-tabs{display:flex;gap:0.5rem}
 .mod-tab{font-size:0.78rem;letter-spacing:0.08em;padding:0.28rem 0.8rem;border-radius:20px;border:1px solid var(--line);color:var(--gray);cursor:pointer;transition:all .2s}
 .mod-tab.active{border-color:var(--teal);background:var(--teal-dim);color:var(--teal)}
@@ -638,7 +639,6 @@ textarea::placeholder{color:var(--gray)}
     <div class="logo-pip"></div>
     <div>
       <img class="logo-img" src="assets/brand/alzakgroup-claro.png" alt="ALZAK Consulting &amp; Research" width="362" height="128">
-      <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Septiembre 2026</span>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:0.8rem">
@@ -680,10 +680,11 @@ textarea::placeholder{color:var(--gray)}
          empezar a trabajar. Ahora se recoge con un clic en su título. Abre
          desplegado la primera vez, porque es lo que explica hacia dónde van,
          y recuerda si lo recogieron. -->
-    <details class="ejemplo-fold" id="ejemploFold" open>
+    <details class="ejemplo-fold" id="ejemploFold">
       <summary class="ejemplo-summary">
         <span class="ejemplo-summary-lbl">Ejemplo de lo que va a construir tu equipo</span>
-        <span class="ejemplo-summary-hint">clic para recoger</span>
+        <span class="ejemplo-summary-hint" data-cerrado>clic para ver</span>
+        <span class="ejemplo-summary-hint" data-abierto>clic para recoger</span>
       </summary>
       <div class="ejemplo-card">
         <div class="prop-summary-strip ejemplo-strip">
@@ -1968,7 +1969,8 @@ document.getElementById('teamNameInput').addEventListener('input', function(){
 (function(){
   const fold = document.getElementById('ejemploFold');
   if(!fold) return;
-  try{ if(localStorage.getItem('taller-adium-ejemplo') === 'cerrado') fold.open = false; }catch(e){}
+  // Arranca recogido. Solo se abre si el equipo lo abrió antes.
+  try{ if(localStorage.getItem('taller-adium-ejemplo') === 'abierto') fold.open = true; }catch(e){}
   fold.addEventListener('toggle', ()=>{
     try{ localStorage.setItem('taller-adium-ejemplo', fold.open ? 'abierto' : 'cerrado'); }catch(e){}
   });
