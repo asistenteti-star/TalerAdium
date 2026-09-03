@@ -15,5 +15,6 @@ Thumbs.db
 *.log
 snowflake.log
 
-# PDFs generados por la propia app, útiles para revisar pero no para versionar
-docs/*.pdf
+# PDFs que genera la propia app al imprimir: útiles para revisar, no para
+# versionar. Los materiales del taller viven en assets/docs y sí se versionan.
+/docs/*.pdf

@@ -53,6 +53,61 @@ header{
 .logo-img{height:30px;width:auto;align-self:flex-start;display:block}
 @media(max-width:640px){.logo-img{height:24px}}
 
+/* ═══════════════════════════════════════════════════════════════════
+   BLOQUE CONCEPTUAL
+   Una tarjeta con la portada, y el visor del navegador insertado solo
+   cuando el equipo lo abre: el documento pesa cerca de un mega y no
+   tiene sentido descargarlo a todos los asistentes al entrar.
+   ═══════════════════════════════════════════════════════════════════ */
+.slides{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.8rem;max-width:860px}
+.slides-lbl{
+  font-size:0.78rem;letter-spacing:0.14em;color:var(--teal);font-weight:600;
+  text-transform:uppercase;margin-bottom:0.9rem;
+}
+.slides-card{
+  display:grid;grid-template-columns:minmax(0,240px) 1fr;gap:1.3rem;width:100%;
+  text-align:left;background:var(--priv);border:1px solid var(--line);
+  border-radius:14px;padding:1.1rem;cursor:pointer;font:inherit;color:inherit;
+  transition:border-color .18s,background-color .18s,transform .12s;
+  align-items:start;
+}
+.slides-card:hover{border-color:var(--pub-b);background:var(--teal-dim);transform:translateY(-2px)}
+.slides-portada{
+  width:100%;height:auto;display:block;border-radius:8px;
+  border:1px solid var(--line);
+}
+.slides-info{display:flex;flex-direction:column;gap:0.5rem;min-width:0}
+.slides-titulo{font-size:1.05rem;font-weight:700;line-height:1.3}
+.slides-desc{font-size:0.862rem;color:var(--gray);line-height:1.6}
+.slides-meta{display:flex;flex-wrap:wrap;gap:0.4rem 0.9rem;font-size:0.806rem;color:var(--gray-d)}
+.slides-autor{color:var(--gray)}
+.slides-paginas{font-variant-numeric:tabular-nums}
+.slides-cta{
+  align-self:flex-start;margin-top:0.2rem;font-size:0.829rem;font-weight:700;
+  color:var(--teal);border:1px solid var(--pub-b);border-radius:8px;
+  padding:0.45rem 0.9rem;
+}
+.slides-card:hover .slides-cta{background:var(--teal-dim)}
+
+.slides-visor{margin-top:1.1rem;border:1px solid var(--pub-b);border-radius:14px;overflow:hidden}
+.slides-visor-barra{
+  display:flex;align-items:center;gap:0.8rem;flex-wrap:wrap;
+  padding:0.7rem 1rem;background:rgba(0,0,0,.25);border-bottom:1px solid var(--line);
+}
+.slides-visor-lbl{font-size:0.829rem;font-weight:600;margin-right:auto}
+.slides-visor-link{font-size:0.806rem;color:var(--teal);text-decoration:none}
+.slides-visor-link:hover{text-decoration:underline}
+.slides-cerrar{padding:0.45rem 1rem;font-size:0.806rem}
+.slides-marco{aspect-ratio:16/9;background:#1a1a1a}
+.slides-marco iframe{width:100%;height:100%;border:0;display:block}
+
+@media(max-width:700px){
+  .slides-card{grid-template-columns:1fr}
+  /* En un teléfono el visor de PDF a 16/9 deja las diapositivas ilegibles;
+     con más alto se puede leer el texto de cada una. */
+  .slides-marco{aspect-ratio:3/4}
+}
+
 /* ═══ EJEMPLO PLEGABLE ═══
    El ejemplo ocupaba media pantalla antes de que el equipo pudiera empezar.
    Se recoge con un clic en su título. */
@@ -723,6 +778,38 @@ textarea::placeholder{color:var(--gray)}
     <div class="btn-row">
       <button class="btn-p" id="btnTeam" disabled onclick="confirmTeam()">Comenzar →</button>
     </div>
+
+    <!-- Vista previa del bloque conceptual. El visor se inserta solo cuando
+         el equipo lo abre: el documento pesa cerca de un mega y no tiene
+         sentido descargarlo a todos los asistentes al entrar. -->
+    <section class="slides">
+      <div class="slides-lbl">Bloque conceptual del taller</div>
+      <button type="button" class="slides-card" id="slidesAbrir"
+              aria-expanded="false" aria-controls="slidesVisor">
+        <img class="slides-portada" src="assets/docs/slides-portada.jpg"
+             alt="Portada de la presentación: «Funciona» ya no alcanza"
+             width="960" height="540" loading="lazy">
+        <span class="slides-info">
+          <span class="slides-titulo">«Funciona» ya no alcanza</span>
+          <span class="slides-desc">Cómo se construye el argumento económico que hace
+            que un pagador latinoamericano diga que sí.</span>
+          <span class="slides-meta">
+            <span class="slides-autor">Nelson J. Alvis Zakzuk</span>
+            <span class="slides-paginas">49 diapositivas</span>
+          </span>
+          <span class="slides-cta">Ver la presentación</span>
+        </span>
+      </button>
+      <div class="slides-visor" id="slidesVisor" hidden>
+        <div class="slides-visor-barra">
+          <span class="slides-visor-lbl">«Funciona» ya no alcanza · 49 diapositivas</span>
+          <a class="slides-visor-link" href="assets/docs/slides-taller-conceptual.pdf"
+             target="_blank" rel="noopener">Abrir en una pestaña nueva</a>
+          <button type="button" class="btn-g slides-cerrar" id="slidesCerrar">Cerrar</button>
+        </div>
+        <div class="slides-marco" id="slidesMarco"></div>
+      </div>
+    </section>
   </div>
 
   <!-- S1 PAÍS -->
@@ -1973,6 +2060,36 @@ document.getElementById('teamNameInput').addEventListener('input', function(){
   try{ if(localStorage.getItem('taller-adium-ejemplo') === 'abierto') fold.open = true; }catch(e){}
   fold.addEventListener('toggle', ()=>{
     try{ localStorage.setItem('taller-adium-ejemplo', fold.open ? 'abierto' : 'cerrado'); }catch(e){}
+  });
+})();
+
+/* ═══ BLOQUE CONCEPTUAL ═══
+   El visor se crea al abrirlo y se destruye al cerrarlo: mientras esté
+   cerrado, el documento no se descarga. */
+(function(){
+  const abrir  = document.getElementById('slidesAbrir');
+  const cerrar = document.getElementById('slidesCerrar');
+  const visor  = document.getElementById('slidesVisor');
+  const marco  = document.getElementById('slidesMarco');
+  if(!abrir || !visor || !marco) return;
+
+  abrir.addEventListener('click', ()=>{
+    if(!marco.firstChild){
+      const iframe = document.createElement('iframe');
+      iframe.src = 'assets/docs/slides-taller-conceptual.pdf#view=FitH';
+      iframe.title = 'Presentación: «Funciona» ya no alcanza';
+      marco.appendChild(iframe);
+    }
+    visor.hidden = false;
+    abrir.setAttribute('aria-expanded','true');
+    visor.scrollIntoView({ behavior:'smooth', block:'start' });
+  });
+
+  if(cerrar) cerrar.addEventListener('click', ()=>{
+    visor.hidden = true;
+    abrir.setAttribute('aria-expanded','false');
+    marco.innerHTML = '';          // libera el documento de la memoria
+    abrir.focus();
   });
 })();
 
