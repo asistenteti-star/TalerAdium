@@ -1156,9 +1156,8 @@ const METAS=[
   {id:'inclusion',num:'Meta 1',title:'Incluir Suprahyal en el formulario o listado oficial',desc:'El producto no está cubierto. Quiero que entre al plan de beneficios o formulario oficial, a la Lista Oficial de Medicamentos (LOM, Costa Rica), al Cuadro Nacional de Medicamentos Básicos (CNMB, Ecuador) o al Petitorio Nacional Único de Medicamentos Esenciales (Perú).',tag:'Acceso inicial · barrera de cobertura',recomendada:['consenso','cea'],porque:'Sin cobertura, lo que abre la puerta es el respaldo clínico regional. El CEA acompaña, no lidera.'},
   {id:'difer',num:'Meta 2',title:'Diferenciarlo frente al ácido hialurónico genérico',desc:'El producto está en el mercado pero compite con múltiples alternativas. Quiero demostrar por qué Suprahyal es la opción preferida.',tag:'Diferenciación · barrera de preferencia',recomendada:['ccons','cmin'],porque:'Si pueden sostener equivalencia clínica, la minimización de costos es la más limpia. Si no, el costo-consecuencia muestra las diferencias sin forzar un solo número.'},
   {id:'presup',num:'Meta 3',title:'Demostrar que no hace un hueco al presupuesto',desc:'El pagador tiene dudas sobre el costo. Quiero mostrar que Suprahyal evita costos mayores a futuro.',tag:'Sostenibilidad · barrera financiera',recomendada:['aip'],porque:'Es la pregunta textual de "no le hago un hueco al presupuesto". El CEA solo acompaña si el decisor exige evaluación formal completa.'},
-  {id:'riesgo',num:'Meta 4',title:'Abrir una conversación de riesgo compartido',desc:'El pagador quiere ver impacto real antes de comprometerse. Quiero proponer un acuerdo precio-resultado.',tag:'Acuerdo de acceso · relación avanzada',recomendada:['mea'],porque:'Es la definición misma de la meta. Sin el MEA no hay mecanismo para mitigar la incertidumbre del pagador.'},
-  {id:'prescripcion',num:'Meta 5',title:'Aumentar la prescripción donde ya tiene cobertura',desc:'El producto ya está cubierto pero la prescripción es baja. Quiero que el clínico lo use más y con mayor confianza.',tag:'Expansión · barrera de adopción clínica',recomendada:['consenso','rwe'],porque:'No hay barrera de acceso, hay barrera de confianza clínica. El costo ya está asumido, así que el impacto presupuestal no es el argumento principal aquí.'},
-  {id:'negociacion',num:'Meta 6',title:'Defender el precio frente a una objeción de costo',desc:'El producto ya generó interés o está en evaluación, pero el pagador compara precio directo contra el genérico o pide un descuento antes de aprobar. Quiero sustentar el precio con costo total, no con precio unitario.',tag:'Negociación comercial · barrera de precio',recomendada:['cmin','ccons'],porque:'La meta pide comparar el costo total, no una razón incremental contra un umbral. El CEA solo no sustenta bien esta conversación.'}
+  {id:'prescripcion',num:'Meta 4',title:'Aumentar la prescripción donde ya tiene cobertura',desc:'El producto ya está cubierto pero la prescripción es baja. Quiero que el clínico lo use más y con mayor confianza.',tag:'Expansión · barrera de adopción clínica',recomendada:['consenso','rwe'],porque:'No hay barrera de acceso, hay barrera de confianza clínica. El costo ya está asumido, así que el impacto presupuestal no es el argumento principal aquí.'},
+  {id:'negociacion',num:'Meta 5',title:'Defender el precio frente a una objeción de costo',desc:'El producto ya generó interés o está en evaluación, pero el pagador compara precio directo contra el genérico o pide un descuento antes de aprobar. Quiero sustentar el precio con costo total, no con precio unitario.',tag:'Negociación comercial · barrera de precio',recomendada:['cmin','ccons'],porque:'La meta pide comparar el costo total, no una razón incremental contra un umbral. El CEA solo no sustenta bien esta conversación.'}
 ];
 
 
@@ -1355,7 +1354,6 @@ const TOOLS_BY_META={
   inclusion:['consenso','cea','aip'],
   difer:['ccons','cmin','rwe'],
   presup:['aip','cea'],
-  riesgo:['mea','rwe','cea'],
   prescripcion:['consenso','rwe','ccons'],
   negociacion:['cmin','cea','aip'],
 };
@@ -1369,7 +1367,6 @@ const META_METRICS = {
   inclusion: ['Costo por AVAC evitado','Nivel de evidencia GRADE','Tiempo estimado a inclusión','Comparación con tecnologías ya incluidas'],
   difer: ['Diferencia de resultado clínico vs. comparador','Costo total del tratamiento completo','Tasa de eventos evitados','Percepción de valor del prescriptor'],
   presup: ['Impacto presupuestal neto a 3 y 5 años','Costo evitado por paciente tratado','Análisis de sensibilidad del modelo','Número de pacientes elegibles'],
-  riesgo: ['Métrica de resultado acordada','Tasa de cumplimiento del acuerdo','Ajuste de precio por resultado','Costo de monitoreo del acuerdo'],
   prescripcion: ['Tasa de prescripción actual vs. esperada','Brecha entre cobertura aprobada y uso real','Confianza clínica reportada','Tiempo desde cobertura hasta primera prescripción'],
   negociacion: ['Costo total a 5 años vs. precio de lista','Descuento máximo aceptable sin pérdida de margen','Ahorro neto proyectado para el sistema','Precio por resultado comparado con el comparador'],
 };
@@ -1539,10 +1536,6 @@ const VIZ={
   presup:[
     {title:'ICER de referencia (competidor)',num:'Dominante',unit:'',desc:'Castro 2015 es hylan G-F 20 (Synvisc, Sanofi), no Suprahyal. Sirve para ver qué tan exigente es la metodología esperada en Colombia, no como argumento propio.',src:'Castro et al. 2015 · Colombia, evidencia del competidor'},
     {title:'Umbral de referencia colombiano',num:'USD 5.180,80',unit:'por AVAC',desc:'0,86 del PIB per cápita. Útil como referencia de qué tan exigente es el umbral colombiano, independiente de qué producto se esté evaluando.',src:'Espinosa et al. 2022 · Health Policy Plan'}
-  ],
-  riesgo:[
-    {title:'Retraso de artroplastia',num:'9,8',unit:'meses (IC 8,2-11,4)',desc:'Síntesis independiente, sin financiación · 25 estudios · 2,8M pacientes · base sólida para definir la métrica de un acuerdo',src:'Berkani et al. 2022 · J Clin Med'},
-    {title:'Peso del hialuronato en el costo total',num:'1,8%',unit:'vs 76,6% de la cirugía',desc:'Argumento de poca inversión, mucha palanca para estructurar el acuerdo',src:'Malanga et al. 2020',bar:{labels:['Hialuronato','Cirugía'],vals:[1.8,76.6],max:100}}
   ],
   prescripcion:[
     {title:'El dato que cambia la consulta',num:'0,3 → 3,6+',unit:'años a cirugía, sin HA vs 5+ ciclos',desc:'El argumento dosis-respuesta que el prescriptor necesita para justificar completar el esquema, no solo aplicar una dosis',src:'Altman et al. 2015 · PLoS ONE',bar:{labels:['Sin HA (0,3 años)','1 ciclo (>1,0 año)','5+ ciclos (retraso de 3,6 años)'],vals:[0.3,1.0,3.6],max:4}},
