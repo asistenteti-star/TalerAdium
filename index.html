@@ -121,13 +121,13 @@ header{
    que cualquier regla display posterior lo anularía sin avisar. */
 [hidden]{display:none!important}
 
-.slides{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.8rem;max-width:860px}
+.slides{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.8rem}
 .slides-lbl{
   font-size:0.78rem;letter-spacing:0.14em;color:var(--teal);font-weight:600;
   text-transform:uppercase;margin-bottom:0.9rem;
 }
 .slides-card{
-  display:grid;grid-template-columns:minmax(0,240px) 1fr;gap:1.3rem;width:100%;
+  display:grid;grid-template-columns:minmax(0,240px) 1fr;gap:1.3rem;width:100%;max-width:860px;
   text-align:left;background:var(--priv);border:1px solid var(--line);
   border-radius:14px;padding:1.1rem;cursor:pointer;font:inherit;color:inherit;
   transition:border-color .18s,background-color .18s,transform .12s;
@@ -160,14 +160,22 @@ header{
 .slides-visor-link{font-size:0.806rem;color:var(--teal);text-decoration:none}
 .slides-visor-link:hover{text-decoration:underline}
 .slides-cerrar{padding:0.45rem 1rem;font-size:0.806rem}
-.slides-marco{aspect-ratio:16/9;background:#1a1a1a}
+.slides-marco{height:min(78vh,780px);background:#1a1a1a}
 .slides-marco iframe{width:100%;height:100%;border:0;display:block}
 
 @media(max-width:700px){
   .slides-card{grid-template-columns:1fr}
-  /* En un teléfono el visor de PDF a 16/9 deja las diapositivas ilegibles;
-     con más alto se puede leer el texto de cada una. */
-  .slides-marco{aspect-ratio:3/4}
+  /* En un teléfono el visor ajusta la diapositiva al ancho, así que darle
+     más alto solo agrega vacío: se le da el que la diapositiva necesita más
+     la barra del visor. Para leerla de verdad está el enlace a la pestaña
+     nueva, donde el visor del sistema permite ampliar con los dedos. */
+  .slides-marco{height:calc((100vw - 2.4rem) * 0.5625 + 3.6rem)}
+  .slides-visor-barra{gap:0.5rem}
+  .slides-visor-lbl{flex-basis:100%;margin-right:0}
+  .slides-visor-link{
+    font-weight:700;border:1px solid var(--pub-b);border-radius:8px;
+    padding:0.45rem 0.8rem;
+  }
 }
 
 /* ═══ EJEMPLO PLEGABLE ═══
