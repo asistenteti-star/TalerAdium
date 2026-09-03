@@ -1,5 +1,22 @@
 # Ruta de trabajo
 
+> **Aviso de estado (3 de septiembre de 2026).** Lo que está desplegado es la
+> versión 3 del archivo del gerente, tal cual la entregó, con dos únicos
+> cambios: el registro apunta a `/api/save` para que el Sheet reciba las filas,
+> y la tipografía se escaló desde la raíz a 19px de base con la columna a
+> 1300px. El rediseño anterior —temas claro y oscuro, iconos, soporte táctil,
+> previsualización de impresión, marca ALZAK, pie legal y estructura modular—
+> está completo en la rama `rediseno-alzak`. **Todo lo que este documento
+> describe más abajo se refiere a esa rama, no a lo desplegado.**
+>
+> **Limitación conocida y aceptada.** En la versión desplegada el Paso 4 solo
+> responde al arrastre HTML5, que no dispara en móvil ni en tablet, y la
+> columna «tu combinación» arranca vacía. Un equipo que trabaje desde el
+> celular no puede agregar ninguna herramienta y por lo tanto nunca genera el
+> argumento. Se decidió dejarlo así para mantener el archivo fiel al original.
+> Si se quiere corregir, el arreglo es el que ya está aplicado en la rama:
+> un `click` que mueve la tarjeta entre columnas, conviviendo con el arrastre.
+
 Estado al 2 de septiembre de 2026. El taller es en octubre de 2026.
 
 La app funciona de punta a punta: se recorren las siete pantallas, se genera el
