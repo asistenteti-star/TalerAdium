@@ -1050,12 +1050,9 @@ const META_METRICS = {
 let ACTIVE_TOOL = null;
 
 // ═══ REGISTRO EN VIVO: GOOGLE SHEET ═══
-// El registro va a /api/save, la función serverless de este mismo despliegue,
-// que reenvía la fila al Apps Script del Sheet. Así la URL del script y el
-// token viven solo en las variables de entorno de Vercel, la petición es del
-// mismo origen (no hay CORS que esquivar) y se puede leer la respuesta real
-// para decirle al equipo si su trabajo quedó guardado.
-const SAVE_ENDPOINT = '/api/save';
+// Reemplaza esta URL por la que te da Apps Script al implementar (ver AppsScript_TallerAdium.gs)
+const APPS_SCRIPT_URL = 'PEGA_AQUI_TU_URL_DE_APPS_SCRIPT';
+const GUARDADO_ACTIVO = false; // ← ponlo en true cuando pegues la URL real y quieras conectar el Sheet
 let TEAM_NAME = '';
 let saveDebounceTimer = null;
 
@@ -1064,7 +1061,6 @@ function setSaveIndicator(state){
   if(!el) return;
   if(state==='saving') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#c47f00;display:inline-block"></span> Guardando…';
   else if(state==='saved') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block"></span> Guardado';
-  else if(state==='local') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#7a8585;display:inline-block"></span> Guardado en este equipo';
   else if(state==='error') el.innerHTML = '<span style="width:6px;height:6px;border-radius:50%;background:#c94b4b;display:inline-block"></span> Sin conexión';
   else el.innerHTML = '';
 }
@@ -1103,42 +1099,22 @@ function collectData(){
   };
 }
 
-let guardadoRemotoApagado = false;
-let guardadoEnVuelo = false;
-let guardadoPendiente = false;
-let ultimoEnviado = '';
-
 function saveToSheet(){
-  if(!TEAM_NAME) return;                       // sin equipo no hay fila que actualizar
-  if(guardadoRemotoApagado){ setSaveIndicator('local'); return; }
-
-  const cuerpo = JSON.stringify(collectData());
-  if(cuerpo === ultimoEnviado) return;         // nada cambió desde el último envío
-
-  // Apps Script serializa las escrituras con un lock: medido con 8 equipos a
-  // la vez, cada una toma unos 2,8 s. Una sola petición en vuelo por equipo
-  // evita que el salón entero haga cola.
-  if(guardadoEnVuelo){ guardadoPendiente = true; return; }
-  guardadoEnVuelo = true;
-
+  if(!GUARDADO_ACTIVO) return;
+  if(!TEAM_NAME) return;
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PEGA_AQUI') === 0){
+    console.warn('APPS_SCRIPT_URL no configurada, guardado deshabilitado.');
+    return;
+  }
   setSaveIndicator('saving');
-  fetch(SAVE_ENDPOINT, {
+  const data = collectData();
+  fetch(APPS_SCRIPT_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: cuerpo,
-  }).then(r=>{
-    if(r.status === 501){                      // el Sheet no está configurado en este despliegue
-      guardadoRemotoApagado = true;
-      setSaveIndicator('local');
-      return;
-    }
-    if(r.ok) ultimoEnviado = cuerpo;
-    setSaveIndicator(r.ok ? 'saved' : 'error');
-  }).catch(()=> setSaveIndicator('error'))
-    .finally(()=>{
-      guardadoEnVuelo = false;
-      if(guardadoPendiente){ guardadoPendiente = false; saveDebounced(); }
-    });
+    mode: 'no-cors', // Apps Script Web Apps no siempre exponen CORS; enviamos "a ciegas".
+    headers: { 'Content-Type': 'text/plain' }, // evita preflight OPTIONS
+    body: JSON.stringify(data),
+  }).then(()=> setSaveIndicator('saved'))
+    .catch(()=> setSaveIndicator('error'));
 }
 
 function saveDebounced(){
