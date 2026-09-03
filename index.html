@@ -528,6 +528,24 @@ textarea.is-example{color:var(--gray);font-style:italic}
 
 .ejemplo-card{border:1px solid var(--line);border-radius:14px;padding:1.3rem;margin:1rem 0 1.6rem;background:rgba(255,255,255,.015)}
 .ejemplo-strip{padding:0;background:transparent;border:none;margin-bottom:1rem}
+/* Listas del plan de acción y de los indicadores del ejemplo. La propuesta
+   real usa campos de texto libre; acá el contenido es fijo, así que va como
+   lista para que cada acción se lea entera. */
+.ejemplo-plan-list{list-style:none;display:flex;flex-direction:column;gap:0.55rem;margin:0}
+.ejemplo-plan-list li{
+  position:relative;padding-left:0.95rem;
+  font-size:0.862rem;line-height:1.65;color:var(--white);
+}
+.ejemplo-plan-list li::before{
+  content:'';position:absolute;left:0;top:0.62em;
+  width:4px;height:4px;border-radius:50%;background:var(--teal);
+}
+.ejemplo-plan{align-items:start;margin-bottom:1.4rem}
+.ejemplo-plan .timeline-item{align-items:start}
+.ejemplo-indicadores{margin-bottom:1.2rem}
+.ejemplo-indicadores li::before{background:var(--gray)}
+@media(max-width:820px){.ejemplo-plan{grid-template-columns:1fr}}
+
 .prop-quote-card.mini{margin:0 0 0.9rem 0;padding:1rem 1.3rem}
 .prop-quote-card.mini::before{font-size:2.2rem;top:0.15rem}
 .prop-quote-card.mini .prop-quote-text{
@@ -860,6 +878,46 @@ textarea::placeholder{color:var(--gray)}
           <div class="prop-quote-text">«Doctor, ¿sabía que completar el esquema de ciclos puede retrasar hasta 3,6 años el reemplazo de rodilla de su paciente? Si no lo sabía, 15 minutos van a cambiar cómo prescribe desde hoy.»
 «Doctor, 25 especialistas de 15 países ya llegaron a la misma conclusión con el respaldo más alto posible. La pregunta ya no es si funciona, es si su consulta ya lo está aplicando.»</div>
         </div>
+        <div class="ejemplo-tools-lbl">Plan de acción</div>
+        <div class="timeline-row ejemplo-plan">
+          <div class="timeline-item">
+            <div class="timeline-badge teal">1</div>
+            <div>
+              <div class="timeline-head">Corto plazo <span>hasta 3 meses</span></div>
+              <ul class="ejemplo-plan-list">
+                <li>Desarrollar una comunicación médica estandarizada con el detalle
+                  dosis-respuesta de Altman 2015 y la recomendación de LATINVISCO 2026,
+                  validada por Medical Affairs antes de distribuirla en campo.</li>
+                <li>Auditar la adherencia actual al esquema completo de ciclos en la base
+                  de prescriptores activos, para priorizar la visita médica hacia el
+                  segmento de baja adherencia.</li>
+                <li>Equipar al equipo médico con una ficha de objeción-respuesta
+                  específica para «cuántos ciclos ofrecer», lista para usarse en consulta.</li>
+              </ul>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-badge green">2</div>
+            <div>
+              <div class="timeline-head">Mediano plazo <span>3 a 6 meses</span></div>
+              <ul class="ejemplo-plan-list">
+                <li>Diseñar un estudio observacional de práctica clínica local que
+                  confirme el patrón dosis-respuesta en población propia.</li>
+                <li>Medir el cambio en la tasa de finalización del esquema completo a
+                  6 meses, como KPI formal de la iniciativa.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="ejemplo-tools-lbl">Indicadores</div>
+        <ul class="ejemplo-plan-list ejemplo-indicadores">
+          <li>Porcentaje de pacientes que completan 5 o más ciclos, línea base contra
+            seguimiento a 6 meses.</li>
+          <li>Tiempo mediano estimado a reemplazo articular en la cohorte con esquema
+            completo frente a la de esquema incompleto.</li>
+          <li>Número de prescriptores que modifican su patrón de prescripción tras la
+            intervención médica.</li>
+        </ul>
         <div class="ejemplo-nota">Esto es un ejemplo. Tu equipo va a construir el suyo propio, con su país, su decisor, sus herramientas y su evidencia.</div>
       </div>
     </details>
