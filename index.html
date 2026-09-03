@@ -44,7 +44,13 @@ header{
   background:rgba(15,20,18,0.88);backdrop-filter:blur(14px);
   position:sticky;top:0;z-index:100;
 }
-.logo{display:flex;align-items:center;gap:0.75rem}
+.logo{
+  display:flex;align-items:center;gap:0.75rem;
+  text-decoration:none;color:inherit;border-radius:8px;
+  transition:opacity .18s;
+}
+.logo:hover{opacity:.75}
+.logo:focus-visible{outline:2px solid var(--teal);outline-offset:4px}
 .logo-pip{width:3px;height:24px;border-radius:2px;background:var(--teal)}
 .logo-name{font-size:0.88rem;font-weight:700}
 /* El logotipo es un mapa de bits: align-self es imprescindible porque el
@@ -59,6 +65,27 @@ header{
    cuando el equipo lo abre: el documento pesa cerca de un mega y no
    tiene sentido descargarlo a todos los asistentes al entrar.
    ═══════════════════════════════════════════════════════════════════ */
+/* ═══ REANUDAR SESIÓN ═══ */
+.reanudar{
+  display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
+  background:var(--amber-l);border:1px solid rgba(196,127,0,.4);
+  border-radius:12px;padding:1rem 1.2rem;margin-bottom:1.8rem;
+}
+.reanudar-texto{display:flex;flex-direction:column;gap:0.2rem}
+.reanudar-lbl{
+  font-size:0.784rem;letter-spacing:0.08em;color:var(--amber);
+  font-weight:700;text-transform:uppercase;
+}
+.reanudar-equipo{font-size:0.862rem;color:var(--white)}
+.reanudar-acciones{display:flex;gap:0.6rem;flex-wrap:wrap}
+@media(max-width:640px){
+  .reanudar-acciones{width:100%}
+  .reanudar-acciones button{flex:1 1 auto}
+}
+/* El atributo hidden se aplica con la misma especificidad que una clase, así
+   que cualquier regla display posterior lo anularía sin avisar. */
+[hidden]{display:none!important}
+
 .slides{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.8rem;max-width:860px}
 .slides-lbl{
   font-size:0.78rem;letter-spacing:0.14em;color:var(--teal);font-weight:600;
@@ -690,12 +717,13 @@ textarea::placeholder{color:var(--gray)}
 <div class="app">
 
 <header>
-  <div class="logo">
+  <a class="logo" href="https://alzak.com.co/" target="_blank" rel="noopener"
+     title="Ir al sitio de ALZAK Consulting &amp; Research">
     <div class="logo-pip"></div>
     <div>
       <img class="logo-img" src="assets/brand/alzakgroup-claro.png" alt="ALZAK Consulting &amp; Research" width="362" height="128">
     </div>
-  </div>
+  </a>
   <div style="display:flex;align-items:center;gap:0.8rem">
     <span id="saveIndicator" style="font-size:0.68rem;color:var(--gray);display:flex;align-items:center;gap:0.35rem"></span>
     <div class="module-tabs">
@@ -719,6 +747,19 @@ textarea::placeholder{color:var(--gray)}
 <main><div class="inner">
 
   <!-- ═══ MÓDULO 1 ═══ -->
+
+  <!-- Aviso de trabajo guardado en este navegador. Oculto salvo que haya
+       algo que recuperar. -->
+  <div class="reanudar" id="reanudarBar" hidden>
+    <div class="reanudar-texto">
+      <span class="reanudar-lbl">Hay trabajo guardado en este dispositivo</span>
+      <span class="reanudar-equipo">Equipo: <strong id="reanudarEquipo"></strong></span>
+    </div>
+    <div class="reanudar-acciones">
+      <button type="button" class="btn-p" id="reanudarSi">Continuar donde quedamos</button>
+      <button type="button" class="btn-g" id="reanudarNo">Empezar de cero</button>
+    </div>
+  </div>
 
   <!-- S0 OBJETIVOS + NOMBRE EQUIPO -->
   <div class="screen on" id="s0">
@@ -779,11 +820,11 @@ textarea::placeholder{color:var(--gray)}
       <button class="btn-p" id="btnTeam" disabled onclick="confirmTeam()">Comenzar →</button>
     </div>
 
-    <!-- Vista previa del bloque conceptual. El visor se inserta solo cuando
+    <!-- Vista previa de las slides de apoyo. El visor se inserta solo cuando
          el equipo lo abre: el documento pesa cerca de un mega y no tiene
          sentido descargarlo a todos los asistentes al entrar. -->
     <section class="slides">
-      <div class="slides-lbl">Bloque conceptual del taller</div>
+      <div class="slides-lbl">Slides de apoyo presentación conceptual jornada 1</div>
       <button type="button" class="slides-card" id="slidesAbrir"
               aria-expanded="false" aria-controls="slidesVisor">
         <img class="slides-portada" src="assets/docs/slides-portada.jpg"
@@ -1276,6 +1317,46 @@ let ACTIVE_TOOL = null;
 // mismo origen (no hay CORS que esquivar) y se puede leer la respuesta real
 // para decirle al equipo si su trabajo quedó guardado.
 const SAVE_ENDPOINT = '/api/save';
+
+/* ═══ RESPALDO LOCAL ═══
+   El registro en el Sheet depende de la red y tarda unos segundos. Este
+   respaldo es inmediato y vive en el navegador del equipo: si se les cierra la
+   pestaña, se les apaga el equipo o se cae el wifi a mitad del taller, al
+   volver a entrar la app les ofrece continuar donde quedaron.
+   Se guarda el estado, no el HTML: la pantalla se vuelve a construir desde
+   los datos. */
+
+const RESPALDO_KEY = 'taller-adium-trabajo';
+const RESPALDO_VIGENCIA_MS = 14 * 60 * 60 * 1000;   // una jornada larga
+
+function guardarLocal(){
+  try{
+    const campos = {};
+    document.querySelectorAll('textarea[id], input[type="text"][id]')
+      .forEach(el => { if(el.value) campos[el.id] = el.value; });
+    localStorage.setItem(RESPALDO_KEY, JSON.stringify({
+      ts: Date.now(),
+      equipo: TEAM_NAME,
+      st: ST,
+      combo: COMBO_TOOLS,
+      builder: BUILDER_SEL,
+      pantalla: (document.querySelector('.screen.on') || {}).id || 's0',
+      campos,
+    }));
+  }catch(e){}   // modo privado o cuota llena: no es un fallo que deba cortar nada
+}
+
+function leerLocal(){
+  try{
+    const crudo = localStorage.getItem(RESPALDO_KEY);
+    if(!crudo) return null;
+    const d = JSON.parse(crudo);
+    if(!d.equipo || Date.now() - (d.ts || 0) > RESPALDO_VIGENCIA_MS) return null;
+    return d;
+  }catch(e){ return null; }
+}
+
+function borrarLocal(){ try{ localStorage.removeItem(RESPALDO_KEY); }catch(e){} }
 let TEAM_NAME = '';
 let saveDebounceTimer = null;
 
@@ -1329,6 +1410,7 @@ let guardadoPendiente = false;
 let ultimoEnviado = '';
 
 function saveToSheet(){
+  guardarLocal();                              // el respaldo local nunca espera a la red
   if(!TEAM_NAME) return;                       // sin equipo no hay fila que actualizar
   if(guardadoRemotoApagado){ setSaveIndicator('local'); return; }
 
@@ -2035,6 +2117,11 @@ function showStep(n,tabEl){
 }
 
 function restart(){
+  if(!confirm('Esto borra el trabajo de este equipo y empieza un caso nuevo. ¿Continuar?')) return;
+  borrarLocal();
+  TEAM_NAME='';
+  BUILDER_SEL={};
+  document.querySelectorAll('textarea, input[type="text"]').forEach(el=>{ el.value=''; });
   ST={country:null,perfil:null,meta:null};
   COMBO_TOOLS=[];
   document.querySelectorAll('.c-btn,.p-card,.m-card').forEach(el=>el.classList.remove('sel'));
@@ -2062,6 +2149,79 @@ document.getElementById('teamNameInput').addEventListener('input', function(){
     try{ localStorage.setItem('taller-adium-ejemplo', fold.open ? 'abierto' : 'cerrado'); }catch(e){}
   });
 })();
+
+/* ═══ REANUDAR SESIÓN ═══
+   Se reconstruye la pantalla desde el estado guardado, no desde HTML
+   almacenado: así el respaldo sobrevive a cualquier cambio de la maqueta. */
+
+function ofrecerReanudar(){
+  const d = leerLocal();
+  const bar = document.getElementById('reanudarBar');
+  if(!d || !bar) return;
+  document.getElementById('reanudarEquipo').textContent = d.equipo;
+  bar.hidden = false;
+  document.getElementById('reanudarSi').onclick = ()=> reanudar(d);
+  document.getElementById('reanudarNo').onclick = ()=>{ borrarLocal(); bar.hidden = true; };
+}
+
+function reanudar(d){
+  TEAM_NAME = d.equipo;
+  ST = Object.assign({country:null,perfil:null,meta:null}, d.st || {});
+  COMBO_TOOLS = Array.isArray(d.combo) ? d.combo : [];
+  BUILDER_SEL = d.builder || {};
+  document.getElementById('reanudarBar').hidden = true;
+  const nombre = document.getElementById('teamNameInput');
+  if(nombre) nombre.value = TEAM_NAME;
+
+  // Se vuelve a marcar lo elegido en el Módulo 1 para que el estado visual y
+  // el interno no queden separados.
+  if(ST.country){
+    const el = document.querySelectorAll('.c-btn')[Object.keys(COUNTRIES).indexOf(ST.country)];
+    if(el){ el.classList.add('sel'); renderCtx(ST.country); document.getElementById('btn1').disabled = false; }
+  }
+  if(ST.perfil){
+    const el = document.querySelectorAll('.p-card')[PERFILES.findIndex(x=>x.id===ST.perfil)];
+    if(el){ el.classList.add('sel'); document.getElementById('btn2').disabled = false; }
+  }
+  if(ST.meta){
+    const el = document.querySelectorAll('.m-card')[METAS.findIndex(x=>x.id===ST.meta)];
+    if(el){ el.classList.add('sel'); document.getElementById('btn3').disabled = false; }
+  }
+
+  const destino = d.pantalla || 's1';
+  if(destino === 's5' || destino === 's6'){
+    // startM2 reinicia BUILDER_SEL como parte de armar el módulo desde cero,
+    // así que los chips se reponen después de llamarlo.
+    const chips = BUILDER_SEL;
+    startM2();
+    BUILDER_SEL = chips;
+    reponerCampos(d.campos);
+    reponerChips();
+    if(destino === 's6') buildProposal();
+  }else{
+    reponerCampos(d.campos);
+    go(Number(destino.replace('s','')) || 1);
+  }
+}
+
+function reponerCampos(campos){
+  if(!campos) return;
+  Object.entries(campos).forEach(([id, v])=>{
+    const el = document.getElementById(id);
+    if(el && v) el.value = v;
+  });
+}
+
+function reponerChips(){
+  Object.entries(BUILDER_SEL).forEach(([dim, v])=>{
+    const el = document.querySelector(`.chip-opt[data-dim="${dim}"][data-val="${v}"]`);
+    if(el){
+      document.querySelectorAll(`.chip-opt[data-dim="${dim}"]`).forEach(c=>c.classList.remove('sel'));
+      el.classList.add('sel');
+    }
+  });
+  if(typeof updateDescOut === 'function') updateDescOut();
+}
 
 /* ═══ BLOQUE CONCEPTUAL ═══
    El visor se crea al abrirlo y se destruye al cerrarlo: mientras esté
@@ -2094,6 +2254,7 @@ document.getElementById('teamNameInput').addEventListener('input', function(){
 })();
 
 init();
+ofrecerReanudar();
 updateStepperActive(0);
 </script>
 </body>
