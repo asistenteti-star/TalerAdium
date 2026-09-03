@@ -121,6 +121,17 @@ header{
    que cualquier regla display posterior lo anularía sin avisar. */
 [hidden]{display:none!important}
 
+/* ═══ CENTRADO DE LA PORTADA ═══
+   El formulario de equipo y la tarjeta de slides tienen anchos angostos, y
+   alineados a la izquierda dejaban vacía la mitad derecha de la columna.
+   Se centran como bloque, con el texto alineado a la izquierda dentro:
+   centrar los párrafos costaría legibilidad y no la ganaría en nada. */
+.portada-centro{max-width:880px;margin-inline:auto}
+.portada-centro .btn-row{justify-content:flex-start}
+#s0 .portada-centro #teamNameInput{max-width:none!important}
+.portada-centro .lead{max-width:none}
+.portada-centro .slides-card{max-width:none}
+
 .slides{margin-top:3rem;border-top:1px solid var(--line);padding-top:1.8rem}
 .slides-lbl{
   font-size:0.78rem;letter-spacing:0.14em;color:var(--teal);font-weight:600;
@@ -923,6 +934,7 @@ textarea::placeholder{color:var(--gray)}
     </details>
 
     <div class="obj-divider"></div>
+    <div class="portada-centro">
 
     <div class="kicker">Antes de empezar</div>
     <div class="team-question">¿Cómo se llama tu equipo?</div>
@@ -963,6 +975,7 @@ textarea::placeholder{color:var(--gray)}
         <div class="slides-marco" id="slidesMarco"></div>
       </div>
     </section>
+    </div>
   </div>
 
   <!-- S1 PAÍS -->
@@ -971,7 +984,6 @@ textarea::placeholder{color:var(--gray)}
     <h1>Selecciona tu mercado de interés</h1>
     <p class="lead" style="max-width:none">El sistema de salud, los actores y las rutas de acceso son distintos en cada país.</p>
     <div class="country-grid" id="countryGrid"></div>
-    <div class="ctx" id="ctxPanel"></div>
     <div class="btn-row"><button class="btn-p" id="btn1" disabled onclick="go(2)">Continuar →</button></div>
   </div>
 
@@ -1734,21 +1746,6 @@ function buildProse_(c){
   const sup = (n) => n ? `<sup><a href="#ref-${c.name}-${n}" style="color:var(--teal);text-decoration:none">${n}</a></sup>` : '';
   return `<p class="ctx-prose">${c.name} opera bajo el modelo de ${c.sistema}. El gasto de bolsillo representa ${c.gasto} del gasto total en salud${sup(gastoIdx)}, uno de los indicadores más directos de cuánto asumen los hogares frente a lo que cubre el sistema. La evaluación de tecnologías sanitarias está a cargo de ${c.hta}${sup(htaIdx)}. En materia de umbral de costo-efectividad, ${c.umbral.charAt(0).toLowerCase()+c.umbral.slice(1)} En cuanto a cobertura, ${c.cobertura}${sup(coberturaIdx)}</p>`;
 }
-function renderCtx(id){
-  const c=COUNTRIES[id];
-  const panel=document.getElementById('ctxPanel');
-  const refs=c.refs.map((r,i)=>`<span id="ref-${c.name}-${i+1}"></span>[${i+1}] <a href="${r.url}" target="_blank">↗ ${r.label}</a>`).join('<br>');
-  panel.innerHTML=`
-    <div class="ctx-head"><div class="ctx-flag">${c.flag}</div><div><div class="ctx-title">${c.name}</div><span class="ctx-sub">${c.sistema}</span></div></div>
-    <div class="ctx-meta">
-      <div class="ctx-item"><span class="ctx-lbl">Gasto de bolsillo</span><span class="ctx-val">${c.gasto}</span></div>
-      <div class="ctx-item"><span class="ctx-lbl">Agencia HTA</span><span class="ctx-val">${c.hta}</span></div>
-      <div class="ctx-item"><span class="ctx-lbl">Umbral de costo-efectividad</span><span class="ctx-val">${c.umbral}</span></div>
-      <div class="ctx-item"><span class="ctx-lbl">Cobertura de aseguramiento</span><span class="ctx-val">${c.cobertura}</span></div>
-    </div>
-    <div class="ctx-ref"><strong style="color:var(--gray)">Fuentes primarias verificadas:</strong><br>${refs}</div>`;
-  panel.classList.add('on');
-}
 function pickPerfil(id,el){
   document.querySelectorAll('.p-card').forEach(c=>c.classList.remove('sel'));
   el.classList.add('sel');ST.perfil=id;ST.meta=null;
@@ -2260,7 +2257,6 @@ function restart(){
   ST={country:null,perfil:null,meta:null};
   COMBO_TOOLS=[];
   document.querySelectorAll('.c-btn,.p-card,.m-card').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('ctxPanel').classList.remove('on');
   ['btn1','btn2','btn3'].forEach(id=>document.getElementById(id).disabled=true);
   go(1);
 }
@@ -2312,7 +2308,7 @@ function reanudar(d){
   // el interno no queden separados.
   if(ST.country){
     const el = document.querySelectorAll('.c-btn')[Object.keys(COUNTRIES).indexOf(ST.country)];
-    if(el){ el.classList.add('sel'); renderCtx(ST.country); document.getElementById('btn1').disabled = false; }
+    if(el){ el.classList.add('sel'); document.getElementById('btn1').disabled = false; }
   }
   if(ST.perfil){
     const el = document.querySelectorAll('.p-card')[PERFILES.findIndex(x=>x.id===ST.perfil)];
