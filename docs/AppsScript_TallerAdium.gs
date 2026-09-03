@@ -17,6 +17,10 @@
  * 6. Vuelve a desplegar el proyecto para que tome las variables.
  *
  * ─── Comportamiento ───────────────────────────────────────────────────────
+ * El encabezado se verifica en cada escritura y se corrige si no coincide con
+ * COLUMNAS, así que al cambiar la lista basta con volver a implementar: no
+ * hace falta borrar la fila 1 a mano ni vaciar la hoja.
+ *
  * Cada equipo ocupa UNA sola fila, identificada por el nombre del equipo.
  * Cada envío sobreescribe esa fila, así que la hoja siempre muestra el estado
  * actual de cada equipo en lugar de un histórico de miles de filas.
@@ -82,12 +86,39 @@ function doGet() {
 function obtenerHoja_() {
   var libro = SpreadsheetApp.getActiveSpreadsheet();
   var hoja = libro.getSheetByName(HOJA) || libro.insertSheet(HOJA);
+
   if (hoja.getLastRow() === 0) {
-    hoja.appendRow(COLUMNAS);
-    hoja.getRange(1, 1, 1, COLUMNAS.length).setFontWeight('bold');
-    hoja.setFrozenRows(1);
+    escribirEncabezado_(hoja);
+    return hoja;
+  }
+
+  // El encabezado se verifica en cada escritura, no solo cuando la hoja está
+  // vacía. Al cambiar la lista de columnas basta con dejar la fila 1 puesta
+  // para que los datos caigan bajo etiquetas equivocadas sin que nada avise:
+  // ya pasó, y desde la columna 12 todo quedó corrido una posición. Si el
+  // encabezado no coincide, se corrige aquí mismo.
+  var ancho = Math.max(hoja.getLastColumn(), COLUMNAS.length);
+  var actual = hoja.getRange(1, 1, 1, ancho).getValues()[0];
+  var coincide = true;
+  for (var i = 0; i < COLUMNAS.length; i++) {
+    if (String(actual[i] || '').trim() !== COLUMNAS[i]) { coincide = false; break; }
+  }
+  // Las columnas que sobran de una versión anterior también hay que limpiarlas.
+  for (var j = COLUMNAS.length; j < ancho; j++) {
+    if (String(actual[j] || '').trim() !== '') { coincide = false; break; }
+  }
+  if (!coincide) {
+    if (ancho > COLUMNAS.length) {
+      hoja.getRange(1, COLUMNAS.length + 1, 1, ancho - COLUMNAS.length).clearContent();
+    }
+    escribirEncabezado_(hoja);
   }
   return hoja;
+}
+
+function escribirEncabezado_(hoja) {
+  hoja.getRange(1, 1, 1, COLUMNAS.length).setValues([COLUMNAS]).setFontWeight('bold');
+  hoja.setFrozenRows(1);
 }
 
 function buscarFilaEquipo_(hoja, equipo) {
