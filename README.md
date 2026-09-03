@@ -3,7 +3,7 @@
 **En producción:** https://taler-adium.vercel.app
 
 Herramienta de trabajo en vivo para el taller de farmacoeconomía de Adium LATAM
-(octubre 2026). Cada equipo participante recorre dos módulos desde su propio
+(septiembre 2026). Cada equipo participante recorre dos módulos desde su propio
 dispositivo y termina con una propuesta imprimible.
 
 **Módulo 1 · Segmentación.** El equipo elige su mercado (8 países de LATAM),

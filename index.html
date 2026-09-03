@@ -429,17 +429,7 @@ textarea::placeholder{color:var(--gray)}
 .prop-3col{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
 .prop-box{background:rgba(0,0,0,.25);border:1px solid var(--line);border-radius:10px;padding:1rem}
 @media(max-width:640px){.prop-2col,.prop-3col{grid-template-columns:1fr}}
-@media print{
-  body{background:#fff;color:#111}
-  .bg-grad,header,.prog,.no-print,.module-tabs{display:none!important}
-  main{padding:0}
-  .prop-wrap{border-color:#ccc;background:#fff}
-  .prop-hero{background:#0f3d3a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-  .prop-box{background:#f4f6f6;border-color:#ddd}
-  .prop-field-val,.prop-sec-title{color:#111}
-  .prop-field-lbl,.prop-sec-num{color:#555}
-  .crumb{color:#111;border-color:#bbb}
-}
+
 
 /* PROPUESTA: resumen visual */
 .prop-summary-strip{display:flex;flex-wrap:wrap;gap:0.7rem;padding:1.1rem 2.2rem;background:rgba(0,0,0,.15);border-bottom:1px solid var(--line)}
@@ -453,6 +443,8 @@ textarea::placeholder{color:var(--gray)}
 
 .prop-quote-card{margin:0 2.2rem 1.2rem;padding:1.6rem 1.9rem;border-radius:14px;background:linear-gradient(135deg,rgba(0,180,180,.14),rgba(0,180,180,.03));border:1px solid var(--pub-b);position:relative}
 .prop-quote-card::before{content:'"';position:absolute;top:0.3rem;left:1rem;font-family:Helvetica,Arial,sans-serif;font-size:3.5rem;color:rgba(0,180,180,.25);line-height:1}
+.prop-box-titulo{font-weight:700;font-size:0.862rem;margin-bottom:0.3rem}
+.prop-box-desc{font-size:0.862rem;color:var(--gray);line-height:1.55}
 .prop-quote-lbl{font-size:0.78rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--teal);font-weight:700;margin-bottom:0.6rem}
 .prop-quote-text{font-size:1.15rem;font-style:italic;line-height:1.6;color:var(--white);padding-left:1.4rem;white-space:pre-wrap}
 .prop-quote-text.small{font-size:0.95rem}
@@ -518,6 +510,90 @@ textarea::placeholder{color:var(--gray)}
   .res-grid,.paso1-grid,.viz-grid,.conclusion-grid,.resumen-row{grid-template-columns:1fr}
   h1{font-size:1.7rem}
 }
+
+/* La hoja de impresión va al final a propósito: estaba declarada en medio
+   del archivo y todas las reglas escritas después la sobreescribían, así que
+   la mitad de sus ajustes de color y tamaño no llegaban al papel. */
+@media print{
+  /* Las pantallas entran con una animación que arranca en opacity:0. Si el
+     navegador arma el PDF mientras está en curso, imprime la página
+     transparente. En papel no hay animación que valga. */
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .screen.on,.step-content.on,.ctx.on{opacity:1!important;transform:none!important}
+
+  @page{size:A4;margin:14mm}
+
+  html{font-size:100%}          /* la escala de pantalla no aplica al papel */
+  body{background:#fff;color:#111;font-size:10.5pt;overflow:visible}
+  .app{min-height:0}
+  main{padding:0}
+  .inner{max-width:none}
+
+  /* Fuera todo lo que es navegación: la barra de pasos y las migas repiten
+     datos que el encabezado del documento ya trae. */
+  .bg-grad,header,.prog,.no-print,.module-tabs,.stepper-bar,.crumbs{display:none!important}
+
+  /* La portada va en claro. En oscuro consume tinta, y fotocopiada o impresa
+     en monocromo el texto se pierde contra el fondo. Queda la franja verde
+     como marca, que es lo que identifica el documento. */
+  .prop-wrap{border:none;background:#fff}
+  .prop-hero{
+    background:#fff!important;color:#111!important;
+    border-top:4px solid #0f3d3a;border-bottom:1px solid #ddd;
+    padding:1rem 0 1.2rem;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+  .prop-hero *{color:#111!important}
+  .prop-kicker{color:#0f3d3a!important;font-weight:700}
+  .prop-title{font-size:18pt;line-height:1.2}
+
+  .prop-sec{padding:1rem 0;border-top:1px solid #e4e4e4}
+  .prop-sec-title{font-size:12pt;color:#111;margin-bottom:0.5rem}
+  .prop-sec-num,.prop-field-lbl{color:#555}
+  .prop-field-val{color:#111}
+  .prop-box{background:#f7f9f9;border-color:#e0e0e0}
+  .crumb{color:#111;border-color:#bbb}
+
+  /* Saltos de página. No había ninguna regla: las cajas se cortaban a mitad
+     de hoja. Se protegen las piezas pequeñas y se dejan fluir las secciones,
+     porque forzarlas enteras deja media página vacía cada vez que una no
+     alcanza, que es justo lo que se veía. */
+  .prop-box,.prop-field,.prop-quote,.conc-card,.ev-item,.tool-card,
+  .prop-summary-strip>*{break-inside:avoid;page-break-inside:avoid}
+  .prop-hero{break-inside:avoid;break-after:avoid}
+  .prop-sec-num,.prop-sec-title,.prop-field-lbl,.ev-lbl{break-after:avoid;break-after:avoid-page}
+  p,.prop-field-val{orphans:2;widows:2}
+
+  /* Los bloques con alto mínimo pensado para la pantalla dejaban huecos de
+     media hoja en el papel. */
+  .drag-zone,.prop-quote,.conc-body,textarea{min-height:0!important}
+  textarea{border:none;padding:0;resize:none;height:auto;background:none}
+
+  /* Contraste. Varios textos usan colores calculados para fondo oscuro y
+     sobre blanco quedaban casi invisibles: los encabezados del plan, las
+     descripciones de las herramientas y las etiquetas de las cajas. */
+  .timeline-item{background:#f7f9f9;border-color:#e0e0e0}
+  .timeline-head,.timeline-val{color:#111}
+  .timeline-head span{color:#555}
+  .timeline-val.empty,.prop-field-val.empty,.prop-quote-text.empty{color:#8a8a8a}
+  .timeline-badge{color:#fff!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .prop-summary-strip{background:#f7f9f9;border-bottom:1px solid #e0e0e0;padding:0.9rem 0}
+  .prop-box,.prop-box *{color:#111}
+  .prop-box-desc{color:#333}
+  .prop-box .prop-field-lbl{color:#555}
+
+  /* El texto que escribe el equipo salía en cursiva a 1,5rem y se comía un
+     tercio de la primera hoja. Se mantiene el color de acento, que distingue
+     el mensaje del cierre, pero al tamaño del cuerpo del documento. */
+  .prop-quote-text,.prop-quote-text.big,.prop-quote-text.small,
+  .prop-quote-card.mini .prop-quote-text{
+    font-size:11pt;font-style:normal;font-weight:500;line-height:1.55;
+  }
+  .prop-quote-lbl{font-size:8.5pt}
+
+  /* Las siglas de herramienta en teal claro sobre blanco no se leían. */
+  .sigla,[class*="-icon"]{color:#0f3d3a!important}
+}
 </style>
 </head>
 <body>
@@ -529,7 +605,7 @@ textarea::placeholder{color:var(--gray)}
     <div class="logo-pip"></div>
     <div>
       <div class="logo-name">AL<em>ZAK</em> <span style="font-weight:300;color:var(--gray)">Consulting & Research</span></div>
-      <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Octubre 2026</span>
+      <span class="logo-sub">Taller Farmacoeconomía Aplicada · Adium LATAM · Septiembre 2026</span>
     </div>
   </div>
   <div style="display:flex;align-items:center;gap:0.8rem">
@@ -1738,7 +1814,7 @@ function buildProposal(){
   if(!country||!perfil||!meta) return;
   const base=(typeof COMBO_TOOLS !== 'undefined' && COMBO_TOOLS.length) ? COMBO_TOOLS : (TOOLS_BY_META[ST.meta]||[]);
   const toolChips = base.map(k=>`<span class="chip on"><span class="chip-lbl">${TOOLS[k].icon}</span><span>${TOOLS[k].nombre}</span></span>`).join('');
-  const toolDetalle = base.map(k=>`<div class="prop-box"><div style="font-weight:700;font-size:0.85rem;margin-bottom:.3rem">${TOOLS[k].icon} ${TOOLS[k].nombre}</div><div style="font-size:0.78rem;color:var(--gray)">${TOOLS[k].entrega}</div></div>`).join('');
+  const toolDetalle = base.map(k=>`<div class="prop-box"><div class="prop-box-titulo">${TOOLS[k].icon} ${TOOLS[k].nombre}</div><div class="prop-box-desc">${TOOLS[k].entrega}</div></div>`).join('');
   const argGen = document.getElementById('argGenerado') ? document.getElementById('argGenerado').innerText.trim() : '';
   const fecha=new Date().toLocaleDateString('es-CO',{day:'2-digit',month:'long',year:'numeric'});
   const mensaje = val('ta-mensaje');
@@ -1804,7 +1880,7 @@ function buildProposal(){
         <div class="prop-sec-title">Datos y herramientas</div>
         ${fld('Dato relevante para el argumento', val('ta-p2-valor'))}
         <div class="prop-field-lbl" style="margin-top:.6rem">Herramientas seleccionadas</div>
-        <div class="prop-2col" style="margin-top:.4rem">${toolDetalle || '<span style="color:var(--gray);font-size:0.8rem">Ninguna</span>'}</div>
+        <div class="prop-2col" style="margin-top:.4rem">${toolDetalle || '<span class="prop-box-desc">Ninguna</span>'}</div>
         ${fld('Argumento generado con esta combinación', argGen)}
       </div>
     </div>

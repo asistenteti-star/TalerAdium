@@ -17,7 +17,7 @@
 > Si se quiere corregir, el arreglo es el que ya está aplicado en la rama:
 > un `click` que mueve la tarjeta entre columnas, conviviendo con el arrastre.
 
-Estado al 2 de septiembre de 2026. El taller es en octubre de 2026.
+Estado al 2 de septiembre de 2026. El taller es en septiembre de 2026.
 
 La app funciona de punta a punta: se recorren las siete pantallas, se genera el
 argumento y sale la propuesta imprimible. Lo que queda son **huecos de
