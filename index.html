@@ -65,6 +65,41 @@ header{
    cuando el equipo lo abre: el documento pesa cerca de un mega y no
    tiene sentido descargarlo a todos los asistentes al entrar.
    ═══════════════════════════════════════════════════════════════════ */
+/* ═══ CONTACTO EN EL ENCABEZADO ═══
+   Junto a las pestañas de módulo. En pantalla chica se oculta, porque ahí ya
+   está en el pie y el encabezado no tiene sitio. */
+.contacto{display:flex;flex-direction:column;gap:0.1rem;padding-left:0.9rem;border-left:1px solid var(--line)}
+.contacto-link{
+  font-size:0.784rem;color:var(--gray);text-decoration:none;
+  white-space:nowrap;transition:color .18s;
+}
+.contacto-link:hover{color:var(--teal);text-decoration:underline}
+@media(max-width:1100px){.contacto{display:none}}
+
+/* ═══ PIE DE PÁGINA ═══ */
+.pie{
+  position:relative;z-index:1;margin-top:auto;
+  border-top:1px solid var(--line);background:rgba(0,0,0,.25);
+}
+.pie-inner{
+  max-width:1300px;margin:0 auto;
+  padding:2rem var(--pad-x) calc(2rem + env(safe-area-inset-bottom));
+  display:grid;grid-template-columns:auto auto 1fr;gap:1.5rem 2.5rem;align-items:start;
+}
+.pie-marca{display:block}
+.pie-logo{height:28px;width:auto;display:block;opacity:.85;transition:opacity .18s}
+.pie-marca:hover .pie-logo{opacity:1}
+.pie-contacto{display:flex;flex-direction:column;gap:0.4rem}
+.pie-link{font-size:0.862rem;color:var(--teal);text-decoration:none;white-space:nowrap}
+.pie-link:hover{text-decoration:underline}
+.pie-legal{display:flex;flex-direction:column;gap:0.6rem;max-width:56ch;justify-self:end}
+.pie-legal p{font-size:0.784rem;line-height:1.65;color:var(--gray-d);margin:0}
+.pie-legal p:first-child{color:var(--gray)}
+@media(max-width:900px){
+  .pie-inner{grid-template-columns:1fr;gap:1.2rem}
+  .pie-legal{justify-self:start;max-width:none}
+}
+
 /* ═══ REANUDAR SESIÓN ═══ */
 .reanudar{
   display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;
@@ -173,7 +208,7 @@ header{
 .prog{height:2px;background:var(--line);position:sticky;top:61px;z-index:99}
 .prog-bar{height:100%;width:0;background:linear-gradient(90deg,var(--teal-d),var(--teal));transition:width .5s ease}
 
-main{flex:1;display:flex;justify-content:center;padding:2.5rem 1.4rem 6rem}
+main{flex:1 0 auto;display:flex;justify-content:center;padding:2.5rem 1.4rem 6rem}
 .inner{width:100%;max-width:1300px}
 
 /* SCREENS */
@@ -730,6 +765,10 @@ textarea::placeholder{color:var(--gray)}
       <div class="mod-tab active" id="tab1">Módulo 1 · Segmentación</div>
       <div class="mod-tab" id="tab2">Módulo 2 · Mensaje de valor</div>
     </div>
+    <div class="contacto">
+      <a class="contacto-link" href="mailto:info@alzak.com.co">info@alzak.com.co</a>
+      <a class="contacto-link" href="https://alzak.com.co/" target="_blank" rel="noopener">alzak.com.co</a>
+    </div>
   </div>
 </header>
 
@@ -1070,6 +1109,24 @@ textarea::placeholder{color:var(--gray)}
 
 
 </div></main>
+
+<footer class="pie no-print">
+  <div class="pie-inner">
+    <a class="pie-marca" href="https://alzak.com.co/" target="_blank" rel="noopener">
+      <img class="pie-logo" src="assets/brand/alzakgroup-claro.png"
+           alt="ALZAK Consulting &amp; Research" width="362" height="128">
+    </a>
+    <div class="pie-contacto">
+      <a class="pie-link" href="mailto:info@alzak.com.co">info@alzak.com.co</a>
+      <a class="pie-link" href="https://alzak.com.co/" target="_blank" rel="noopener">alzak.com.co</a>
+    </div>
+    <div class="pie-legal">
+      <p>&copy; <span id="pieAnio">2026</span> ALZAK Consulting &amp; Research. Todos los derechos reservados.</p>
+      <p>Documento de uso interno del taller. El contenido y los argumentos de valor aquí
+        recogidos son confidenciales y no deben distribuirse fuera del equipo participante.</p>
+    </div>
+  </div>
+</footer>
 </div>
 
 <script>
@@ -2252,6 +2309,9 @@ function reponerChips(){
     abrir.focus();
   });
 })();
+
+const pieAnio = document.getElementById('pieAnio');
+if(pieAnio) pieAnio.textContent = String(new Date().getFullYear());
 
 init();
 ofrecerReanudar();
